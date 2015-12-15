@@ -1,0 +1,11 @@
+*.pyc
+__pycache__
+
+config_local.json
+
+log/*
+*.log
+
+/env/*
+/static/*
+bower_components

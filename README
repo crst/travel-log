@@ -1,2 +1,19 @@
 
-TODO
+Dev setup:
+
+Required packages:
+* Python2
+* pip2
+* bower
+
+
+```
+cd working-title
+virtualenv -p /usr/bin/python2 env
+source env/bin/activate
+make dependencies
+
+make run-app
+
+deactivate
+```
