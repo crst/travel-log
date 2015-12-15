@@ -7,13 +7,12 @@ Required packages:
 * bower
 
 
-```
-cd working-title
-virtualenv -p /usr/bin/python2 env
-source env/bin/activate
-make dependencies
+    cd working-title
+    virtualenv -p /usr/bin/python2 env
+    source env/bin/activate
+    make dependencies
 
-make run-app
+    make run-app
 
-deactivate
-```
+    deactivate
+
