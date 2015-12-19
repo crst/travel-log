@@ -1,43 +1,40 @@
 from importlib import import_module
 import sys
 
+from flask import Flask
+from flask.ext.login import LoginManager
+
+import db
 from util import get_logger, config
 logger = get_logger(__name__)
 
-from flask import Flask
+
 flask_app = Flask(__name__)
 
 
-# Register modules
-MODULES = [
-    'user',
-    'album',
-    'edit',
-    'share',
-]
-
-for module in MODULES:
-    mod_name = 'modules.%s' % module
-    blueprint_name = '%s_module' % module
-    try:
-        mod = import_module(mod_name)
-        blueprint = getattr(mod, blueprint_name)
-        flask_app.register_blueprint(blueprint)
-        logger.debug('Loaded module %s', mod_name)
-    except ImportError as err:
-        logger.critical('No such module: %s', err)
-        sys.exit(-1)
-    except AttributeError as err:
-        logger.critical('Module is missing the expected blueprint: %s', err)
-        sys.exit(-1)
+def init_app(cnf):
+    flask_app.secret_key = cnf['SECRET_KEY']
+    login_manager = LoginManager()
+    login_manager.init_app(flask_app)
+    login_manager.session_protection = 'strong'
+    login_manager.login_message = ''
+    login_manager.login_view = 'index.login'
+    login_manager.user_loader(db.load_user)
 
 
-@flask_app.route('/')
-def index():
-    logger.debug('{Index}')
-    return 'Index'
+def load_modules(cnf):
+    for module in cnf['modules']:
+        mod_name = 'modules.%s' % module
+        try:
+            flask_app.register_blueprint(getattr(import_module(mod_name), '%s_module' % module))
+            logger.debug('Loaded module %s', mod_name)
+        except Exception as err:
+            logger.critical('Can\'t load module: %s', err)
+            sys.exit(-1)
 
 
 if __name__ == '__main__':
     logger.debug('Starting app')
+    init_app(config)
+    load_modules(config)
     flask_app.run(debug=config['debug'])

@@ -1,0 +1,49 @@
+{% extends "app.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}" type="text/css" />
+{% endblock %}
+
+{% block body %}
+
+<div id="login">
+  <a href="/login/"><span class="label label-success">Login</span></a>
+</div>
+
+<div class="container">
+  <div id="featured">
+    <div class="row">
+      <div class="page-header">
+        <h2>Featured photo journeys</h2>
+      </div>
+    </div>
+    <div class="row">
+      {% for feature in featured %}
+      <div class="col-sm-6 col-md-3">
+        <a href="#" class="thumbnail">
+          <img src="{{ url_for('static', filename='%s' % feature.image)}}" alt="{{ feature.caption }}">
+          <div class="caption">
+            <h3>{{ feature.caption }}</h3>
+            <p>{{ feature.description }}</p>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div id="sign-up">
+    <h3>Want to create your own photo journeys?</h3>
+    <form class="form-inline">
+      <div class="form-group">
+        <label class="sr-only" for="email">Email address</label>
+        <div class="input-group">
+          <input type="text" class="form-control input-lg" id="email" placeholder="you@app">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg">Sign up for waiting list</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

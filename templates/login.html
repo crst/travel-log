@@ -1,0 +1,33 @@
+{% extends "app.html" %}
+
+{% block head %}
+<link href="{{ url_for('static', filename='login.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+  <form method="POST" class="login">
+    <h2 class="login-header">
+      Welcome to app
+    </h2>
+    <label class="sr-only" for="name">
+      User name
+    </label>
+    <input placeholder="Username" id="username" class="form-control" name="username" type="input" />
+    <label class="sr-only" for="password">
+      Password
+    </label>
+    <input name="password" class="form-control" placeholder="Password" type="password" id="password" />
+    <button class="btn btn-lg btn-success btn-block" type="submit" autofocus>
+      Login
+    </button>
+  </form>
+  <div class="login">
+    {% for error in errors %}
+    <p>{{ error }}</p>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

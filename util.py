@@ -1,9 +1,8 @@
 import json
-import os
-import sys
-
 import logging
 from logging.handlers import RotatingFileHandler
+import os
+import sys
 
 
 configs = [

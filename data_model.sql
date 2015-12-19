@@ -1,20 +1,28 @@
 
+CREATE USER app WITH SUPERUSER;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 DROP SCHEMA IF EXISTS app CASCADE;
 CREATE SCHEMA app;
 
 
 
 CREATE TABLE app.user (
-  id_user   INTEGER PRIMARY KEY,
-  user_name TEXT NOT NULL,
-  email     TEXT NOT NULL,
+  id_user   SERIAL PRIMARY KEY,
+  user_name TEXT NOT NULL UNIQUE,
+  email     TEXT NOT NULL UNIQUE,
   pw_hash   TEXT NOT NULL
 );
+
+CREATE INDEX ON app.user (user_name);
+
+INSERT INTO app.user (user_name, email, pw_hash) VALUES
+  ('admin', 'admin@app', crypt('|l@y^DAbtdtEgUamFe*.0_yaq:y\n~\n^N', gen_salt('bf', 12)));
 
 
 
 CREATE TABLE app.album (
-  id_album    INTEGER PRIMARY KEY,
+  id_album    SERIAL PRIMARY KEY,
   album_title TEXT NOT NULL,
   fk_user     INTEGER NOT NULL
 );
@@ -24,7 +32,7 @@ ALTER TABLE app.album ADD FOREIGN KEY (fk_user) REFERENCES app.user (id_user);
 
 
 CREATE TABLE app.item (
-  id_item     INTEGER PRIMARY KEY,
+  id_item     SERIAL PRIMARY KEY,
   fk_album    INTEGER NOT NULL,
   image       TEXT NOT NULL,
   ts          TIMESTAMP WITH TIME ZONE,
@@ -38,14 +46,14 @@ ALTER TABLE app.item ADD FOREIGN KEY (fk_album) REFERENCES app.album (id_album);
 
 
 CREATE TABLE app.share_type (
-  id_share_type   SMALLINT PRIMARY KEY,
+  id_share_type   SERIAL PRIMARY KEY,
   share_type_name TEXT
 );
 
 
 
 CREATE TABLE app.share (
-  fk_album      INTEGER NOT NULL,
+  fk_album      SERIAL NOT NULL,
   fk_share_type SMALLINT NOT NULL,
   url           TEXT,
   email         TEXT,

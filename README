@@ -8,6 +8,7 @@ Required packages:
 
 
     cd working-title
+    make get-media
     virtualenv -p /usr/bin/python2 env
     source env/bin/activate
     make dependencies

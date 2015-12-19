@@ -1,4 +1,22 @@
 {
+    "modules": [
+        "index",
+        "user",
+        "album",
+        "edit",
+        "share"
+    ],
+
+    "app-database": {
+        "database": "app",
+        "user": "app",
+        "password": "",
+        "host": "localhost",
+        "port": 5432
+    },
+
+    "SECRET_KEY": "fM#1KY$\tD4ygxZ8/x0ck+jy,xq#BK~xu[/3",
+
     "debug": false,
     "log_level": "WARNING"
 }

@@ -4,6 +4,11 @@ run-app:
 	python2 app.py
 
 
+.PHONY: get-media
+get-media:
+	git clone git@gitlab.com:crst/working-title-media.git media
+	cp media/* static/
+
 
 .PHONY: dependencies
 dependencies: install-python-packages install-jquery install-bootstrap
@@ -21,10 +26,10 @@ install-jquery:
 .PHONY: install-bootstrap
 install-bootstrap:
 	bower install bootstrap#3.3.6
-	mkdir -p static/lib/bootstrap/
-	cp bower_components/bootstrap/dist/js/bootstrap.min.js static/lib/bootstrap
-	cp bower_components/bootstrap/dist/css/bootstrap.min.css static/lib/bootstrap
-	cp bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.* static/lib/bootstrap
+	mkdir -p static/lib/bootstrap/{js,css,fonts}
+	cp bower_components/bootstrap/dist/js/bootstrap.min.js static/lib/bootstrap/js
+	cp bower_components/bootstrap/dist/css/bootstrap.min.css static/lib/bootstrap/css
+	cp bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.* static/lib/bootstrap/fonts
 
 .PHONY: clean
 clean:

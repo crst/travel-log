@@ -1,12 +1,25 @@
 <!DOCTYPE html>
-<head>
-  <title>App | {{ module }}</title>
-  <script type="text/javascript" src="{{ url_for('static', filename='lib/jquery/jquery.min.js') }}"></script>
+<html>
+  <head>
+    <title>App | {{ module }}</title>
+    <script type="text/javascript" src="{{ url_for('static', filename='lib/jquery/jquery.min.js') }}"></script>
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='lib/bootstrap/bootstrap.min.css') }}" type="text/css" />
-  <script type="text/javascript" src="{{ url_for('static', filename='lib/bootstrap/bootstrap.min.js') }}"></script>
-</head>
-<body>
-  {% block body %}{% endblock %}
-</body>
+    <link rel="stylesheet" href="{{ url_for('static', filename='lib/bootstrap/css/bootstrap.min.css') }}" type="text/css" />
+    <script type="text/javascript" src="{{ url_for('static', filename='lib/bootstrap/js/bootstrap.min.js') }}"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}" type="text/css" />
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    {% block body %}{% endblock %}
+
+    <footer class="footer">
+      <div class="container">
+        <ul class="list-inline">
+          <li class="text-muted"><a href="#">About</a></li>
+          <li class="text-muted"><a href="#">Imprint</a></li>
+        </ul>
+      </div>
+    </footer>
+  </body>
 </html>
