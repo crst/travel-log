@@ -20,6 +20,7 @@ def pg_connection(cnf):
         try:
             yield con, cur, None
         finally:
+            con.commit()
             cur.close()
             con.close()
 
@@ -32,6 +33,14 @@ class Row(object):
 
 def fetch_one(cur):
     return Row(cur, cur.fetchone())
+
+def query_one(cur, query, env):
+    cur.execute(query, env)
+    return fetch_one(cur)
+
+def query_all(cur, query, env):
+    cur.execute(query, env)
+    return [Row(cur, r) for r in cur.fetchall()]
 
 
 class User(object):

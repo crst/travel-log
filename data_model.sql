@@ -28,7 +28,7 @@ CREATE TABLE app.album (
 );
 
 ALTER TABLE app.album ADD FOREIGN KEY (fk_user) REFERENCES app.user (id_user);
-
+ALTER TABLE app.album ADD UNIQUE (album_title, fk_user);
 
 
 CREATE TABLE app.item (

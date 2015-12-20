@@ -1,0 +1,29 @@
+{% extends "app.html" %}
+
+{% block body %}
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>Create a new album</h1>
+    <h4>All new albums will be private by default. You can change this
+      later in the <b>Share</b> section.</h4>
+
+    <form method="POST" class="form-inline">
+      <div class="form-group">
+        <label class="sr-only" for="album_name">Album name</label>
+        <div class="input-group">
+          <div class="input-group-addon">{{ current_user.name }} / </div>
+          <input type="text" class="form-control" id="album_name" name="album_name" placeholder="my-cool-vacation-in-hawaii" autofocus>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Create album</button>
+    </form>
+    <div class="errors">
+      {% for error in errors %}
+      <p><code>{{ error }}</code></p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

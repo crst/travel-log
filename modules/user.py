@@ -1,6 +1,8 @@
 from flask import Blueprint, redirect, render_template, url_for
 from flask.ext.login import current_user, login_required
 
+from util import config
+import db
 from util import get_logger
 logger = get_logger(__name__)
 
@@ -14,8 +16,19 @@ def index(username):
     logger.debug('{User} user/%s', username)
     if username != current_user.name:
         return redirect(url_for('user.index', username=current_user.name))
+
+    albums = []
+    with db.pg_connection(config['app-database']) as (_, cur, err):
+        if not err:
+            user = db.query_one(cur, 'SELECT id_user FROM app.user WHERE user_name=%(name)s;', {'name': username})
+            albums = db.query_all(
+                cur,
+                'SELECT id_album, album_title FROM app.album WHERE fk_user=%(user)s',
+                {'user': user.id_user})
+
     env = {
         'module': 'User',
-        'username': username,
+        'header': True,
+        'albums': albums
     }
     return render_template('user.html', **env)

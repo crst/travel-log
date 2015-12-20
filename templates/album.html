@@ -1,5 +1,5 @@
 {% extends "app.html" %}
 
 {% block body %}
-View album {{ title }} from user {{ username }}
+View album {{ title }} from user {{ current_user.name }}
 {% endblock %}

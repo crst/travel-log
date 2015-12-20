@@ -1,5 +1,5 @@
 from flask import Blueprint, escape, flash, get_flashed_messages, redirect, render_template, request, url_for
-from flask.ext.login import login_user, logout_user
+from flask.ext.login import current_user, login_user, logout_user
 
 import db
 from util import get_logger
@@ -30,6 +30,8 @@ def index():
 @index_module.route('/login/', methods=['GET', 'POST'])
 def login():
     logger.debug('{Login}')
+    if current_user.is_authenticated:
+        return redirect(url_for('user.index', username=current_user.name))
 
     if request.method == 'POST':
         username = 'username' in request.form and escape(request.form['username']) or ''
@@ -42,9 +44,9 @@ def login():
         else:
             flash('Login failed!')
 
-    err = get_flashed_messages()
     env = {
-        'errors': err
+        'module': 'Login',
+        'errors': get_flashed_messages(),
     }
     return render_template('login.html', **env)
 
