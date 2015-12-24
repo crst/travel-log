@@ -1,5 +1,7 @@
 {% extends "app.html" %}
 
 {% block body %}
-Edit album {{ title }} from user {{ username }}
+
+Edit album {{ album_title }} from user {{ current_user.name }}
+
 {% endblock %}

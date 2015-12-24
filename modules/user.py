@@ -10,12 +10,12 @@ logger = get_logger(__name__)
 user_module = Blueprint('user', __name__)
 
 
-@user_module.route('/user/<username>/')
+@user_module.route('/user/<user_name>/')
 @login_required
-def index(username):
-    logger.debug('{User} user/%s', username)
-    if username != current_user.name:
-        return redirect(url_for('user.index', username=current_user.name))
+def index(user_name):
+    logger.debug('{User} user/%s', user_name)
+    if user_name != current_user.name:
+        return redirect(url_for('user.index', user_name=current_user.name))
 
     albums = get_albums(current_user.name)
 

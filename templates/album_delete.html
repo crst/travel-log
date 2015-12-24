@@ -1,0 +1,17 @@
+{% extends "app.html" %}
+
+{% block body %}
+
+<div class="jumbotron">
+  <div class="container">
+    <h2>Really delete album <b>{{ album_title }}</b>?</h2>
+    <h4>There is no undo for this!</h4>
+
+    <form method="POST" class="form-inline">
+      <input type="hidden" class="form-control" id="album_name" name="album_name">
+      <button type="submit" class="btn btn-danger">Delete album</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

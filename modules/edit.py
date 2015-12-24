@@ -5,12 +5,11 @@ from flask import Blueprint, render_template
 
 edit_module = Blueprint('edit', __name__)
 
-@edit_module.route('/<username>/album/<title>/edit/')
-def index(username, title):
-    logger.debug('{Edit album} %s/album/%s/', username, title)
+@edit_module.route('/<user_name>/album/<album_title>/edit/')
+def index(user_name, album_title):
+    logger.debug('{Edit album} %s/album/%s/', user_name, album_title)
     env = {
         'module': 'Edit album',
-        'username': username,
-        'title': title
+        'album_title': album_title
     }
     return render_template('edit.html', **env)

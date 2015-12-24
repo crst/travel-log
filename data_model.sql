@@ -60,6 +60,7 @@ CREATE TRIGGER app_album_update_last_modified BEFORE INSERT OR UPDATE ON app.alb
   FOR EACH ROW EXECUTE PROCEDURE fn.update_last_modified();
 ALTER TABLE app.album ADD FOREIGN KEY (fk_user) REFERENCES app.user (id_user);
 ALTER TABLE app.album ADD UNIQUE (album_title, fk_user);
+CREATE INDEX ON app.album (album_title);
 
 
 

@@ -31,16 +31,16 @@ def index():
 def login():
     logger.debug('{Login}')
     if current_user.is_authenticated:
-        return redirect(url_for('user.index', username=current_user.name))
+        return redirect(url_for('user.index', user_name=current_user.name))
 
     if request.method == 'POST':
-        username = 'username' in request.form and escape(request.form['username']) or ''
+        user_name = 'user_name' in request.form and escape(request.form['user_name']) or ''
         pw = 'password' in request.form and escape(request.form['password']) or ''
-        u = db.User(username)
+        u = db.User(user_name)
         u.set_authenticated(pw)
         if u.is_authenticated():
             login_user(u)
-            return redirect(url_for('user.index', username=username))
+            return redirect(url_for('user.index', user_name=user_name))
         else:
             flash('Login failed!')
 
