@@ -2,6 +2,10 @@
 
 
 {% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='lib/osm/ol.css') }}" type="text/css" />
+<script type="text/javascript" src="{{ url_for('static', filename='lib/osm/ol.js') }}"></script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='edit.js') }}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='edit.css') }}" type="text/css" />
 {% endblock %}
 
@@ -43,8 +47,8 @@
         <div class="col-md-12">
           <div id="tile-map" class="tile panel panel-default">
             <div class="panel-heading">Map</diV>
-            <div class="panel-body">
-              Map will be here
+            <div id="map-panel" class="panel-body">
+              <div id="map" style="height: 50px; width: 100%;"></div>
             </div>
           </diV>
         </div>
@@ -54,8 +58,8 @@
         <div class="col-md-12">
           <div id="tile-text" class="tile panel panel-default">
             <div class="panel-heading">Item description</div>
-            <div class="panel-body">
-              <textarea rows=5 class="form-control" id="item-description"></textarea>
+            <div id="text-panel" class="panel-body">
+              <textarea rows=5 class="form-control" id="item-description" placeholder="Your text"></textarea>
             </div>
           </div>
         </div>
@@ -65,7 +69,7 @@
 
   <div class="row">
     <div class="col-md-12">
-      <div class="tile panel panel-default">
+      <div id="tile-timeline" class="tile panel panel-default">
         <div class="panel-heading">Timeline will be here</div>
       </div>
     </div>

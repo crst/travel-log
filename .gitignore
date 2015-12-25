@@ -9,5 +9,6 @@ log/*
 *.log
 
 /env/*
-/static/*
+/static/lib/*
+/static/*.jpg
 bower_components

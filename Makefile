@@ -11,7 +11,7 @@ get-media:
 
 
 .PHONY: dependencies
-dependencies: install-python-packages install-jquery install-bootstrap
+dependencies: install-python-packages install-jquery install-bootstrap install-osm
 
 .PHONY: install-python-packages
 install-python-packages:
@@ -30,6 +30,13 @@ install-bootstrap:
 	cp bower_components/bootstrap/dist/js/bootstrap.min.js static/lib/bootstrap/js
 	cp bower_components/bootstrap/dist/css/bootstrap.min.css static/lib/bootstrap/css
 	cp bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.* static/lib/bootstrap/fonts
+
+.PHONY: install-osm
+install-osm:
+	wget -P static/lib/osm http://openlayers.org/en/v3.12.1/css/ol.css
+	wget -P static/lib/osm http://openlayers.org/en/v3.12.1/build/ol.js
+
+
 
 .PHONY: clean
 clean:

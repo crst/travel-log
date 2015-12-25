@@ -1,0 +1,29 @@
+
+body {
+    background: url(background.jpg) no-repeat fixed center center;
+    background-size: cover;
+}
+
+#login {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+}
+
+#featured {
+    padding: 25px;
+    border: 1px solid #333333;
+    background: #f5f5f5;
+    opacity: 0.9;
+
+    box-shadow: 5px 5px 4px 0px rgba(30, 30, 30, 0.9);
+    border-radius: 4px;
+
+    text-align: center;
+}
+
+#sign-up {
+    color: #f5f5f5;
+    text-align: center;
+    margin-bottom: 100px;
+}
