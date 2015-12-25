@@ -54,13 +54,15 @@ CREATE TABLE app.album (
   id_album      SERIAL PRIMARY KEY,
   album_title   TEXT NOT NULL,
   fk_user       INTEGER NOT NULL,
+  is_deleted    BOOLEAN NOT NULL DEFAULT FALSE,
   last_modified TIMESTAMP WITH TIME ZONE NOT NULL
 );
 CREATE TRIGGER app_album_update_last_modified BEFORE INSERT OR UPDATE ON app.album
   FOR EACH ROW EXECUTE PROCEDURE fn.update_last_modified();
 ALTER TABLE app.album ADD FOREIGN KEY (fk_user) REFERENCES app.user (id_user);
-ALTER TABLE app.album ADD UNIQUE (album_title, fk_user);
+ALTER TABLE app.album ADD UNIQUE (album_title, fk_user) WHERE NOT is_deleted;
 CREATE INDEX ON app.album (album_title);
+CREATE INDEX ON app.album (is_deleted) WHERE is_deleted = TRUE;
 
 
 

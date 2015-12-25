@@ -35,6 +35,6 @@ def get_albums(user_name):
             user = db.query_one(cur, 'SELECT id_user FROM app.user WHERE user_name=%(name)s;', {'name': user_name})
             albums = db.query_all(
                 cur,
-                'SELECT id_album, album_title FROM app.album WHERE fk_user=%(user)s',
+                'SELECT id_album, album_title FROM app.album WHERE fk_user=%(user)s AND NOT is_deleted',
                 {'user': user.id_user})
     return albums
