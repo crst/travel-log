@@ -1,7 +1,79 @@
 {% extends "app.html" %}
 
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='edit.css') }}" type="text/css" />
+{% endblock %}
+
+
 {% block body %}
 
-Edit album {{ album_title }} from user {{ current_user.name }}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <div id="tile-header" class="tile panel panel-default">
+        <div class="panel-heading">
+          Editing album <b>{{ album_title }}</b>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+      <div id="tile-image-upload" class="tile panel panel-default">
+        <div class="panel-heading">Image upload</div>
+        <div class="panel-body">
+          Image upload will be here
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div id="tile-main" class="tile panel panel-default">
+        <div class="panel-heading">Current item</div>
+        <div class="panel-body">
+          Selected item will be here
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="row">
+        <div class="col-md-12">
+          <div id="tile-map" class="tile panel panel-default">
+            <div class="panel-heading">Map</diV>
+            <div class="panel-body">
+              Map will be here
+            </div>
+          </diV>
+        </div>
+      </diV>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div id="tile-text" class="tile panel panel-default">
+            <div class="panel-heading">Item description</div>
+            <div class="panel-body">
+              <textarea rows=5 class="form-control" id="item-description"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="tile panel panel-default">
+        <div class="panel-heading">Timeline will be here</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+</div>
 
 {% endblock %}

@@ -9,7 +9,7 @@ edit_module = Blueprint('edit', __name__)
 def index(user_name, album_title):
     logger.debug('{Edit album} %s/album/%s/', user_name, album_title)
     env = {
-        'module': 'Edit album',
+        'module': 'Edit %s/%s' % (user_name, album_title),
         'album_title': album_title
     }
     return render_template('edit.html', **env)
