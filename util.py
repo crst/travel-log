@@ -31,8 +31,12 @@ config = load_config()
 
 
 def get_logger(name):
+    log_folder = config['log_folder']
+    if not os.path.isdir(log_folder):
+        os.makedirs(log_folder)
+
     logger = logging.getLogger(name)
-    handler = RotatingFileHandler(os.path.join('log', 'app.log'), maxBytes=1024 * 1024 * 50, backupCount=5)
+    handler = RotatingFileHandler(os.path.join(log_folder, 'app.log'), maxBytes=1024 * 1024 * 50, backupCount=5)
     formatter = logging.Formatter(
         '[%(asctime)s] - {%(processName)s:%(threadName)s:%(pathname)s:%(lineno)d} - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
