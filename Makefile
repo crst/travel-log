@@ -6,8 +6,8 @@ run-app:
 
 .PHONY: get-media
 get-media:
-	git clone git@gitlab.com:crst/working-title-media.git media
-	cp media/* static/
+	git clone git@gitlab.com:crst/working-title-media.git cache/media
+	cp cache/media/* static/
 
 
 .PHONY: dependencies
@@ -21,15 +21,15 @@ install-python-packages:
 install-jquery:
 	bower install jquery#2.1.4
 	mkdir -p static/lib/jquery/
-	cp bower_components/jquery/dist/jquery.min.js static/lib/jquery
+	cp cache/bower/jquery/dist/jquery.min.js static/lib/jquery
 
 .PHONY: install-bootstrap
 install-bootstrap:
 	bower install bootstrap#3.3.6
 	mkdir -p static/lib/bootstrap/{js,css,fonts}
-	cp bower_components/bootstrap/dist/js/bootstrap.min.js static/lib/bootstrap/js
-	cp bower_components/bootstrap/dist/css/bootstrap.min.css static/lib/bootstrap/css
-	cp bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.* static/lib/bootstrap/fonts
+	cp cache/bower/bootstrap/dist/js/bootstrap.min.js static/lib/bootstrap/js
+	cp cache/bower/bootstrap/dist/css/bootstrap.min.css static/lib/bootstrap/css
+	cp cache/bower/bootstrap/dist/fonts/glyphicons-halflings-regular.* static/lib/bootstrap/fonts
 
 .PHONY: install-osm
 install-osm:
@@ -40,7 +40,7 @@ install-osm:
 
 .PHONY: clean
 clean:
-	rm -rf bower-components
+	rm -rf cache
 
 
 
