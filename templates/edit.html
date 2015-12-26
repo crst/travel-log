@@ -24,11 +24,18 @@
   </div>
 
   <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-2">
       <div id="tile-image-upload" class="tile panel panel-default">
         <div class="panel-heading">Image upload</div>
         <div class="panel-body">
-          Image upload will be here
+          <div id="thumbnail-list" class="row">
+          </div>
+
+          <div>
+            <form id="upload-file" action="" method="POST" enctype="multipart/form-data">
+              <span class="btn btn-default btn-file">Browse<input id="image-file" name="file" type="file"></span>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -36,13 +43,11 @@
     <div class="col-md-6">
       <div id="tile-main" class="tile panel panel-default">
         <div class="panel-heading">Current item</div>
-        <div class="panel-body">
-          Selected item will be here
-        </div>
+        <div id="current-item" class="panel-body"></div>
       </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4">
       <div class="row">
         <div class="col-md-12">
           <div id="tile-map" class="tile panel panel-default">

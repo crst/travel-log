@@ -31,7 +31,7 @@ config = load_config()
 
 
 def get_logger(name):
-    log_folder = config['log_folder']
+    log_folder = config['log-folder']
     if not os.path.isdir(log_folder):
         os.makedirs(log_folder)
 
@@ -41,5 +41,5 @@ def get_logger(name):
         '[%(asctime)s] - {%(processName)s:%(threadName)s:%(pathname)s:%(lineno)d} - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-    logger.setLevel(logging.getLevelName(config['log_level']))
+    logger.setLevel(logging.getLevelName(config['log-level']))
     return logger

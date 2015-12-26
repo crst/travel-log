@@ -17,7 +17,15 @@
 
     "SECRET_KEY": "fM#1KY$\tD4ygxZ8/x0ck+jy,xq#BK~xu[/3",
 
+
+    "storage-engine": {
+        "type": "filesystem",
+        "path": "static/images/",
+        "url": "images/"
+    },
+
+
     "debug": false,
-    "log_folder": "log",
-    "log_level": "WARNING"
+    "log-folder": "log",
+    "log-level": "WARNING"
 }
