@@ -39,7 +39,8 @@ def get_items(user_name, album_title):
         )
     result = {item.id_item: {
         'image': url_for('static', filename=item.image),
-        'description': item.description
+        'description': item.description,
+        'ts': item.ts
     } for item in items}
     return jsonify(result)
 
@@ -55,16 +56,22 @@ def save_items(user_name, album_title):
 
 
 def store_items(user_name, album_title, items):
-    for key, item in items.items():
-        print(item)
     with db.pg_connection(config['app-database']) as (_, cur, err):
-        if not err:
-            for key, item in items.items():
-                # TODO: need to make sure users can only edit their own items
+        if err:
+            return False
+
+        for key, item in items.items():
+            # TODO: need to make sure users can only edit their own items
+            try:
                 cur.execute(
-                    'UPDATE app.item SET description=%(desc)s WHERE id_item=%(key)s',
-                    {'key': key, 'desc': item['description']}
+                    '''UPDATE app.item
+                          SET description = %(desc)s,
+                              ts = %(ts)s
+                        WHERE id_item=%(key)s''',
+                    {'key': key, 'desc': item['description'], 'ts': item['ts']}
                 )
+            except:
+                return False
 
     return True
 

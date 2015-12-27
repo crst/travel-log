@@ -24,7 +24,6 @@ app.edit.has_unsaved_changes = false;
 app.edit.handle_changes = function () {
     if (app.edit.has_unsaved_changes && app.edit.work_in_progress <= 0) {
         app.edit.save_items();
-        app.edit.mark_everything_saved();
     }
 };
 window.setInterval(app.edit.handle_changes, 5 * 1000);
@@ -55,6 +54,7 @@ $(document).ready(function () {
     $('#save').click(app.edit.save_items);
     app.edit.resize_map();
     app.edit.bind_upload();
+    app.edit.bind_timestamp();
     app.edit.bind_description();
 
     var map_options = {
@@ -123,6 +123,7 @@ app.edit.save_items = function () {
         'success': function (data) {
             if (data['success']) {
                 app.edit.mark_everything_saved();
+                app.edit.update_items();
             }
         }
     });
@@ -174,9 +175,20 @@ app.edit.select_item = function (id) {
         '<img src="' + item.image + '">'
     );
 
+    $('#item-timestamp').val(item.ts);
     $('#item-description').val(item.description);
 };
 
+
+
+app.edit.bind_timestamp = function () {
+    $('#item-timestamp').on('input', function () {
+        var item = app.edit.get_current_item();
+        item.ts = $(this).val();
+        app.edit.mark_unsaved_changes();
+        app.edit.set_work_in_progress(5);
+    });
+};
 
 app.edit.bind_description = function () {
     $('#item-description').on('input', function () {
