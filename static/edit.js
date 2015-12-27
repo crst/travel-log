@@ -1,22 +1,54 @@
 
 var app = app || {};
 app.edit = {};
+
+
+// All item data by `id_item`.
 app.edit.items = {};
+
 app.edit.current_item = undefined;
-
-app.edit.has_unsaved_changes = false;
-app.edit.check_for_changes = function () {
-    if (app.edit.has_unsaved_changes) {
-        app.edit.save_items();
-        app.edit.has_unsaved_changes = false;
-    }
-};
-window.setInterval(app.edit.check_for_changes, 5 * 1000);
-
-
 app.edit.get_current_item = function () {
     return app.edit.items[app.edit.current_item];
 };
+
+
+
+/* We auto-save under two conditions:
+ *   - There are unsaved changes.
+ *   - And there is no work in progress.
+ *
+ * Any edit event can set the work_in_progress timer, which blocks
+ * auto-saving for the value set in seconds.
+ */
+app.edit.has_unsaved_changes = false;
+app.edit.handle_changes = function () {
+    if (app.edit.has_unsaved_changes && app.edit.work_in_progress <= 0) {
+        app.edit.save_items();
+        app.edit.mark_everything_saved();
+    }
+};
+window.setInterval(app.edit.handle_changes, 5 * 1000);
+app.edit.mark_unsaved_changes = function () {
+    app.edit.has_unsaved_changes = true;
+    $('#last-saved').html('<a href="javascript:app.edit.save_items();">Save changes</a>');
+};
+app.edit.mark_everything_saved = function () {
+    app.edit.has_unsaved_changes = false;
+    $('#last-saved').hide().html('Last saved at ' + app.format_time(new Date())).fadeIn('fast');
+};
+
+app.edit.work_in_progress = 0;
+app.edit.update_work_in_progress = function () {
+    if (app.edit.work_in_progress > 0) {
+        app.edit.work_in_progress -= 1;
+    }
+};
+window.setInterval(app.edit.update_work_in_progress, 1 * 1000);
+app.edit.set_work_in_progress = function (n) {
+    app.edit.work_in_progress = n;
+};
+
+
 
 
 $(document).ready(function () {
@@ -42,7 +74,6 @@ $(document).ready(function () {
 
     app.edit.update_items();
 });
-
 
 
 app.edit.bind_upload = function () {
@@ -91,7 +122,7 @@ app.edit.save_items = function () {
         'async': true,
         'success': function (data) {
             if (data['success']) {
-                $('#last-saved').hide().html('Last saved at ' + app.format_time(new Date())).fadeIn('slow');
+                app.edit.mark_everything_saved();
             }
         }
     });
@@ -151,6 +182,7 @@ app.edit.bind_description = function () {
     $('#item-description').on('input', function () {
         var item = app.edit.get_current_item();
         item.description = $(this).val();
-        app.edit.has_unsaved_changes = true;
+        app.edit.mark_unsaved_changes();
+        app.edit.set_work_in_progress(5);
     });
 };
