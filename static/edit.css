@@ -1,4 +1,9 @@
 
+#last-saved {
+    float: right;
+    color: #c0c0c0;
+}
+
 #tile-image-upload {
     min-height: 450px;
     max-height: 500px;

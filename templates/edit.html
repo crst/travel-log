@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='lib/osm/ol.css') }}" type="text/css" />
 <script type="text/javascript" src="{{ url_for('static', filename='lib/osm/ol.js') }}"></script>
 
+<script type="text/javascript" src="{{ url_for('static', filename='app.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='edit.js') }}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='edit.css') }}" type="text/css" />
 {% endblock %}
@@ -18,6 +19,7 @@
       <div id="tile-header" class="tile panel panel-default">
         <div class="panel-heading">
           Editing album <b>{{ album_title }}</b>
+          <div id="last-saved"></div>
         </div>
       </div>
     </div>

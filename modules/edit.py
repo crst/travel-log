@@ -44,6 +44,29 @@ def get_items(user_name, album_title):
     return jsonify(result)
 
 
+@edit_module.route('/<user_name>/album/<album_title>/edit/save_items/', methods=['POST'])
+@login_required
+def save_items(user_name, album_title):
+    result = False
+    if request.method == 'POST':
+        result = store_items(user_name, album_title, request.get_json())
+
+    return jsonify({'success': result})
+
+
+def store_items(user_name, album_title, items):
+    for key, item in items.items():
+        print(item)
+    with db.pg_connection(config['app-database']) as (_, cur, err):
+        if not err:
+            for key, item in items.items():
+                # TODO: need to make sure users can only edit their own items
+                cur.execute(
+                    'UPDATE app.item SET description=%(desc)s WHERE id_item=%(key)s',
+                    {'key': key, 'desc': item['description']}
+                )
+
+    return True
 
 
 @edit_module.route('/<user_name>/album/<album_title>/edit/upload/', methods=['GET', 'POST'])
