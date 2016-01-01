@@ -52,7 +52,7 @@ class User(object):
         with pg_connection(config['app-database']) as (_, cur, err):
             if not err:
                 cur.execute(
-                    'SELECT pw_hash = crypt(%(pw)s, pw_hash) AS auth FROM app.user WHERE user_name = %(name)s',
+                    'SELECT pw_hash = crypt(%(pw)s, pw_hash) AS auth FROM travel_log.user WHERE user_name = %(name)s',
                     {'pw': password, 'name': self.name})
                 result = fetch_one(cur)
                 if result.auth:
@@ -75,7 +75,7 @@ def load_user(key):
     with pg_connection(config['app-database']) as (_, cur, err):
         if not err:
             cur.execute(
-                'SELECT * FROM app.user WHERE user_name = %(name)s',
+                'SELECT * FROM travel_log.user WHERE user_name = %(name)s',
                 {'name': key})
             if cur.fetchone():
                 return User(key)

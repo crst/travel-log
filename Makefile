@@ -6,7 +6,7 @@ run-app:
 
 .PHONY: get-media
 get-media:
-	git clone git@gitlab.com:crst/working-title-media.git cache/media
+	git clone git@gitlab.com:travel-log/media.git cache/media
 	cp cache/media/* static/
 
 
@@ -46,23 +46,5 @@ clean:
 
 .PHONY: create-database
 create-database:
-	echo 'DROP DATABASE IF EXISTS app; CREATE DATABASE app;' | psql postgres
-	cat data_model.sql | psql app
-
-
-
-.PHONY: user-log
-user-log:
-	@tail -f log/app.log | grep '{User}'
-
-.PHONY: album-log
-album-log:
-	@tail -f log/app.log | grep '{Album}'
-
-.PHONY: edit-log
-edit-log:
-	@tail -f log/app.log | grep '{Edit album}'
-
-.PHONY: share-log
-share-log:
-	@tail -f log/app.log | grep '{Share album}'
+	echo 'DROP DATABASE IF EXISTS travel_log; CREATE DATABASE travel_log;' | psql postgres
+	cat data_model.sql | psql travel_log

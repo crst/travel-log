@@ -30,9 +30,9 @@ def get_items(user_name, album_title):
         items = db.query_all(
             cur,
             '''
-            SELECT * FROM app.item i
-            JOIN app.album A ON a.id_album = i.fk_album
-            JOIN app.user u ON u.id_user = a.fk_user
+            SELECT * FROM travel_log.item i
+            JOIN travel_log.album A ON a.id_album = i.fk_album
+            JOIN travel_log.user u ON u.id_user = a.fk_user
             WHERE u.user_name = %(user)s AND a.album_title = %(album)s
             ''',
             {'user': user_name, 'album': album_title}
@@ -64,7 +64,7 @@ def store_items(user_name, album_title, items):
             # TODO: need to make sure users can only edit their own items
             try:
                 cur.execute(
-                    '''UPDATE app.item
+                    '''UPDATE travel_log.item
                           SET description = %(desc)s,
                               ts = %(ts)s
                         WHERE id_item=%(key)s''',
@@ -97,10 +97,10 @@ def store_fs(image, user_name, album_title):
         if err:
             return False
 
-        uid = db.query_one(cur, 'SELECT id_user FROM app.user WHERE user_name=%(name)s;', {'name': user_name})
+        uid = db.query_one(cur, 'SELECT id_user FROM travel_log.user WHERE user_name=%(name)s;', {'name': user_name})
         aid = db.query_one(
             cur,
-            'SELECT id_album FROM app.album WHERE fk_user = %(uid)s AND album_title = %(album)s AND NOT is_deleted',
+            'SELECT id_album FROM travel_log.album WHERE fk_user = %(uid)s AND album_title = %(album)s AND NOT is_deleted',
             {'uid': uid.id_user, 'album': album_title}
         )
 
@@ -118,7 +118,7 @@ def store_fs(image, user_name, album_title):
             secure_filename(image.filename)
         )
         cur.execute(
-            'INSERT INTO app.item (fk_album, image) VALUES (%(aid)s, %(path)s)',
+            'INSERT INTO travel_log.item (fk_album, image) VALUES (%(aid)s, %(path)s)',
             {'aid': aid.id_album, 'path': url}
         )
 

@@ -53,14 +53,14 @@ def create_new_album(user_name, album_title):
     # TODO: check for allowed characters
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if not err:
-            user = db.query_one(cur, 'SELECT id_user FROM app.user WHERE user_name=%(name)s;', {'name': user_name})
+            user = db.query_one(cur, 'SELECT id_user FROM travel_log.user WHERE user_name=%(name)s;', {'name': user_name})
             album = db.query_one(
                 cur,
-                'SELECT id_album FROM app.album WHERE album_title = %(album)s and fk_user = %(user)s AND NOT is_deleted;',
+                'SELECT id_album FROM travel_log.album WHERE album_title = %(album)s and fk_user = %(user)s AND NOT is_deleted;',
                 {'album': album_title, 'user': user.id_user})
             if not album.id_album:
                 cur.execute(
-                    'INSERT INTO app.album (album_title, fk_user) VALUES (%(title)s, %(user)s);',
+                    'INSERT INTO travel_log.album (album_title, fk_user) VALUES (%(title)s, %(user)s);',
                     {'title': album_title, 'user': user.id_user})
                 success = True
 
@@ -96,9 +96,9 @@ def delete_one_album(user_name, album_title):
         if not err:
             # TODO: only flag album as deleted here, some worker queue
             # should actually delete them (and cascade to items).
-            user = db.query_one(cur, 'SELECT id_user FROM app.user WHERE user_name=%(name)s;', {'name': user_name})
+            user = db.query_one(cur, 'SELECT id_user FROM travel_log.user WHERE user_name=%(name)s;', {'name': user_name})
             cur.execute(
-                'UPDATE app.album SET is_deleted = TRUE WHERE fk_user=%(user)s AND album_title=%(album)s',
+                'UPDATE travel_log.album SET is_deleted = TRUE WHERE fk_user=%(user)s AND album_title=%(album)s',
                 {'user': user.id_user, 'album': album_title}
             )
             success=True

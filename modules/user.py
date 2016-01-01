@@ -32,9 +32,9 @@ def get_albums(user_name):
     albums = []
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if not err:
-            user = db.query_one(cur, 'SELECT id_user FROM app.user WHERE user_name=%(name)s;', {'name': user_name})
+            user = db.query_one(cur, 'SELECT id_user FROM travel_log.user WHERE user_name=%(name)s;', {'name': user_name})
             albums = db.query_all(
                 cur,
-                'SELECT id_album, album_title FROM app.album WHERE fk_user=%(user)s AND NOT is_deleted',
+                'SELECT id_album, album_title FROM travel_log.album WHERE fk_user=%(user)s AND NOT is_deleted',
                 {'user': user.id_user})
     return albums

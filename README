@@ -7,7 +7,7 @@ Required packages:
 * bower
 
 
-    cd working-title
+    cd travel-log
     make get-media
     virtualenv -p /usr/bin/python2 env
     source env/bin/activate
@@ -16,4 +16,3 @@ Required packages:
     make run-app
 
     deactivate
-

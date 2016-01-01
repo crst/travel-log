@@ -8,8 +8,8 @@
     ],
 
     "app-database": {
-        "database": "app",
-        "user": "app",
+        "database": "travel_log",
+        "user": "travel_log",
         "password": "",
         "host": "localhost",
         "port": 5432
