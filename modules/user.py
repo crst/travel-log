@@ -17,7 +17,7 @@ def index(user_name):
     if user_name != current_user.name:
         return redirect(url_for('user.index', user_name=current_user.name))
 
-    albums = get_albums(current_user.name)
+    albums = get_albums(current_user.id_user)
 
     env = {
         'module': 'User',
@@ -27,14 +27,13 @@ def index(user_name):
     return render_template('user.html', **env)
 
 
-# TODO: move function to somewhere else?
-def get_albums(user_name):
+
+def get_albums(id_user):
     albums = []
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if not err:
-            user = db.query_one(cur, 'SELECT id_user FROM travel_log.user WHERE user_name=%(name)s;', {'name': user_name})
             albums = db.query_all(
                 cur,
                 'SELECT id_album, album_title FROM travel_log.album WHERE fk_user=%(user)s AND NOT is_deleted',
-                {'user': user.id_user})
+                {'user': id_user})
     return albums

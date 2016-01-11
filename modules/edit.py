@@ -2,7 +2,7 @@ import os
 
 from flask import Blueprint, jsonify, render_template, request, url_for
 from werkzeug import secure_filename
-from flask.ext.login import login_required
+from flask.ext.login import current_user, login_required
 
 import db
 from util import config, get_logger
@@ -33,9 +33,9 @@ def get_items(user_name, album_title):
             SELECT * FROM travel_log.item i
             JOIN travel_log.album A ON a.id_album = i.fk_album
             JOIN travel_log.user u ON u.id_user = a.fk_user
-            WHERE u.user_name = %(user)s AND a.album_title = %(album)s
+            WHERE u.id_user = %(user)s AND a.album_title = %(album)s
             ''',
-            {'user': user_name, 'album': album_title}
+            {'user': current_user.id_user, 'album': album_title}
         )
     result = {item.id_item: {
         'image': url_for('static', filename=item.image),
@@ -97,24 +97,24 @@ def store_fs(image, user_name, album_title):
         if err:
             return False
 
-        uid = db.query_one(cur, 'SELECT id_user FROM travel_log.user WHERE user_name=%(name)s;', {'name': user_name})
+        uid = current_user.id_user
         aid = db.query_one(
             cur,
             'SELECT id_album FROM travel_log.album WHERE fk_user = %(uid)s AND album_title = %(album)s AND NOT is_deleted',
-            {'uid': uid.id_user, 'album': album_title}
+            {'uid': uid, 'album': album_title}
         )
 
         # Create item in database
         path = os.path.join(
             config['storage-engine']['path'],
-            str(uid.id_user), str(aid.id_album))
+            str(uid), str(aid.id_album))
         if not os.path.isdir(path):
             os.makedirs(path)
         file = os.path.join(path, secure_filename(image.filename))
 
         url = os.path.join(
             config['storage-engine']['url'],
-            str(uid.id_user), str(aid.id_album),
+            str(uid), str(aid.id_album),
             secure_filename(image.filename)
         )
         cur.execute(

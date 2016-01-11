@@ -33,7 +33,7 @@ def new_album(user_name):
     if request.method == 'POST':
         album_title = 'album_title' in request.form and escape(request.form['album_title']) or ''
         logger.debug('{Album} %s/new-album/%s', user_name, album_title)
-        result = create_new_album(current_user.name, album_title)
+        result = create_new_album(current_user.id_user, album_title)
         if result['success']:
             return redirect(url_for('user.index', user_name=current_user.name))
         else:
@@ -48,20 +48,19 @@ def new_album(user_name):
 
 
 # TODO: move this function to somewhere else?
-def create_new_album(user_name, album_title):
+def create_new_album(id_user, album_title):
     success = False
     # TODO: check for allowed characters
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if not err:
-            user = db.query_one(cur, 'SELECT id_user FROM travel_log.user WHERE user_name=%(name)s;', {'name': user_name})
             album = db.query_one(
                 cur,
                 'SELECT id_album FROM travel_log.album WHERE album_title = %(album)s and fk_user = %(user)s AND NOT is_deleted;',
-                {'album': album_title, 'user': user.id_user})
+                {'album': album_title, 'user': id_user})
             if not album.id_album:
                 cur.execute(
                     'INSERT INTO travel_log.album (album_title, fk_user) VALUES (%(title)s, %(user)s);',
-                    {'title': album_title, 'user': user.id_user})
+                    {'title': album_title, 'user': id_user})
                 success = True
 
     return {'success': success}
@@ -76,7 +75,7 @@ def delete_album(user_name, album_title):
         return redirect(url_for('album.index', user_name=current_user.name))
 
     if request.method == 'POST':
-        result = delete_one_album(user_name, album_title)
+        result = delete_one_album(current_user.id_user, album_title)
         if result['success']:
             if result['success']:
                 flash('Successfully deleted album "%s"' % album_title)
@@ -90,17 +89,16 @@ def delete_album(user_name, album_title):
     return render_template('album_delete.html', **env)
 
 
-def delete_one_album(user_name, album_title):
+def delete_one_album(id_user, album_title):
     success = False
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if not err:
             # TODO: only flag album as deleted here, some worker queue
             # should actually delete them (and cascade to items).
-            user = db.query_one(cur, 'SELECT id_user FROM travel_log.user WHERE user_name=%(name)s;', {'name': user_name})
             cur.execute(
                 'UPDATE travel_log.album SET is_deleted = TRUE WHERE fk_user=%(user)s AND album_title=%(album)s',
-                {'user': user.id_user, 'album': album_title}
+                {'user': id_user, 'album': album_title}
             )
-            success=True
+            success = True
 
     return {'success': success}

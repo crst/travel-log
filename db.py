@@ -43,17 +43,27 @@ def query_all(cur, query, env):
     return [Row(cur, r) for r in cur.fetchall()]
 
 
+def get_user_id(user_name):
+    with pg_connection(config['app-database']) as (_, cur, err):
+        if not err:
+            cur.execute('SELECT * FROM travel_log.user WHERE user_name = %(name)s', {'name': user_name})
+            result = fetch_one(cur)
+            return result.id_user
+
+
 class User(object):
-    def __init__(self, name, authenticated=False):
+    def __init__(self, name, authenticated=False, id_user=None):
         self.name = name
         self.authenticated = authenticated
+        self.id_user = id_user or get_user_id(self.name)
+
 
     def set_authenticated(self, password):
         with pg_connection(config['app-database']) as (_, cur, err):
             if not err:
                 cur.execute(
-                    'SELECT pw_hash = crypt(%(pw)s, pw_hash) AS auth FROM travel_log.user WHERE user_name = %(name)s',
-                    {'pw': password, 'name': self.name})
+                    'SELECT pw_hash = crypt(%(pw)s, pw_hash) AS auth FROM travel_log.user WHERE id_user = %(id)s',
+                    {'pw': password, 'id': self.id_user})
                 result = fetch_one(cur)
                 if result.auth:
                     self.authenticated = True
@@ -77,6 +87,7 @@ def load_user(key):
             cur.execute(
                 'SELECT * FROM travel_log.user WHERE user_name = %(name)s',
                 {'name': key})
-            if cur.fetchone():
-                return User(key)
+            user = fetch_one(cur)
+            if user:
+                return User(user.user_name, id_user=user.id_user)
     return None
