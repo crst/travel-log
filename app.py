@@ -33,8 +33,10 @@ def load_modules(cnf):
             sys.exit(-1)
 
 
+init_app(config)
+load_modules(config)
+
+
 if __name__ == '__main__':
     logger.debug('Starting app')
-    init_app(config)
-    load_modules(config)
     flask_app.run(debug=config['debug'])
