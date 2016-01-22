@@ -19,17 +19,16 @@ install-python-packages:
 
 .PHONY: install-jquery
 install-jquery:
-	bower install jquery#2.1.4
 	mkdir -p static/lib/jquery/
-	cp cache/bower/jquery/dist/jquery.min.js static/lib/jquery
+	wget -O static/lib/jquery/jquery.min.js https://code.jquery.com/jquery-2.2.0.min.js
 
 .PHONY: install-bootstrap
 install-bootstrap:
-	bower install bootstrap#3.3.6
+	wget -P cache https://github.com/twbs/bootstrap/releases/download/v3.3.6/bootstrap-3.3.6-dist.zip
 	mkdir -p static/lib/bootstrap/{js,css,fonts}
-	cp cache/bower/bootstrap/dist/js/bootstrap.min.js static/lib/bootstrap/js
-	cp cache/bower/bootstrap/dist/css/bootstrap.min.css static/lib/bootstrap/css
-	cp cache/bower/bootstrap/dist/fonts/glyphicons-halflings-regular.* static/lib/bootstrap/fonts
+	cp cache/bootstrap-3.3.6-dist/js/bootstrap.min.js static/lib/bootstrap/js
+	cp cache/bootstrap-3.3.6-dist/css/bootstrap.min.css static/lib/bootstrap/css
+	cp cache/bootstrap-3.3.6-dist/fonts/glyphicons-halflings-regular.* static/lib/bootstrap/fonts
 
 .PHONY: install-osm
 install-osm:

@@ -4,7 +4,6 @@ Dev setup:
 Required packages:
 * Python2
 * pip2
-* bower
 
 
     cd travel-log
