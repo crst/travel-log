@@ -7,11 +7,6 @@ CREATE SCHEMA travel_log;
 DROP SCHEMA IF EXISTS fn CASCADE;
 CREATE SCHEMA fn;
 
-
-CREATE USER travel_log;
-GRANT ALL PRIVILEGES ON ALL tables IN SCHEMA travel_log TO travel_log;
-GRANT USAGE ON SCHEMA travel_log to travel_log;
-
 -------------------------------------------------------------------------------
 
 
@@ -106,3 +101,12 @@ CREATE TRIGGER travel_log_share_update_last_modified BEFORE INSERT OR UPDATE ON 
 ALTER TABLE travel_log.share ADD FOREIGN KEY (fk_album) REFERENCES travel_log.album (id_album);
 ALTER TABLE travel_log.share ADD FOREIGN KEY (fk_share_type) REFERENCES travel_log.share_type (id_share_type);
 ALTER TABLE travel_log.share ADD FOREIGN KEY (fk_user) REFERENCES travel_log.user (id_user);
+
+
+-------------------------------------------------------------------------------
+
+DROP OWNED BY travel_log CASCADE;
+DROP USER IF EXISTS travel_log;
+CREATE USER travel_log;
+GRANT ALL PRIVILEGES ON ALL tables IN SCHEMA travel_log TO travel_log;
+GRANT USAGE ON SCHEMA travel_log to travel_log;

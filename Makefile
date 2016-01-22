@@ -31,9 +31,9 @@ install-bootstrap:
 	wget -P cache https://github.com/twbs/bootstrap/releases/download/v3.3.6/bootstrap-3.3.6-dist.zip
 	unzip -d cache/ cache/bootstrap-3.3.6-dist.zip
 	mkdir -p static/lib/bootstrap/{js,css,fonts}
-	cp cache/bootstrap-3.3.6-dist/js/bootstrap.min.js static/lib/bootstrap/js
-	cp cache/bootstrap-3.3.6-dist/css/bootstrap.min.css static/lib/bootstrap/css
-	cp cache/bootstrap-3.3.6-dist/fonts/glyphicons-halflings-regular.* static/lib/bootstrap/fonts
+	cp cache/bootstrap-3.3.6-dist/js/bootstrap.min.js static/lib/bootstrap/js/
+	cp cache/bootstrap-3.3.6-dist/css/bootstrap.min.css static/lib/bootstrap/css/
+	cp cache/bootstrap-3.3.6-dist/fonts/glyphicons-halflings-regular.* static/lib/bootstrap/fonts/
 
 .PHONY: install-osm
 install-osm:
@@ -50,5 +50,5 @@ clean:
 
 .PHONY: create-database
 create-database:
-	echo 'DROP DATABASE IF EXISTS travel_log; CREATE DATABASE travel_log;' | psql postgres
-	cat data_model.sql | psql travel_log
+	echo 'DROP DATABASE IF EXISTS travel_log; CREATE DATABASE travel_log;' | psql -U travel_log_admin postgres
+	cat data_model.sql | psql -U travel_log_admin travel_log

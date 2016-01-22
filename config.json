@@ -11,7 +11,7 @@
         "database": "travel_log",
         "user": "travel_log",
         "password": "",
-        "host": "localhost",
+        "host": "",
         "port": 5432
     },
 
