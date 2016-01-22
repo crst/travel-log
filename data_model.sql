@@ -1,5 +1,4 @@
 
-CREATE USER travel_log WITH SUPERUSER;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 DROP SCHEMA IF EXISTS travel_log CASCADE;
@@ -8,6 +7,10 @@ CREATE SCHEMA travel_log;
 DROP SCHEMA IF EXISTS fn CASCADE;
 CREATE SCHEMA fn;
 
+
+CREATE USER travel_log;
+GRANT ALL PRIVILEGES ON ALL tables IN SCHEMA travel_log TO travel_log;
+GRANT USAGE ON SCHEMA travel_log to travel_log;
 
 -------------------------------------------------------------------------------
 
