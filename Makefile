@@ -13,6 +13,10 @@ get-media:
 .PHONY: dependencies
 dependencies: install-python-packages install-jquery install-bootstrap install-osm
 
+.PHONY: static-dependencies
+static-dependencies: install-jquery install-bootstrap install-osm
+
+
 .PHONY: install-python-packages
 install-python-packages:
 	pip2 install -r requirements.txt
@@ -25,6 +29,7 @@ install-jquery:
 .PHONY: install-bootstrap
 install-bootstrap:
 	wget -P cache https://github.com/twbs/bootstrap/releases/download/v3.3.6/bootstrap-3.3.6-dist.zip
+	unzip -d cache/ cache/bootstrap-3.3.6-dist.zip
 	mkdir -p static/lib/bootstrap/{js,css,fonts}
 	cp cache/bootstrap-3.3.6-dist/js/bootstrap.min.js static/lib/bootstrap/js
 	cp cache/bootstrap-3.3.6-dist/css/bootstrap.min.css static/lib/bootstrap/css
