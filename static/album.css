@@ -1,0 +1,21 @@
+
+#main-navigation {
+    width: 100%;
+    font-size: 2em;
+    text-align: center;
+}
+
+#main-image {
+    width: 80%;
+    height: 400px;
+    text-align: center;
+}
+
+#main-image img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#item-description {
+    font-size: 1.2em;
+}

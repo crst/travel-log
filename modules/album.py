@@ -1,10 +1,9 @@
-
 from flask import Blueprint, abort, escape, flash, get_flashed_messages, redirect, render_template, request, url_for
 from flask.ext.login import current_user, login_required
 
-from util import config
+from common import check_auth, load_items
 import db
-from util import get_logger
+from util import config, get_logger
 logger = get_logger(__name__)
 
 
@@ -20,37 +19,18 @@ def index(user_name, album_title):
     if not is_authorized:
         return abort(404)
 
-
     env = {
         'module': 'Album',
-        'album_title': album_title
+        'header': False,
+        'user': user_name,
+        'album_title': album_title,
     }
     return render_template('album.html', **env)
 
 
-def check_auth(current_user, user_name, album_title):
-    if not current_user.is_anonymous and current_user.name == user_name:
-        return True
-
-    with db.pg_connection(config['app-database']) as (_, cur, err):
-        share_type = db.query_one(
-            cur,
-            '''
-SELECT
-  st.share_type_name
-FROM travel_log.share s
-JOIN travel_log.share_type st ON st.id_share_type = s.fk_share_type
-JOIN travel_log.album a ON a.id_album = s.fk_album
-JOIN travel_log.user u ON u.id_user = s.fk_user
-WHERE a.album_title = %(album)s
-  AND u.user_name = %(user)s
-''',
-            {'user': user_name, 'album': album_title}
-        )
-        if share_type.share_type_name == 'Public':
-            return True
-
-    return False
+@album_module.route('/user/<user_name>/album/view/<album_title>/get_items/')
+def get_items(user_name, album_title):
+    return load_items(current_user, user_name, album_title)
 
 
 @album_module.route('/user/<user_name>/album/new', methods=['GET', 'POST'])

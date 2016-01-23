@@ -1,5 +1,41 @@
 {% extends "app.html" %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='lib/osm/ol.css') }}" type="text/css" />
+<script type="text/javascript" src="{{ url_for('static', filename='lib/osm/ol.js') }}"></script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='album.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='album.css') }}" type="text/css" />
+{% endblock %}
+
+
 {% block body %}
-View album {{ album_title }} from user {{ current_user.name }}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <div id="main-navigation">
+        <a id="nav-prev" href="javascript:void(0);"><span class="glyphicon glyphicon-step-backward"></span></a>
+        <a id="nav-next" href="javascript:void(0);"><span class="glyphicon glyphicon-step-forward"></a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-10">
+        <div id="main-image"></div>
+      </div>
+      <div class="col-md-2">
+        <div id="map" style="height: 200px; width: 100%;"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <div class="well">
+          <div id="item-description"></div>
+        </div>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+</div>
+
 {% endblock %}

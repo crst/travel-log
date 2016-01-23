@@ -2,10 +2,11 @@ import hashlib
 import os
 import time
 
-from flask import Blueprint, jsonify, render_template, request, url_for
+from flask import Blueprint, jsonify, render_template, request
 from werkzeug import secure_filename
 from flask.ext.login import current_user, login_required
 
+from common import load_items
 import db
 from util import config, get_logger
 logger = get_logger(__name__)
@@ -28,23 +29,7 @@ def index(user_name, album_title):
 @edit_module.route('/<user_name>/album/<album_title>/edit/get_items/')
 @login_required
 def get_items(user_name, album_title):
-    with db.pg_connection(config['app-database']) as (_, cur, err):
-        items = db.query_all(
-            cur,
-            '''
-            SELECT * FROM travel_log.item i
-            JOIN travel_log.album A ON a.id_album = i.fk_album
-            JOIN travel_log.user u ON u.id_user = a.fk_user
-            WHERE u.id_user = %(user)s AND a.album_title = %(album)s
-            ''',
-            {'user': current_user.id_user, 'album': album_title}
-        )
-    result = {item.id_item: {
-        'image': url_for('image.images', filename=item.image),
-        'description': item.description,
-        'ts': item.ts
-    } for item in items}
-    return jsonify(result)
+    return load_items(current_user, user_name, album_title)
 
 
 @edit_module.route('/<user_name>/album/<album_title>/edit/save_items/', methods=['POST'])
