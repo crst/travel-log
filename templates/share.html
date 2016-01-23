@@ -1,5 +1,32 @@
 {% extends "app.html" %}
 
 {% block body %}
-Share album {{ album_title }} from user {{ current_user.name }}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <b>Share album {{ album_title }} from user {{ current_user.name }}</b>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <form method="POST" class="form-inline">
+        <div class="form-group">
+          {% for type in share_types %}
+          <div class="radio">
+            <label>
+              <input type="radio" name="share_type" id="{{ type }}" value="{{ type }}"
+                     {% if share_type == type %} checked {% endif %}>
+              {{ type }}
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-success">Save changes</button>
+          <a href="{{ url_for('user.index', user_name=current_user.name) }}" class="btn btn-warning">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

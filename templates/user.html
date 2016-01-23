@@ -41,6 +41,7 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <b>{{ album.album_title }}</b>
+          {% if is_current_user %}<span class="label label-info">{{ album.share_type_name }}</span>{% endif %}
         </div>
         <div class="panel-body">
           <div class="row">

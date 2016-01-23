@@ -1,7 +1,7 @@
 from importlib import import_module
 import sys
 
-from flask import Flask
+from flask import Flask, render_template
 from flask.ext.login import LoginManager
 
 import db
@@ -35,6 +35,11 @@ def load_modules(cnf):
 
 init_app(config)
 load_modules(config)
+
+
+@flask_app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html', header=True), 404
 
 
 if __name__ == '__main__':

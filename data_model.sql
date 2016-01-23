@@ -87,6 +87,9 @@ CREATE TABLE travel_log.share_type (
 );
 CREATE TRIGGER travel_log_type_update_last_modified BEFORE INSERT OR UPDATE ON travel_log.share_type FOR EACH ROW EXECUTE PROCEDURE fn.update_last_modified();
 
+INSERT INTO travel_log.share_type VALUES
+  (1, 'Private'),
+  (2, 'Public');
 
 
 CREATE TABLE travel_log.share (
