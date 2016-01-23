@@ -1,4 +1,6 @@
+import hashlib
 import os
+import time
 
 from flask import Blueprint, jsonify, render_template, request, url_for
 from werkzeug import secure_filename
@@ -38,7 +40,7 @@ def get_items(user_name, album_title):
             {'user': current_user.id_user, 'album': album_title}
         )
     result = {item.id_item: {
-        'image': url_for('static', filename=item.image),
+        'image': url_for('image.images', filename=item.image),
         'description': item.description,
         'ts': item.ts
     } for item in items}
@@ -105,24 +107,24 @@ def store_fs(image, user_name, album_title):
         )
 
         # Create item in database
-        path = os.path.join(
+        fs_path = os.path.join(
             config['storage-engine']['path'],
             str(uid), str(aid.id_album))
-        if not os.path.isdir(path):
-            os.makedirs(path)
-        file = os.path.join(path, secure_filename(image.filename))
+        if not os.path.isdir(fs_path):
+            os.makedirs(fs_path)
 
-        url = os.path.join(
-            config['storage-engine']['url'],
-            str(uid), str(aid.id_album),
-            secure_filename(image.filename)
-        )
+        filename = hashlib.sha256(
+            '%s-%s-%s-%s' % (uid, aid, time.time(), secure_filename(image.filename))
+        ).hexdigest()
+        fs_file = os.path.join(fs_path, '%s.jpg' % filename)
+        rel_path = os.path.join(str(uid), str(aid.id_album), '%s.jpg' % filename)
+
+        # TODO: either store file and database entry or revert both
         cur.execute(
-            'INSERT INTO travel_log.item (fk_album, image) VALUES (%(aid)s, %(path)s)',
-            {'aid': aid.id_album, 'path': url}
+            'INSERT INTO travel_log.item (fk_album, image) VALUES (%(aid)s, %(image)s)',
+            {'aid': aid.id_album, 'image': rel_path}
         )
-
         # Store image in file system
-        image.save(file)
+        image.save(fs_file)
 
     return True

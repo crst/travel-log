@@ -110,3 +110,4 @@ DROP USER IF EXISTS travel_log;
 CREATE USER travel_log;
 GRANT ALL PRIVILEGES ON ALL tables IN SCHEMA travel_log TO travel_log;
 GRANT USAGE ON SCHEMA travel_log to travel_log;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA travel_log to travel_log;

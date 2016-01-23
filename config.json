@@ -1,6 +1,7 @@
 {
     "modules": [
         "index",
+        "image",
         "user",
         "album",
         "edit",
@@ -20,8 +21,7 @@
 
     "storage-engine": {
         "type": "filesystem",
-        "path": "static/images/",
-        "url": "images/"
+        "path": "/data/images/"
     },
 
 
