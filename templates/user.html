@@ -8,30 +8,56 @@
   {% endfor %}
 
   <div class="jumbotron">
-    <h2>Hello, {{ current_user.name }}</h2>
-    <p><a href="{{ url_for('album.new_album', user_name='%s' % current_user.name) }}" class="btn btn-success">Create a new album</a></p>
+    <div class="row">
+      <div class="col-md-2">
+        <span class="glyphicon glyphicon-user" style="font-size: 4em;"></span>
+      </div>
+      {% if is_current_user %}
+      <div class="col-md-8">
+        <h2>Hello, {{ user }}</h2>
+      </div>
+      <div class="col-md-2">
+        <a href="{{ url_for('album.new_album', user_name='%s' % user) }}" class="btn btn-success">Create a new album</a>
+      </div>
+      {% else %}
+      <div class="col-md-10">
+        <h3>{{ user }}</h3>
+      </div>
+      {% endif %}
+    </div>
   </div>
 
   <div class="row">
     <div class="col-md-4"></div>
-    <div class="col-md-8"><h3>Your albums</h3></div>
+    <div class="col-md-8">
+      <h3>Albums</h3>
+    </div>
   </div>
+
   {% for album in albums %}
   <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-8">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <b><a href="{{ url_for('album.index', user_name='%s' % current_user.name, album_title='%s' % album.album_title) }}">{{ album.album_title }}</a></b>
+          <b>{{ album.album_title }}</b>
         </div>
         <div class="panel-body">
           <div class="row">
-            <div class="col-md-11">
-              <a href="{{ url_for('edit.index', user_name='%s' % current_user.name, album_title='%s' % album.album_title) }}" class="btn btn-success"><span class="glyphicon glyphicon-edit"></span> Edit</a>
-              <a href="{{ url_for('share.index', user_name='%s' % current_user.name, album_title='%s' % album.album_title) }}" class="btn btn-info"><span class="glyphicon glyphicon-share"></span> Share</a>
+            <div class="col-md-5">
+              <a href="{{ url_for('album.index', user_name='%s' % user, album_title='%s' % album.album_title) }}" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-camera"></span> View</a>
+              {% if is_current_user %}
+              <a href="{{ url_for('edit.index', user_name='%s' % user, album_title='%s' % album.album_title) }}" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+              <a href="{{ url_for('share.index', user_name='%s' % user, album_title='%s' % album.album_title) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-share"></span> Share</a>
+              {% endif %}
+            </div>
+            <div class="col-md-6">
+              {{ album.album_desc }}
             </div>
             <div class="col-md-1">
-              <a href="{{ url_for('album.delete_album', user_name='%s' % current_user.name, album_title='%s' % album.album_title) }}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
+              {% if is_current_user %}
+              <a href="{{ url_for('album.delete_album', user_name='%s' % user, album_title='%s' % album.album_title) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
+              {% endif %}
             </div>
           </div>
         </div>

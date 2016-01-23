@@ -56,7 +56,7 @@ class User(object):
         self.name = name
         self.authenticated = authenticated
         self.id_user = id_user or get_user_id(self.name)
-
+        self.is_anonymous = False
 
     def set_authenticated(self, password):
         with pg_connection(config['app-database']) as (_, cur, err):
@@ -73,9 +73,6 @@ class User(object):
 
     def is_active(self):
         return True
-
-    def is_anonymous(self):
-        return False
 
     def get_id(self):
         return self.name

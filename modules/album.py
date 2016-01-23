@@ -31,9 +31,10 @@ def new_album(user_name):
         return redirect(url_for('album.new_album', user_name=current_user.name))
 
     if request.method == 'POST':
-        album_title = 'album_title' in request.form and escape(request.form['album_title']) or ''
+        album_title = 'album_title' in request.form and escape(request.form['album_title']) or 'No title'
+        album_desc = 'album_desc' in request.form and escape(request.form['album_desc']) or 'No description'
         logger.debug('{Album} %s/new-album/%s', user_name, album_title)
-        result = create_new_album(current_user.id_user, album_title)
+        result = create_new_album(current_user.id_user, album_title, album_desc)
         if result['success']:
             return redirect(url_for('user.index', user_name=current_user.name))
         else:
@@ -47,8 +48,7 @@ def new_album(user_name):
     return render_template('album_new.html', **env)
 
 
-# TODO: move this function to somewhere else?
-def create_new_album(id_user, album_title):
+def create_new_album(id_user, album_title, album_desc):
     success = False
     # TODO: check for allowed characters
     with db.pg_connection(config['app-database']) as (_, cur, err):
@@ -59,8 +59,8 @@ def create_new_album(id_user, album_title):
                 {'album': album_title, 'user': id_user})
             if not album.id_album:
                 cur.execute(
-                    'INSERT INTO travel_log.album (album_title, fk_user) VALUES (%(title)s, %(user)s);',
-                    {'title': album_title, 'user': id_user})
+                    'INSERT INTO travel_log.album (album_title, album_desc, fk_user) VALUES (%(title)s, %(desc)s, %(user)s);',
+                    {'title': album_title, 'desc': album_desc, 'user': id_user})
                 success = True
 
     return {'success': success}

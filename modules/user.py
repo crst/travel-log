@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, url_for
+from flask import Blueprint, escape, redirect, render_template, url_for
 from flask.ext.login import current_user, login_required
 
 from util import config
@@ -11,29 +11,35 @@ user_module = Blueprint('user', __name__)
 
 
 @user_module.route('/user/<user_name>/')
-@login_required
 def index(user_name):
     logger.debug('{User} user/%s', user_name)
-    if user_name != current_user.name:
-        return redirect(url_for('user.index', user_name=current_user.name))
+    is_current_user = not current_user.is_anonymous and user_name == current_user.name
 
-    albums = get_albums(current_user.id_user)
+    albums = get_albums(user_name)
 
     env = {
-        'module': 'User',
+        'module': 'User | %s' % escape(user_name),
+        'is_current_user': is_current_user,
         'header': True,
+        'user': user_name,
         'albums': albums
     }
     return render_template('user.html', **env)
 
 
 
-def get_albums(id_user):
+def get_albums(user_name):
     albums = []
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if not err:
             albums = db.query_all(
                 cur,
-                'SELECT id_album, album_title FROM travel_log.album WHERE fk_user=%(user)s AND NOT is_deleted',
-                {'user': id_user})
+                '''
+SELECT
+  a.id_album, a.album_title, a.album_desc
+FROM travel_log.album a
+JOIN travel_log.user u ON u.id_user = a.fk_user
+WHERE u.user_name=%(user)s AND NOT a.is_deleted
+''',
+                {'user': user_name})
     return albums

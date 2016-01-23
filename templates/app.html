@@ -26,7 +26,11 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="{{ url_for('user.index', user_name='%s' % current_user.name)}}"><b>{{ current_user.name }}</b></a></li>
+            {% if current_user.is_authenticated %}
             <li><a href="{{ url_for('index.logout') }}" class="btn btn-secondary btn-xs">Logout</a></li>
+            {% else %}
+            <li><a href="{{ url_for('index.login') }}" class="btn btn-secondary btn-xs">Login</a></li>
+            {% endif %}
           </ul>
         </div>
       </div>
