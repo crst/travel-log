@@ -41,7 +41,8 @@ app.album.handle_items = function (data) {
             'time': item.ts,
             'description': item.description,
             'lat': item.lat,
-            'lon': item.lon
+            'lon': item.lon,
+            'zoom': item.zoom
         })
     }
     app.album.items = items;
@@ -52,9 +53,11 @@ app.album.handle_items = function (data) {
 
 app.album.switch_to_item = function (i) {
     var item = app.album.items[i];
-    $('#main-image').html(item.img);
-    $('#item-description').html(item.description);
-    app.map.set_marker(item);
+    if (item) {
+        $('#main-image').html(item.img);
+        $('#item-description').html(item.description);
+        app.map.set_marker(item);
+    }
 };
 
 app.album.skip = function (f) {

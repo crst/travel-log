@@ -60,6 +60,7 @@ $(document).ready(function () {
     app.map.resize_map();
     app.map.init_map();
     app.edit.bind_coordinates();
+    app.edit.bind_zoom();
 
     // Update page
     app.edit.update_items();
@@ -151,14 +152,16 @@ app.edit.bind_thumbnails = function () {
 app.edit.select_item = function (id) {
     app.edit.current_item = id;
     var item = app.edit.items[id];
-    $('#current-item').html(
-        '<img src="' + item.image + '">'
-    );
+    if (item) {
+        $('#current-item').html(
+            '<img src="' + item.image + '">'
+        );
 
-    $('#item-timestamp').val(item.ts);
-    $('#item-description').val(item.description);
+        $('#item-timestamp').val(item.ts);
+        $('#item-description').val(item.description);
 
-    app.map.set_marker(item);
+        app.map.set_marker(item);
+    }
 };
 
 
@@ -190,5 +193,15 @@ app.edit.bind_coordinates = function () {
         item.lon = coord[0];
         app.edit.mark_unsaved_changes();
         app.edit.set_work_in_progress(5);
-    }, app.map.marker);
+    });
+};
+
+app.edit.bind_zoom = function () {
+    var view = app.map.map.getView();
+    view.on('change:resolution', function () {
+        var item = app.edit.get_current_item();
+        item.zoom = view.getZoom();
+        app.edit.mark_unsaved_changes();
+        app.edit.set_work_in_progress(5);
+    });
 };

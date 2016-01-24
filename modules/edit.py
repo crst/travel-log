@@ -58,13 +58,15 @@ def store_items(user_name, album_title, items):
                           SET description = %(desc)s,
                               lat = %(lat)s,
                               lon = %(lon)s,
+                              zoom = %(zoom)s,
                               ts = %(ts)s
                         WHERE id_item=%(key)s''',
                     {
                         'key': key,
                         'desc': item['description'],
-                        'lat': item['lat'],
-                        'lon': item['lon'],
+                        'lat': item['lat'] != 'None' and item['lat'] or None,
+                        'lon': item['lon'] != 'None' and item['lon'] or None,
+                        'zoom': item['zoom'] or 12,
                         'ts': item['ts'] or None
                     }
                 )

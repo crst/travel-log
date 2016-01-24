@@ -51,6 +51,7 @@ def load_items(current_user, user_name, album_title):
         'description': item.description,
         'lat': str(item.lat),
         'lon': str(item.lon),
+        'zoom': item.zoom,
         'ts': item.ts
     } for item in items}
     return jsonify(result)

@@ -71,6 +71,7 @@ CREATE TABLE travel_log.item (
   ts            TIMESTAMP WITH TIME ZONE,
   lat           NUMERIC(9, 6),
   lon           NUMERIC(9, 6),
+  zoom          SMALLINT,
   description   TEXT,
   last_modified TIMESTAMP WITH TIME ZONE NOT NULL
 );
