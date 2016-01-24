@@ -12,4 +12,5 @@ log/*
 /static/lib/*
 /static/images/
 /static/*.jpg
+/static/*.png
 bower_components
