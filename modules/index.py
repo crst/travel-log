@@ -46,6 +46,7 @@ def login():
 
     env = {
         'module': 'Login',
+        'header': True,
         'errors': get_flashed_messages(),
     }
     return render_template('login.html', **env)
@@ -56,3 +57,17 @@ def logout():
     logger.debug('{Logout}')
     logout_user()
     return redirect(url_for('index.index'))
+
+
+@index_module.route('/about')
+def about():
+    logger.debug('{About}')
+    env = {'module': 'About', 'header': True}
+    return render_template('about.html', **env)
+
+
+@index_module.route('/imprint')
+def imprint():
+    logger.debug('{Imprint}')
+    env = {'module': 'Imprint', 'header': True}
+    return render_template('imprint.html', **env)

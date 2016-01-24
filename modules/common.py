@@ -1,4 +1,6 @@
-from flask import jsonify, url_for
+from functools import wraps
+
+from flask import current_app, jsonify, request, redirect, url_for
 
 import db
 from util import config
@@ -50,3 +52,12 @@ def load_items(current_user, user_name, album_title):
         'ts': item.ts
     } for item in items}
     return jsonify(result)
+
+
+def ssl_required(f):
+    @wraps(f)
+    def g(*args, **kwargs):
+        if request.is_secure:
+            return f(*args, **kwargs)
+        return redirect(request.url.replace("http://", "https://"))
+    return g

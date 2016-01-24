@@ -11,39 +11,41 @@
     {% block head %}{% endblock %}
   </head>
   <body>
-    {% if header or (current_user.is_authenticated and not header == False) %}
-    <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{{ url_for('index.index') }}"><span class="glyphicon glyphicon-picture"></span> App</a>
+    <div id="wrap">
+      {% if header or (current_user.is_authenticated and not header == False) %}
+      <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('index.index') }}"><span class="glyphicon glyphicon-picture"></span> App</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="{{ url_for('user.index', user_name='%s' % current_user.name)}}"><b>{{ current_user.name }}</b></a></li>
+              {% if current_user.is_authenticated %}
+              <li><a href="{{ url_for('index.logout') }}" class="btn btn-secondary btn-xs">Logout</a></li>
+              {% else %}
+              <li><a href="{{ url_for('index.login', _external=True, _scheme='https') }}" class="btn btn-secondary btn-xs">Login</a></li>
+              {% endif %}
+            </ul>
+          </div>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="{{ url_for('user.index', user_name='%s' % current_user.name)}}"><b>{{ current_user.name }}</b></a></li>
-            {% if current_user.is_authenticated %}
-            <li><a href="{{ url_for('index.logout') }}" class="btn btn-secondary btn-xs">Logout</a></li>
-            {% else %}
-            <li><a href="{{ url_for('index.login') }}" class="btn btn-secondary btn-xs">Login</a></li>
-            {% endif %}
-          </ul>
-        </div>
-      </div>
-    </nav>
-    {% endif %}
+      </nav>
+      {% endif %}
 
-    {% block body %}{% endblock %}
+      {% block body %}{% endblock %}
+    </div>
 
     <footer class="footer">
       <div class="container">
         <ul class="list-inline">
-          <li class="text-muted"><a href="#">About</a></li>
-          <li class="text-muted"><a href="#">Imprint</a></li>
+          <li class="text-muted"><a href="{{ url_for('index.about') }}">About</a></li>
+          <li class="text-muted"><a href="{{ url_for('index.imprint') }}">Imprint</a></li>
         </ul>
       </div>
     </footer>

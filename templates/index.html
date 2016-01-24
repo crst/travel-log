@@ -7,20 +7,20 @@
 {% block body %}
 
 <div id="login">
-  <a href="/login/"><span class="label label-success">Login</span></a>
+  <a href="{{ url_for('index.login', _external=True, _scheme='https') }}"><span class="label label-primary">Login</span></a>
 </div>
 
 <div class="container">
   <div id="featured">
     <div class="row">
       <div class="page-header">
-        <h2>Featured photo journeys</h2>
+        <h2>Featured travel logs</h2>
       </div>
     </div>
     <div class="row">
       {% for feature in featured %}
       <div class="col-sm-6 col-md-3">
-        <a href="#" class="thumbnail">
+        <a href="javascript:void(0);" class="thumbnail">
           <img src="{{ url_for('static', filename='%s' % feature.image)}}" alt="{{ feature.caption }}">
           <div class="caption">
             <h3>{{ feature.caption }}</h3>
@@ -33,15 +33,15 @@
   </div>
 
   <div id="sign-up">
-    <h3>Want to create your own photo journeys?</h3>
+    <h3>Want to create your own travel logs?</h3>
     <form class="form-inline">
       <div class="form-group">
         <label class="sr-only" for="email">Email address</label>
         <div class="input-group">
-          <input type="text" class="form-control input-lg" id="email" placeholder="you@app">
+          <input type="text" class="form-control input-lg" id="email" placeholder="you@app" disabled>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary btn-lg">Sign up for waiting list</button>
+      <button type="submit" class="btn btn-primary btn-lg" disabled>Sign up for waiting list</button>
     </form>
   </div>
 </div>

@@ -34,7 +34,7 @@ CREATE TRIGGER travel_log_user_update_last_modified BEFORE INSERT OR UPDATE ON t
 CREATE INDEX ON travel_log.user (user_name);
 
 INSERT INTO travel_log.user (user_name, email, pw_hash) VALUES
-  ('admin', 'admin@travel_log', crypt('|l@y^DAbtdtEgUamFe*.0_yaq:y\n~\n^N', gen_salt('bf', 12)));
+  ('admin', 'admin@travel_log', crypt('@1@3%kgq\\|EH\tt{LO|PjZwn\x0c\tZPluh4(', gen_salt('bf', 12)));
 
 
 

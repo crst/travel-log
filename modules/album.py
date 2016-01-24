@@ -1,7 +1,7 @@
 from flask import Blueprint, abort, escape, flash, get_flashed_messages, redirect, render_template, request, url_for
 from flask.ext.login import current_user, login_required
 
-from common import check_auth, load_items
+from common import check_auth, load_items, ssl_required
 import db
 from util import config, get_logger
 logger = get_logger(__name__)
@@ -10,8 +10,7 @@ logger = get_logger(__name__)
 album_module = Blueprint('album', __name__)
 
 
-
-@album_module.route('/user/<user_name>/album/view/<album_title>/')
+@album_module.route('/user/<user_name>/album/<album_title>/view/')
 def index(user_name, album_title):
     logger.debug('{Album} %s/album/%s', user_name, album_title)
 
@@ -28,13 +27,14 @@ def index(user_name, album_title):
     return render_template('album.html', **env)
 
 
-@album_module.route('/user/<user_name>/album/view/<album_title>/get_items/')
+@album_module.route('/user/<user_name>/album/<album_title>/view/get_items/')
 def get_items(user_name, album_title):
     return load_items(current_user, user_name, album_title)
 
 
 @album_module.route('/user/<user_name>/album/new', methods=['GET', 'POST'])
 @login_required
+@ssl_required
 def new_album(user_name):
     logger.debug('{Album} %s/new-album', user_name)
     if user_name != current_user.name:
@@ -93,6 +93,7 @@ INSERT INTO travel_log.share (fk_album, fk_share_type, fk_user)
 
 @album_module.route('/user/<user_name>/album/<album_title>/delete/', methods=['GET', 'POST'])
 @login_required
+@ssl_required
 def delete_album(user_name, album_title):
     logger.debug('{Album} %s/new-album', user_name)
     if user_name != current_user.name:

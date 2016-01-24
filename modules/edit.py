@@ -6,7 +6,7 @@ from flask import Blueprint, jsonify, render_template, request
 from werkzeug import secure_filename
 from flask.ext.login import current_user, login_required
 
-from common import load_items
+from common import load_items, ssl_required
 import db
 from util import config, get_logger
 logger = get_logger(__name__)
@@ -15,8 +15,9 @@ logger = get_logger(__name__)
 edit_module = Blueprint('edit', __name__)
 
 
-@edit_module.route('/<user_name>/album/<album_title>/edit/')
+@edit_module.route('/user/<user_name>/album/<album_title>/edit/')
 @login_required
+@ssl_required
 def index(user_name, album_title):
     logger.debug('{Edit album} %s/album/%s/', user_name, album_title)
     env = {
@@ -26,14 +27,16 @@ def index(user_name, album_title):
     return render_template('edit.html', **env)
 
 
-@edit_module.route('/<user_name>/album/<album_title>/edit/get_items/')
+@edit_module.route('/user/<user_name>/album/<album_title>/edit/get_items/')
 @login_required
+@ssl_required
 def get_items(user_name, album_title):
     return load_items(current_user, user_name, album_title)
 
 
-@edit_module.route('/<user_name>/album/<album_title>/edit/save_items/', methods=['POST'])
+@edit_module.route('/user/<user_name>/album/<album_title>/edit/save_items/', methods=['POST'])
 @login_required
+@ssl_required
 def save_items(user_name, album_title):
     result = False
     if request.method == 'POST':
@@ -63,7 +66,9 @@ def store_items(user_name, album_title, items):
     return True
 
 
-@edit_module.route('/<user_name>/album/<album_title>/edit/upload/', methods=['GET', 'POST'])
+@edit_module.route('/user/<user_name>/album/<album_title>/edit/upload/', methods=['GET', 'POST'])
+@login_required
+@ssl_required
 def upload_image(user_name, album_title):
     if request.method == 'POST':
         file = request.files['file']

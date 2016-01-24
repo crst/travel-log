@@ -10,6 +10,7 @@ logger = get_logger(__name__)
 
 
 flask_app = Flask(__name__)
+flask_app.config['PREFERRED_URL_SCHEME'] = 'https'
 
 
 def init_app(cnf):
@@ -39,9 +40,17 @@ load_modules(config)
 
 @flask_app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html', header=True), 404
+    logger.debug('{Not found}')
+    env = {'header': True}
+    return render_template('404.html', **env), 404
 
 
 if __name__ == '__main__':
     logger.debug('Starting app')
-    flask_app.run(debug=config['debug'])
+
+    context = None
+    if config['ssl']:
+        import ssl
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        context.load_cert_chain(config['ssl-certificate'], config['ssl-key'])
+    flask_app.run(debug=config['debug'], ssl_context=context)
