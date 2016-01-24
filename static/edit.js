@@ -10,6 +10,7 @@ app.edit.current_item = undefined;
 app.edit.get_current_item = function () {
     return app.edit.items[app.edit.current_item];
 };
+app.edit.marker = undefined;
 
 
 
@@ -57,20 +58,7 @@ $(document).ready(function () {
     app.edit.bind_timestamp();
     app.edit.bind_description();
 
-    var map_options = {
-        'target': 'map',
-        'layers': [
-            new ol.layer.Tile({
-                source: new ol.source.MapQuest({layer: 'osm'})
-            })
-        ],
-        'view': new ol.View({
-            'projection': 'EPSG:3857',
-            'center': ol.proj.transform([13.383, 52.516], 'EPSG:4326', 'EPSG:3857'),
-            'zoom': 9
-        })
-    };
-    app.edit.init_map(map_options);
+    app.edit.init_map();
 
     app.edit.update_items();
 });
@@ -106,8 +94,52 @@ app.edit.resize_map = function () {
     $('#map').width(m.width()).height(m.height());
 };
 
-app.edit.init_map = function (map_options) {
+app.edit.init_map = function () {
+    var markerFeature = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.transform([13.383, 52.516], 'EPSG:4326', 'EPSG:3857'))
+    });
+
+    var dragInteraction = new ol.interaction.Modify({
+        features: new ol.Collection([markerFeature]),
+        style: null
+    });
+
+    var markerStyle = new ol.style.Style({
+        image: new ol.style.Icon(/* @type {olx.style.IconOptions} */ ({
+            opacity: 1,
+            src: '/static/marker.png' // Maps Icons Collection https://mapicons.mapsmarker.com
+        }))
+    });
+    markerFeature.setStyle(markerStyle);
+
+    var vectorLayer = new ol.layer.Vector({
+        source: new ol.source.Vector({
+            features: [markerFeature]
+        })
+    });
+
+    var map_options = {
+        'layers': [
+            new ol.layer.Tile({
+                source: new ol.source.OSM({
+                    crossOrigin: null,
+                    //url: 'http://{a-b}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png'
+                }),
+            }),
+            vectorLayer,
+        ],
+        'view': new ol.View({
+            'projection': 'EPSG:3857',
+            'center': ol.proj.transform([13.383, 52.516], 'EPSG:4326', 'EPSG:3857'),
+            'zoom': 10
+        }),
+        'target': 'map',
+    };
+
     app.edit.map = new ol.Map(map_options);
+    app.edit.map.addInteraction(dragInteraction);
+    app.edit.marker = markerFeature;
+    app.edit.bind_coordinates();
 };
 
 
@@ -122,7 +154,6 @@ app.edit.save_items = function () {
         'async': true,
         'success': function (data) {
             if (data['success']) {
-                app.edit.mark_everything_saved();
                 app.edit.update_items();
             }
         }
@@ -153,6 +184,11 @@ app.edit.update_items = function () {
         $('#thumbnail-list').html(thumbnail_buffer.join(''));
         app.edit.bind_thumbnails();
         app.edit.select_item(app.edit.current_item);
+        // TODO: select_item should not cause a call from the marker
+        // to mark_unsaved_changes
+        window.setTimeout(function () {
+            app.edit.mark_everything_saved();
+        }, 10);
     };
     $.ajax({
         'type': 'GET',
@@ -177,6 +213,14 @@ app.edit.select_item = function (id) {
 
     $('#item-timestamp').val(item.ts);
     $('#item-description').val(item.description);
+
+    // Set map marker
+    if (item.lat !== 'None' && item.lon !== 'None') {
+        var lat = parseFloat(item.lat);
+        var lon = parseFloat(item.lon);
+        var point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+        app.edit.marker.setGeometry(point);
+    }
 };
 
 
@@ -197,4 +241,16 @@ app.edit.bind_description = function () {
         app.edit.mark_unsaved_changes();
         app.edit.set_work_in_progress(5);
     });
+};
+
+app.edit.bind_coordinates = function () {
+    app.edit.marker.on('change', function() {
+        var coord = this.getGeometry().getCoordinates();
+        coord = ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
+        var item = app.edit.get_current_item();
+        item.lat = coord[1];
+        item.lon = coord[0];
+        app.edit.mark_unsaved_changes();
+        app.edit.set_work_in_progress(5);
+    }, app.edit.marker);
 };

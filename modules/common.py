@@ -49,6 +49,8 @@ def load_items(current_user, user_name, album_title):
     result = {item.id_item: {
         'image': url_for('image.images', filename=item.image),
         'description': item.description,
+        'lat': str(item.lat),
+        'lon': str(item.lon),
         'ts': item.ts
     } for item in items}
     return jsonify(result)

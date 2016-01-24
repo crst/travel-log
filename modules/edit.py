@@ -56,11 +56,20 @@ def store_items(user_name, album_title, items):
                 cur.execute(
                     '''UPDATE travel_log.item
                           SET description = %(desc)s,
+                              lat = %(lat)s,
+                              lon = %(lon)s,
                               ts = %(ts)s
                         WHERE id_item=%(key)s''',
-                    {'key': key, 'desc': item['description'], 'ts': item['ts']}
+                    {
+                        'key': key,
+                        'desc': item['description'],
+                        'lat': item['lat'],
+                        'lon': item['lon'],
+                        'ts': item['ts'] or None
+                    }
                 )
-            except:
+            except Exception as e:
+                logger.debug(e)
                 return False
 
     return True
