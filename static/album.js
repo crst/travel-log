@@ -14,21 +14,8 @@ $(document).ready(function () {
         success: app.album.handle_items
     });
 
-    var map_options = {
-        'target': 'map',
-        'layers': [
-            new ol.layer.Tile({
-                source: new ol.source.MapQuest({layer: 'osm'})
-            })
-        ],
-        'view': new ol.View({
-            'projection': 'EPSG:3857',
-            'center': ol.proj.transform([13.383, 52.516], 'EPSG:4326', 'EPSG:3857'),
-            'zoom': 9
-        })
-    };
-    app.album.map = new ol.Map(map_options);
-
+    app.map.resize_map();
+    app.map.init_map();
 
     app.album.bind_navigation();
 });
@@ -52,7 +39,9 @@ app.album.handle_items = function (data) {
         items.push({
             'img': img,
             'time': item.ts,
-            'description': item.description
+            'description': item.description,
+            'lat': item.lat,
+            'lon': item.lon
         })
     }
     app.album.items = items;
@@ -65,6 +54,7 @@ app.album.switch_to_item = function (i) {
     var item = app.album.items[i];
     $('#main-image').html(item.img);
     $('#item-description').html(item.description);
+    app.map.set_marker(item);
 };
 
 app.album.skip = function (f) {

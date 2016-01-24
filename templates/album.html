@@ -4,6 +4,8 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='lib/osm/ol.css') }}" type="text/css" />
 <script type="text/javascript" src="{{ url_for('static', filename='lib/osm/ol.js') }}"></script>
 
+<script type="text/javascript" src="{{ url_for('static', filename='map.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='map.css') }}" type="text/css" />
 <script type="text/javascript" src="{{ url_for('static', filename='album.js') }}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='album.css') }}" type="text/css" />
 {% endblock %}
@@ -24,7 +26,9 @@
         <div id="main-image"></div>
       </div>
       <div class="col-md-2">
-        <div id="map" style="height: 200px; width: 100%;"></div>
+        <div id="map-panel">
+          <div id="map" style="height: 200px; width: 100%;"></div>
+        </div>
       </div>
     </div>
     <div class="row">

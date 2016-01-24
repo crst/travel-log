@@ -10,8 +10,6 @@ app.edit.current_item = undefined;
 app.edit.get_current_item = function () {
     return app.edit.items[app.edit.current_item];
 };
-app.edit.marker = undefined;
-
 
 
 /* We auto-save under two conditions:
@@ -52,14 +50,18 @@ app.edit.set_work_in_progress = function (n) {
 
 
 $(document).ready(function () {
+    // Bind event handlers
     $('#save').click(app.edit.save_items);
-    app.edit.resize_map();
     app.edit.bind_upload();
     app.edit.bind_timestamp();
     app.edit.bind_description();
 
-    app.edit.init_map();
+    // Setup map
+    app.map.resize_map();
+    app.map.init_map();
+    app.edit.bind_coordinates();
 
+    // Update page
     app.edit.update_items();
 });
 
@@ -82,64 +84,6 @@ app.edit.bind_upload = function () {
             }
         });
     });
-};
-
-
-$(window).resize(function () {
-    app.edit.resize_map();
-});
-
-app.edit.resize_map = function () {
-    var m = $('#map-panel');
-    $('#map').width(m.width()).height(m.height());
-};
-
-app.edit.init_map = function () {
-    var markerFeature = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.transform([13.383, 52.516], 'EPSG:4326', 'EPSG:3857'))
-    });
-
-    var dragInteraction = new ol.interaction.Modify({
-        features: new ol.Collection([markerFeature]),
-        style: null
-    });
-
-    var markerStyle = new ol.style.Style({
-        image: new ol.style.Icon(/* @type {olx.style.IconOptions} */ ({
-            opacity: 1,
-            src: '/static/marker.png' // Maps Icons Collection https://mapicons.mapsmarker.com
-        }))
-    });
-    markerFeature.setStyle(markerStyle);
-
-    var vectorLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-            features: [markerFeature]
-        })
-    });
-
-    var map_options = {
-        'layers': [
-            new ol.layer.Tile({
-                source: new ol.source.OSM({
-                    crossOrigin: null,
-                    //url: 'http://{a-b}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png'
-                }),
-            }),
-            vectorLayer,
-        ],
-        'view': new ol.View({
-            'projection': 'EPSG:3857',
-            'center': ol.proj.transform([13.383, 52.516], 'EPSG:4326', 'EPSG:3857'),
-            'zoom': 10
-        }),
-        'target': 'map',
-    };
-
-    app.edit.map = new ol.Map(map_options);
-    app.edit.map.addInteraction(dragInteraction);
-    app.edit.marker = markerFeature;
-    app.edit.bind_coordinates();
 };
 
 
@@ -214,13 +158,7 @@ app.edit.select_item = function (id) {
     $('#item-timestamp').val(item.ts);
     $('#item-description').val(item.description);
 
-    // Set map marker
-    if (item.lat !== 'None' && item.lon !== 'None') {
-        var lat = parseFloat(item.lat);
-        var lon = parseFloat(item.lon);
-        var point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
-        app.edit.marker.setGeometry(point);
-    }
+    app.map.set_marker(item);
 };
 
 
@@ -244,7 +182,7 @@ app.edit.bind_description = function () {
 };
 
 app.edit.bind_coordinates = function () {
-    app.edit.marker.on('change', function() {
+    app.map.marker.on('change', function() {
         var coord = this.getGeometry().getCoordinates();
         coord = ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
         var item = app.edit.get_current_item();
@@ -252,5 +190,5 @@ app.edit.bind_coordinates = function () {
         item.lon = coord[0];
         app.edit.mark_unsaved_changes();
         app.edit.set_work_in_progress(5);
-    }, app.edit.marker);
+    }, app.map.marker);
 };
