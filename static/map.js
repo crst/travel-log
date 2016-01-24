@@ -15,7 +15,9 @@ app.map.resize_map = function () {
     $('#map').width(m.width()).height(m.height());
 };
 
-app.map.init_map = function () {
+app.map.init_map = function (args) {
+    args = args || {};
+
     var marker_feature = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.transform([13.383, 52.516], 'EPSG:4326', 'EPSG:3857'))
     });
@@ -58,7 +60,9 @@ app.map.init_map = function () {
     };
 
     app.map.map = new ol.Map(map_options);
-    app.map.map.addInteraction(drag_interaction);
+    if (args.drag_marker) {
+        app.map.map.addInteraction(drag_interaction);
+    }
 
     app.map.marker = marker_feature;
     app.map.marker_layer = marker_layer;

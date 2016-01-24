@@ -58,7 +58,7 @@ $(document).ready(function () {
 
     // Setup map
     app.map.resize_map();
-    app.map.init_map();
+    app.map.init_map({'drag_marker': true});
     app.edit.bind_coordinates();
     app.edit.bind_zoom();
 
