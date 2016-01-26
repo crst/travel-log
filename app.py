@@ -49,7 +49,7 @@ if __name__ == '__main__':
     logger.debug('Starting app')
 
     context = None
-    if config['ssl']:
+    if 'ssl' in config and config['ssl']:
         import ssl
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         context.load_cert_chain(config['ssl-certificate'], config['ssl-key'])
