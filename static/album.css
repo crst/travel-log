@@ -1,3 +1,72 @@
+body {
+    background: #dbd1b4;
+}
+
+#album {
+    margin-top: -50px;
+}
+
+#tile-timeline {
+    height: 100%;
+}
+
+#timeline {
+    position: relative;
+
+    width: 16px;
+    top: 1em;
+    height: 600px;
+
+    margin-top: 25px;
+    left: 50%;
+
+    background: #333333;
+    border-radius: 5px;
+}
+
+.marker {
+    z-index: 100;
+    position: absolute;
+    width: 12px;
+    height: 4px;
+    background: red;
+}
+
+.marker:hover {
+    cursor: pointer;
+}
+
+#pointer {
+    position: absolute;
+    left: 50%;
+    margin-left: -225px;
+}
+
+#triangle {
+    float: right;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 20px solid #fafafa;
+    margin-top: 16px;
+}
+
+#date {
+    background: #333333;
+    width: 13em;
+    height: 55px;
+    float: left;
+    border-radius: 10px;
+    border: 2px solid #fafafa;
+
+    color: #c0c0c0;
+    font-size: 11pt;
+    padding: 4px;
+
+    text-align: center;
+}
+
 
 #main-navigation {
     width: 100%;
@@ -6,14 +75,24 @@
 }
 
 #main-image {
-    width: 80%;
-    height: 400px;
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+    max-height: 100%;
     text-align: center;
 }
 
 #main-image img {
+    display: block;
     max-width: 100%;
     max-height: 100%;
+}
+
+#tile-timeline,
+#tile-main-image,
+#tile-map,
+#tile-description {
+    padding: 1em;
 }
 
 #item-description {
