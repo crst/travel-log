@@ -82,11 +82,12 @@ WHERE u.user_name = %(user)s AND album_title = %(album)s AND NOT is_deleted
 def write_image(storage, img, file_path):
     file_size = get_img_size(img)
     max_allowed_size = 1024 * 1024 # TODO: magic number
-    if not is_jpeg(img) or file_size > max_allowed_size:
+    if True: #not is_jpeg(img) or file_size > max_allowed_size:
         processed_image = process_image(img, file_size, max_allowed_size)
         processed_image.save(file_path, 'JPEG', quality=90) # TODO: magic number
     else:
-        storage.write(file_path)
+        # TODO
+        storage.save(file_path)
 
 def process_image(img, file_size, max_allowed_size):
     # TODO: This works for now, but there is probably a better way to
