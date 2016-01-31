@@ -107,25 +107,29 @@ app.edit.save_items = function () {
 
 app.edit.update_items = function () {
     var handle_items = function (items) {
-        app.edit.items = items;
+        var sorted_item_list = items.items;
+        var item_buffer = {};
+
 
         var thumbnail_buffer = [];
-        for (var key in items) {
-            if (items.hasOwnProperty(key)) {
-                if (!app.edit.current_item) {
-                    app.edit.current_item = key;
-                }
-                var item = items[key];
-
-                thumbnail_buffer.push(
-                    '<div class="col-sm-6, col-md-12">',
-                    '<a href="#" class="thumbnail item-thumbnail" data-item="', key, '">',
-                    '<img src="', item.image, '">',
-                    '</a>',
-                    '</div>'
-                );
+        for (var i=0; i<sorted_item_list.length; i++) {
+            var cur_item = sorted_item_list[i];
+            item_buffer[cur_item.id] = cur_item;
+            var current_item_key = cur_item.id;
+            if (!app.edit.current_item) {
+                app.edit.current_item = current_item_key;
             }
+            var item = items[current_item_key];
+
+            thumbnail_buffer.push(
+                '<div class="col-sm-6, col-md-12">',
+                '<a href="#" class="thumbnail item-thumbnail" data-item="', current_item_key, '">',
+                '<img src="', cur_item.image, '">',
+                '</a>',
+                '</div>'
+            );
         }
+        app.edit.items = item_buffer;
         $('#thumbnail-list').html(thumbnail_buffer.join(''));
         app.edit.bind_thumbnails();
         app.edit.select_item(app.edit.current_item);

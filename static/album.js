@@ -46,8 +46,9 @@ app.album.bind_navigation = function (data) {
 
 app.album.handle_items = function (data) {
     var items = [];
-    for (var key in data) {
-        var item = data[key];
+    var sorted_item_list = data.items;
+    for (var i=0; i<sorted_item_list.length; i++) {
+        var item = sorted_item_list[i];
         var img = $('<img src="' + item.image + '">');
         items.push({
             'img': img,

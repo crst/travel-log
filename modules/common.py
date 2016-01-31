@@ -39,21 +39,23 @@ def load_items(current_user, user_name, album_title):
         items = db.query_all(
             cur,
             '''
-            SELECT * FROM travel_log.item i
-            JOIN travel_log.album A ON a.id_album = i.fk_album
-            JOIN travel_log.user u ON u.id_user = a.fk_user
-            WHERE u.user_name = %(user)s AND a.album_title = %(album)s
+SELECT * FROM travel_log.item i
+JOIN travel_log.album A ON a.id_album = i.fk_album
+JOIN travel_log.user u ON u.id_user = a.fk_user
+WHERE u.user_name = %(user)s AND a.album_title = %(album)s
+ORDER BY i.ts
             ''',
             {'user': user_name, 'album': album_title}
         )
-    result = {item.id_item: {
+    result = {'items': [{
+        'id': item.id_item,
         'image': url_for('image.images', filename=item.image),
         'description': item.description,
         'lat': str(item.lat),
         'lon': str(item.lon),
         'zoom': item.zoom,
         'ts': item.ts
-    } for item in items}
+    } for item in items]}
     return jsonify(result)
 
 
