@@ -48,7 +48,7 @@ clean:
 
 
 
-.PHONY: create-database
-create-database:
+.PHONY: recreate-database
+recreate-database:
 	echo 'DROP DATABASE IF EXISTS travel_log; CREATE DATABASE travel_log;' | psql -U travel_log_admin postgres
-	cat data_model.sql | psql -U travel_log_admin travel_log
+	cat data/data_model.sql | psql -U travel_log_admin travel_log

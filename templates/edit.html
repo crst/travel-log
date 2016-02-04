@@ -46,7 +46,14 @@
 
     <div class="col-md-6">
       <div id="tile-main" class="tile panel panel-default">
-        <div class="panel-heading">Current item</div>
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-md-11">Current item</div>
+            <div id="delete-current-item-col" class="col-md-1">
+              <a id="delete-current-item" href="javascript:void(0);" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
+            </div>
+          </div>
+        </div>
         <div id="current-item" class="panel-body"></div>
       </div>
     </div>

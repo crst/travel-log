@@ -1,0 +1,18 @@
+{% extends "app.html" %}
+
+{% block body %}
+
+<div class="jumbotron">
+  <div class="container">
+    <h2>Really delete item?</h2>
+    <p><i>{{ item_desc }}</i></p>
+    <h4>There is no undo for this!</h4>
+
+    <form method="POST" class="form-inline">
+      <input type="hidden" class="form-control" id="id_item" name="id_item">
+      <button type="submit" class="btn btn-danger">Delete item</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

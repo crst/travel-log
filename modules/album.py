@@ -95,7 +95,7 @@ INSERT INTO travel_log.share (fk_album, fk_share_type, fk_user)
 @login_required
 @ssl_required
 def delete_album(user_name, album_title):
-    logger.debug('{Album} %s/new-album', user_name)
+    logger.debug('{Album} %s/%s/delete-album', user_name, album_title)
     if user_name != current_user.name:
         return redirect(url_for('album.index', user_name=current_user.name))
 
@@ -115,13 +115,18 @@ def delete_album(user_name, album_title):
 
 
 def delete_one_album(id_user, album_title):
+    logger.debug('{Album} %s/%s delete from database', id_user, album_title)
     success = False
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if not err:
-            # TODO: only flag album as deleted here, some worker queue
-            # should actually delete them (and cascade to items).
+            # We only flag album as deleted here, some worker queue
+            # will actually delete them (and cascade to items).
             cur.execute(
-                'UPDATE travel_log.album SET is_deleted = TRUE WHERE fk_user=%(user)s AND album_title=%(album)s',
+                '''
+UPDATE travel_log.album
+SET is_deleted = TRUE
+WHERE fk_user=%(user)s AND album_title=%(album)s
+''',
                 {'user': id_user, 'album': album_title}
             )
             success = True

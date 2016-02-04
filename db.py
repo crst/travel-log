@@ -34,11 +34,11 @@ class Row(object):
 def fetch_one(cur):
     return Row(cur, cur.fetchone())
 
-def query_one(cur, query, env):
+def query_one(cur, query, env=None):
     cur.execute(query, env)
     return fetch_one(cur)
 
-def query_all(cur, query, env):
+def query_all(cur, query, env=None):
     cur.execute(query, env)
     return [Row(cur, r) for r in cur.fetchall()]
 

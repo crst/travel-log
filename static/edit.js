@@ -123,7 +123,7 @@ app.edit.update_items = function () {
 
             thumbnail_buffer.push(
                 '<div class="col-sm-6, col-md-12">',
-                '<a href="#" class="thumbnail item-thumbnail" data-item="', current_item_key, '">',
+                '<a href="javascript:void(0);" class="thumbnail item-thumbnail" data-item="', current_item_key, '">',
                 '<img src="', cur_item.image, '">',
                 '</a>',
                 '</div>'
@@ -163,6 +163,7 @@ app.edit.select_item = function (id) {
 
         $('#item-timestamp').val(item.ts);
         $('#item-description').val(item.description);
+        $('#delete-current-item').attr('href', 'delete/' + item.id);
 
         app.map.set_marker(item);
     }

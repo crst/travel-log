@@ -1,0 +1,13 @@
+
+- data_model.sql
+  Contains latest version
+
+- manage.py
+  Manage migrations
+
+- {{ version }}_up
+  Migrations from previous to next version
+
+- {{ version }}_down
+  Migrations from current to previous version
+

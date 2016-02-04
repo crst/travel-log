@@ -1,0 +1,3 @@
+
+DROP DATABASE IF EXISTS travel_log;
+CREATE DATABASE travel_log;

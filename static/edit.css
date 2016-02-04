@@ -14,6 +14,11 @@
     overflow: scroll;
 }
 
+
+#delete-current-item-col a {
+    float: right;
+}
+
 #current-item img {
     width: 100%;
 }

@@ -43,6 +43,7 @@ SELECT * FROM travel_log.item i
 JOIN travel_log.album A ON a.id_album = i.fk_album
 JOIN travel_log.user u ON u.id_user = a.fk_user
 WHERE u.user_name = %(user)s AND a.album_title = %(album)s
+  AND NOT i.is_deleted
 ORDER BY i.ts
             ''',
             {'user': user_name, 'album': album_title}
