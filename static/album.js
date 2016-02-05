@@ -1,6 +1,7 @@
 
 var app = app || {};
 app.album = {};
+app.album.autoplay = false;
 
 app.album.items = [];
 app.album.current_item = 0;
@@ -36,10 +37,11 @@ $(document).ready(function () {
 app.album.bind_navigation = function (data) {
     $('#nav-prev').click(function () { app.album.prev_item(); })
     $('#nav-next').click(function () { app.album.next_item(); })
+    $('#nav-autoplay').click(app.album.toggle_autoplay);
 
     $(document).bind('keydown', function (e) {
         if (e.keyCode === 37) { app.album.prev_item(); }
-        //else if (e.keyCode === 32) { app.album.toggleAutoplay(); }
+        else if (e.keyCode === 32) { app.album.toggle_autoplay(); }
         else if (e.keyCode === 39) { app.album.next_item(); }
     });
 };
@@ -89,6 +91,33 @@ app.album.next_item = function () {
 app.album.prev_item = function () {
     app.album.skip(function (i) { return i - 1; });
 };
+
+app.album.toggle_autoplay = function () {
+    app.album.autoplay = !app.album.autoplay;
+    if (app.album.autoplay) {
+        $('#nav-autoplay span').removeClass('glyphicon-play').addClass('glyphicon-stop');
+        app.album.start_autoplay();
+    } else {
+        $('#nav-autoplay span').removeClass('glyphicon-stop').addClass('glyphicon-play');
+        app.album.stop_autoplay();
+    }
+};
+
+app.album.start_autoplay = function () {
+    app.album.autoplay = true;
+    var delay = 1 * 1000;
+    var f = function () {
+        if (app.album.autoplay) {
+            app.album.next_item();
+            window.setTimeout(f, delay);
+        }
+    };
+    window.setTimeout(f, delay);
+};
+
+app.album.stop_autoplay = function () {
+    app.album.autoplay = false;
+}
 
 
 app.album.add_timeline_marker = function () {
