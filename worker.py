@@ -50,16 +50,21 @@ WHERE a.is_deleted OR i.is_deleted
         if item_ids:
             found_db_entries = True
             print('  - Deleting items')
-            res = cur.execute(
-                'DELETE FROM travel_log.item WHERE id_item IN %(items)s;',
+            cur.execute(
+                'DELETE FROM travel_log.item WHERE id_item IN %(items)s',
                 {'items': item_ids}
             )
         if album_ids:
+            print('  - Deleting share entries')
+            cur.execute(
+                'DELETE FROM travel_log.share WHERE fk_album IN %(albums)s',
+                {'albums': album_ids}
+            )
             found_db_entries = True
             print('  - Deleting albums...')
             cur.execute(
-                'DELETE FROM travel_log.album WHERE id_album IN %(albums)s;',
-                {'albums': item_ids}
+                'DELETE FROM travel_log.album WHERE id_album IN %(albums)s',
+                {'albums': album_ids}
             )
     if not found_db_entries:
         print(' - None found!')
