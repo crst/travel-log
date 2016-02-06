@@ -61,7 +61,7 @@ WHERE a.is_deleted OR i.is_deleted
                 {'albums': album_ids}
             )
             found_db_entries = True
-            print('  - Deleting albums...')
+            print('  - Deleting albums')
             cur.execute(
                 'DELETE FROM travel_log.album WHERE id_album IN %(albums)s',
                 {'albums': album_ids}

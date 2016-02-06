@@ -105,7 +105,7 @@ app.album.toggle_autoplay = function () {
 
 app.album.start_autoplay = function () {
     app.album.autoplay = true;
-    var delay = 1 * 1000;
+    var delay = 1 * 5000;
     var f = function () {
         if (app.album.autoplay) {
             app.album.next_item();
@@ -136,40 +136,44 @@ app.album.add_timeline_marker = function () {
 };
 
 app.album.position_marker = function () {
+    // Calculate y-coordinates for each marker individually
     $('.marker').map(function () {
         var when = new Date($(this).attr('data-when'));
-        var pos = app.album.get_time_line_pos(when);
+        var pos = app.album.calculate_timeline_position(when);
         $(this).css({top: pos});
     });
 
+    // x-coordinates are the same for all marker
     var offset = $('#timeline').offset();
     var posX = offset.left - $(window).scrollLeft();
-    var left = posX + ($('#timeline').width() / 2) + 1;
+    var left = posX + ($('#timeline').width() / 2) - ($('.marker').width() / 2);
     $('.marker').css({'left': left + 'px'});
 };
 
-app.album.get_time_line_pos = function (when) {
+app.album.calculate_timeline_position = function (when) {
     var timeStart = new Date(app.album.items[0].time).valueOf();
     var timeEnd = new Date(app.album.items[app.album.items.length - 1].time).valueOf();
     var timeDur = (timeEnd - timeStart);
 
-    var atp = (when.valueOf() - timeStart) / timeDur;
+    var relate_position = (when.valueOf() - timeStart) / timeDur;
 
-    var th = $('#timeline').height();
-    var to = $('#timeline').offset().top;
+    var timeline_height = $('#timeline').height();
+    var offset_top = $('#timeline').offset().top;
+    var margin = 25;
 
-    return to + (atp * (th - 20)) + 10;
+    return offset_top + (margin / 2) + (relate_position * (timeline_height - margin)) + ($('.marker').height() / 2);
 };
 
 app.album.set_date = function (s) {
     var when = new Date(s);
-    var pos = app.album.get_time_line_pos(when);
+    var pos = app.album.calculate_timeline_position(when);
     var ph = $('#pointer').height();
     $('#pointer').animate({'top': pos - ph});
 
+    // TODO: should be a format_date() function
     var buffer = [app.album.weekdays[when.getDay()], ', ',
                   pad(when.getDate(), 2), '. ', pad(when.getMonth() + 1, 2), '. ', when.getFullYear(), '<br>',
-                  pad(when.getHours(), 2), ':', pad(when.getMinutes(), 2), ' Uhr'];
+                  pad(when.getHours(), 2), ':', pad(when.getMinutes(), 2)];
     $('#date').html(buffer.join(''));
 };
 

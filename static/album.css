@@ -39,6 +39,7 @@ body {
 #pointer {
     position: absolute;
     left: 50%;
+    width: 220px;
     margin-left: -225px;
 }
 
