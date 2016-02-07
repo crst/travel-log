@@ -22,6 +22,7 @@ JOIN travel_log.album a ON a.id_album = s.fk_album
 JOIN travel_log.user u ON u.id_user = s.fk_user
 WHERE a.album_title = %(album)s
   AND u.user_name = %(user)s
+  AND NOT a.is_deleted
 ''',
             {'user': user_name, 'album': album_title}
         )
@@ -44,6 +45,7 @@ JOIN travel_log.album A ON a.id_album = i.fk_album
 JOIN travel_log.user u ON u.id_user = a.fk_user
 WHERE u.user_name = %(user)s AND a.album_title = %(album)s
   AND NOT i.is_deleted
+  AND NOT a.is_deleted
 ORDER BY i.ts
             ''',
             {'user': user_name, 'album': album_title}
@@ -58,6 +60,32 @@ ORDER BY i.ts
         'ts': item.ts
     } for item in items]}
     return jsonify(result)
+
+
+def load_album(current_user, user_name, album_title):
+    if not check_auth(current_user, user_name, album_title):
+        return jsonify({})
+
+    with db.pg_connection(config['app-database']) as (_, cur, _):
+        album = db.query_one(
+            cur,
+            '''
+SELECT *
+FROM travel_log.album a
+JOIN travel_log.user u ON u.id_user = a.fk_user
+WHERE u.user_name = %(user)s AND a.album_title = %(album)s
+  AND NOT a.is_deleted
+            ''',
+            {'user': user_name, 'album': album_title}
+        )
+
+    if album:
+        return jsonify({
+            'background': album.background,
+            'autoplay_delay': album.autoplay_delay
+        })
+
+    return jsonify({})
 
 
 def ssl_required(f):

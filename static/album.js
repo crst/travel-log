@@ -2,6 +2,7 @@
 var app = app || {};
 app.album = {};
 app.album.autoplay = false;
+app.album.autoplay_delay = 5;
 
 app.album.items = [];
 app.album.current_item = 0;
@@ -22,6 +23,15 @@ $(window).resize(function () {
 
 
 $(document).ready(function () {
+    $.ajax({
+        'type': 'GET',
+        'url': 'get_album/',
+        success: function (album) {
+            $('body').css({'background': album.background})
+            app.album.autoplay_delay = album.autoplay_delay;
+        }
+    });
+
     $.ajax({
         'type': 'GET',
         'url': 'get_items/',
@@ -105,7 +115,7 @@ app.album.toggle_autoplay = function () {
 
 app.album.start_autoplay = function () {
     app.album.autoplay = true;
-    var delay = 1 * 5000;
+    var delay = app.album.autoplay_delay * 1000;
     var f = function () {
         if (app.album.autoplay) {
             app.album.next_item();

@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, flash, render_template, redirect, request, url_for
 from flask.ext.login import current_user, login_required
 
-from common import load_items, ssl_required
+from common import load_items, load_album, ssl_required
 import db
 from storage import store_fs
 from util import config, get_logger
@@ -30,6 +30,23 @@ def index(user_name, album_title):
 def get_items(user_name, album_title):
     return load_items(current_user, user_name, album_title)
 
+@edit_module.route('/user/<user_name>/album/<album_title>/edit/get_album/')
+@login_required
+@ssl_required
+def get_album(user_name, album_title):
+    return load_album(current_user, user_name, album_title)
+
+
+@edit_module.route('/user/<user_name>/album/<album_title>/edit/save_album/', methods=['POST'])
+@login_required
+@ssl_required
+def save_album(user_name, album_title):
+    result = False
+    if request.method == 'POST':
+        result = store_album(user_name, album_title, request.get_json())
+
+    return jsonify({'success': result})
+
 
 @edit_module.route('/user/<user_name>/album/<album_title>/edit/save_items/', methods=['POST'])
 @login_required
@@ -41,24 +58,65 @@ def save_items(user_name, album_title):
 
     return jsonify({'success': result})
 
+def store_album(user_name, album_title, album):
+    # TODO: check auth
+    with db.pg_connection(config['app-database']) as (_, cur, err):
+        if err:
+            return False
+
+        try:
+            cur.execute(
+            '''
+UPDATE travel_log.album
+   SET autoplay_delay = %(autoplay_delay)s
+  FROM travel_log.user
+ WHERE album.fk_user = user.id_user
+   AND user.user_name = %(user)s
+   AND album.album_title = %(album)s
+   AND NOT album.is_deleted
+   AND NOT item.is_deleted
+            ''',
+                {
+                    'user': user_name,
+                    'album': album_title,
+                    'autoplay_delay': album['autoplay_delay']
+                }
+            )
+        except Exception as e:
+            logger.debug(e)
+            return False
+    return True
+
 
 def store_items(user_name, album_title, items):
+    # TODO: check auth
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if err:
             return False
 
         for key, item in items.items():
-            # TODO: need to make sure users can only edit their own items
             try:
                 cur.execute(
-                    '''UPDATE travel_log.item
-                          SET description = %(desc)s,
-                              lat = %(lat)s,
-                              lon = %(lon)s,
-                              zoom = %(zoom)s,
-                              ts = %(ts)s
-                        WHERE id_item=%(key)s''',
+                    '''
+UPDATE travel_log.item
+   SET description = %(desc)s,
+       lat = %(lat)s,
+       lon = %(lon)s,
+       zoom = %(zoom)s,
+       ts = %(ts)s
+  FROM travel_log.album,
+       travel_log.user
+ WHERE item.fk_album = album.id_album
+   AND album.fk_user = user.id_user
+   AND user.user_name = %(user)
+   AND album.album_title = %(album)s
+   AND id_item=%(key)s
+   AND NOT album.is_deleted
+   AND NOT item.is_deleted
+                    ''',
                     {
+                        'user': user_name,
+                        'album': album_title,
                         'key': key,
                         'desc': item['description'],
                         'lat': item['lat'] != 'None' and item['lat'] or None,
@@ -119,16 +177,16 @@ def delete_one_item(id_user, album_title, id_item):
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if not err:
             # We only flag items as deleted here, some worker queue
-            # will actually delete them.
+            # will actually delete them asynchronously.
             cur.execute(
                 '''
 UPDATE travel_log.item
-SET is_deleted = TRUE
-FROM travel_log.album
-WHERE item.fk_album = album.id_album
-  AND fk_user=%(user)s AND album_title=%(album)s
-  AND item.id_item=%(id_item)s
-''',
+   SET is_deleted = TRUE
+  FROM travel_log.album
+ WHERE item.fk_album = album.id_album
+   AND fk_user=%(user)s AND album_title=%(album)s
+   AND item.id_item=%(id_item)s
+                ''',
                 {'user': id_user, 'album': album_title, 'id_item': id_item}
             )
             success = True

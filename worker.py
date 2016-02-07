@@ -99,6 +99,11 @@ WHERE a.is_deleted OR i.is_deleted
         print(' - None found!')
 
 
+    # Step 4:
+    # Remove empty directories
+    # TODO
+
+
 
 if __name__ == '__main__':
     vacuum()

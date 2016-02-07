@@ -1,6 +1,7 @@
 
 var app = app || {};
 app.edit = {};
+app.edit.album = {};
 
 
 // All item data by `id_item`.
@@ -22,13 +23,13 @@ app.edit.get_current_item = function () {
 app.edit.has_unsaved_changes = false;
 app.edit.handle_changes = function () {
     if (app.edit.has_unsaved_changes && app.edit.work_in_progress <= 0) {
-        app.edit.save_items();
+        app.edit.save();
     }
 };
 window.setInterval(app.edit.handle_changes, 5 * 1000);
 app.edit.mark_unsaved_changes = function () {
     app.edit.has_unsaved_changes = true;
-    $('#last-saved').html('<a href="javascript:app.edit.save_items();">Save changes</a>');
+    $('#last-saved').html('<a href="javascript:app.edit.save();">Save changes</a>');
 };
 app.edit.mark_everything_saved = function () {
     app.edit.has_unsaved_changes = false;
@@ -51,23 +52,43 @@ app.edit.set_work_in_progress = function (n) {
 
 $(document).ready(function () {
     // Bind event handlers
-    $('#save').click(app.edit.save_items);
-    app.edit.bind_upload();
-    app.edit.bind_timestamp();
-    app.edit.bind_description();
+    $('#save').click(app.edit.save);
+
+    app.edit.bind_album_autoplay_delay();
+
+    app.edit.bind_item_upload();
+    app.edit.bind_item_timestamp();
+    app.edit.bind_item_description();
 
     // Setup map
     app.map.resize_map();
     app.map.init_map({'drag_marker': true});
-    app.edit.bind_coordinates();
-    app.edit.bind_zoom();
+    app.edit.bind_map_coordinates();
+    app.edit.bind_map_zoom();
 
     // Update page
-    app.edit.update_items();
+    app.edit.update();
 });
 
 
-app.edit.bind_upload = function () {
+app.edit.bind_album_autoplay_delay = function () {
+    $('#album-autoplay-delay').change(function (e) {
+        var delay = parseInt($(this).val());
+        if (isNaN(delay)) {
+            delay = 5;
+            $(this).val(delay);
+        }
+
+        app.edit.album.autoplay_delay = delay;
+
+        app.edit.mark_unsaved_changes();
+        app.edit.set_work_in_progress(5);
+
+    });
+};
+
+
+app.edit.bind_item_upload = function () {
     $('#image-file').change(function (e) {
         var form_data = new FormData($('#upload-file')[0]);
         $.ajax({
@@ -87,6 +108,27 @@ app.edit.bind_upload = function () {
     });
 };
 
+app.edit.save = function () {
+    app.edit.save_album();
+    app.edit.save_items();
+};
+
+app.edit.save_album = function () {
+    $.ajax({
+        'type': 'POST',
+        'url': 'save_album/',
+        'data': JSON.stringify(app.edit.album),
+        'contentType': 'application/json',
+        'cache': false,
+        'processData': false,
+        'async': true,
+        'success': function (data) {
+            if (data['success']) {
+                app.edit.update_album();
+            }
+        }
+    });
+};
 
 app.edit.save_items = function () {
     $.ajax({
@@ -102,6 +144,23 @@ app.edit.save_items = function () {
                 app.edit.update_items();
             }
         }
+    });
+};
+
+app.edit.update = function () {
+    app.edit.update_album();
+    app.edit.update_items();
+};
+
+app.edit.update_album = function () {
+    var handle_album = function (album) {
+        $('body').css({'background': album.background});
+        $('#album-autoplay-delay').val(album.autoplay_delay);
+    }
+    $.ajax({
+        'type': 'GET',
+        'url': 'get_album/',
+        success: handle_album
     });
 };
 
@@ -131,7 +190,7 @@ app.edit.update_items = function () {
         }
         app.edit.items = item_buffer;
         $('#thumbnail-list').html(thumbnail_buffer.join(''));
-        app.edit.bind_thumbnails();
+        app.edit.bind_item_thumbnails();
         app.edit.select_item(app.edit.current_item);
         // TODO: select_item should not cause a call from the marker
         // to mark_unsaved_changes
@@ -146,7 +205,7 @@ app.edit.update_items = function () {
     });
 };
 
-app.edit.bind_thumbnails = function () {
+app.edit.bind_item_thumbnails = function () {
     $('.item-thumbnail').click(function () {
         var id = $(this).attr('data-item');
         app.edit.select_item(id);
@@ -171,7 +230,7 @@ app.edit.select_item = function (id) {
 
 
 
-app.edit.bind_timestamp = function () {
+app.edit.bind_item_timestamp = function () {
     $('#item-timestamp').on('input', function () {
         var item = app.edit.get_current_item();
         item.ts = $(this).val();
@@ -180,7 +239,7 @@ app.edit.bind_timestamp = function () {
     });
 };
 
-app.edit.bind_description = function () {
+app.edit.bind_item_description = function () {
     $('#item-description').on('input', function () {
         var item = app.edit.get_current_item();
         item.description = $(this).val();
@@ -189,7 +248,7 @@ app.edit.bind_description = function () {
     });
 };
 
-app.edit.bind_coordinates = function () {
+app.edit.bind_map_coordinates = function () {
     app.map.marker.on('change', function() {
         var coord = this.getGeometry().getCoordinates();
         coord = ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
@@ -201,7 +260,7 @@ app.edit.bind_coordinates = function () {
     });
 };
 
-app.edit.bind_zoom = function () {
+app.edit.bind_map_zoom = function () {
     var view = app.map.map.getView();
     view.on('change:resolution', function () {
         var item = app.edit.get_current_item();
