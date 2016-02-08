@@ -15,6 +15,10 @@ flask_app.config['PREFERRED_URL_SCHEME'] = 'https'
 
 def init_app(cnf):
     flask_app.secret_key = cnf['SECRET_KEY']
+    init_login()
+
+
+def init_login():
     login_manager = LoginManager()
     login_manager.init_app(flask_app)
     login_manager.session_protection = 'strong'
@@ -38,11 +42,13 @@ init_app(config)
 load_modules(config)
 
 
+
 @flask_app.errorhandler(404)
 def page_not_found(e):
     logger.debug('{Not found}')
     env = {'header': True}
     return render_template('404.html', **env), 404
+
 
 
 if __name__ == '__main__':

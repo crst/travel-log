@@ -58,8 +58,8 @@ WHERE u.user_name = %(user)s AND album_title = %(album)s AND NOT is_deleted
         # Store item in database
         cur.execute(
             '''
-            INSERT INTO travel_log.item (fk_album, image, ts, lat, lon, zoom)
-            VALUES (%(aid)s, %(image)s, %(ts)s, %(lat)s, %(lon)s, %(zoom)s)
+INSERT INTO travel_log.item (fk_album, image, ts, lat, lon, zoom)
+VALUES (%(aid)s, %(image)s, %(ts)s, %(lat)s, %(lon)s, %(zoom)s)
             ''',
             {
                 'aid': aid,

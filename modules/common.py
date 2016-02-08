@@ -11,7 +11,11 @@ def get_user_id(user_name):
     with db.pg_connection(config['app-database']) as (_, cur, _):
         user = db.query_one(
             cur,
-            'SELECT id_user FROM travel_log.user WHERE user_name = %(user)s',
+            '''
+SELECT id_user
+  FROM travel_log.user
+ WHERE user_name = %(user)s
+            ''',
             {'user': user_name}
         )
         result = user.id_user

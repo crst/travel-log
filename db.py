@@ -31,23 +31,31 @@ class Row(object):
         for (column, value) in zip((d[0] for d in cursor.description), result):
             setattr(self, column, value)
 
-def fetch_one(cur):
+def fetch_one_row(cur):
     return Row(cur, cur.fetchone())
 
 def query_one(cur, query, env=None):
     cur.execute(query, env)
-    return fetch_one(cur)
+    return fetch_one_row(cur)
 
 def query_all(cur, query, env=None):
     cur.execute(query, env)
     return [Row(cur, r) for r in cur.fetchall()]
 
 
+# TODO: this is duplicated in common.py
 def get_user_id(user_name):
     with pg_connection(config['app-database']) as (_, cur, err):
         if not err:
-            cur.execute('SELECT * FROM travel_log.user WHERE user_name = %(name)s', {'name': user_name})
-            result = fetch_one(cur)
+            cur.execute(
+                '''
+SELECT *
+  FROM travel_log.user
+ WHERE user_name = %(name)s
+                ''',
+                {'name': user_name}
+            )
+            result = fetch_one_row(cur)
             return result.id_user
 
 
@@ -62,9 +70,13 @@ class User(object):
         with pg_connection(config['app-database']) as (_, cur, err):
             if not err:
                 cur.execute(
-                    'SELECT pw_hash = crypt(%(pw)s, pw_hash) AS auth FROM travel_log.user WHERE id_user = %(id)s',
+                    '''
+SELECT pw_hash = crypt(%(pw)s, pw_hash) AS auth
+  FROM travel_log.user
+ WHERE id_user = %(id)s
+                    ''',
                     {'pw': password, 'id': self.id_user})
-                result = fetch_one(cur)
+                result = fetch_one_row(cur)
                 if result.auth:
                     self.authenticated = True
 
@@ -82,9 +94,13 @@ def load_user(key):
     with pg_connection(config['app-database']) as (_, cur, err):
         if not err:
             cur.execute(
-                'SELECT * FROM travel_log.user WHERE user_name = %(name)s',
+                '''
+SELECT *
+  FROM travel_log.user
+ WHERE user_name = %(name)s
+                ''',
                 {'name': key})
-            user = fetch_one(cur)
+            user = fetch_one_row(cur)
             if user:
                 return User(user.user_name, id_user=user.id_user)
     return None

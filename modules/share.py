@@ -62,7 +62,7 @@ JOIN travel_log.share_type st ON st.id_share_type = s.fk_share_type
 JOIN travel_log.user u ON u.id_user = s.fk_user
 JOIN travel_log.album a ON a.id_album = s.fk_album
 WHERE u.user_name = %(user)s AND a.album_title = %(album)s
-''',
+            ''',
             {'user': user_name, 'album': album_title}
         )
     return share_type.share_type_name

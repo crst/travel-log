@@ -138,7 +138,7 @@ def delete_one_album(id_user, album_title):
 UPDATE travel_log.album
 SET is_deleted = TRUE
 WHERE fk_user=%(user)s AND album_title=%(album)s
-''',
+                ''',
                 {'user': id_user, 'album': album_title}
             )
             success = True

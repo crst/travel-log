@@ -44,6 +44,6 @@ JOIN travel_log.user u ON u.id_user = a.fk_user
 JOIN travel_log.share s ON s.fk_album = a.id_album AND s.fk_user = u.id_user
 JOIN travel_log.share_type st ON st.id_share_type = s.fk_share_type
 WHERE u.user_name=%(user)s AND NOT a.is_deleted AND st.share_type_name IN %(public)s
-''',
+                ''',
                 {'user': user_name, 'public': public})
     return albums

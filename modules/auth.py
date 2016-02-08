@@ -27,7 +27,7 @@ JOIN travel_log.user u ON u.id_user = s.fk_user
 WHERE a.album_title = %(album)s
   AND u.user_name = %(user)s
   AND NOT a.is_deleted
-''',
+            ''',
             {'user': user_name, 'album': album_title}
         )
         if share_type.share_type_name == 'Public':
