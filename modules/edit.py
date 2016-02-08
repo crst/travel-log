@@ -1,7 +1,8 @@
-from flask import Blueprint, jsonify, flash, render_template, redirect, request, url_for
+from flask import Blueprint, abort, jsonify, flash, render_template, redirect, request, url_for
 from flask.ext.login import current_user, login_required
 
-from common import load_items, load_album, ssl_required
+from auth import is_allowed
+from common import get_user_id, load_items, load_album, ssl_required
 import db
 from storage import store_fs
 from util import config, get_logger
@@ -16,6 +17,10 @@ edit_module = Blueprint('edit', __name__)
 @ssl_required
 def index(user_name, album_title):
     logger.debug('{Edit album} %s/album/%s/', user_name, album_title)
+
+    if not is_allowed(current_user, user_name):
+        return abort(404)
+
     env = {
         'module': 'Edit %s/%s' % (user_name, album_title),
         'user_name': user_name,
@@ -24,16 +29,28 @@ def index(user_name, album_title):
     return render_template('edit.html', **env)
 
 
+
 @edit_module.route('/user/<user_name>/album/<album_title>/edit/get_items/')
 @login_required
 @ssl_required
 def get_items(user_name, album_title):
+    logger.debug('{Edit album} %s/album/%s/get_items', user_name, album_title)
+
+    if not is_allowed(current_user, user_name):
+        return jsonify({})
+
     return load_items(current_user, user_name, album_title)
+
 
 @edit_module.route('/user/<user_name>/album/<album_title>/edit/get_album/')
 @login_required
 @ssl_required
 def get_album(user_name, album_title):
+    logger.debug('{Edit album} %s/album/%s/get_album', user_name, album_title)
+
+    if not is_allowed(current_user, user_name):
+        return jsonify({})
+
     return load_album(current_user, user_name, album_title)
 
 
@@ -41,6 +58,11 @@ def get_album(user_name, album_title):
 @login_required
 @ssl_required
 def save_album(user_name, album_title):
+    logger.debug('{Edit album} %s/album/%s/save_album', user_name, album_title)
+
+    if not is_allowed(current_user, user_name):
+        return jsonify({'success': False})
+
     result = False
     if request.method == 'POST':
         result = store_album(user_name, album_title, request.get_json())
@@ -52,14 +74,19 @@ def save_album(user_name, album_title):
 @login_required
 @ssl_required
 def save_items(user_name, album_title):
+    logger.debug('{Edit album} %s/album/%s/save_items', user_name, album_title)
+
+    if not is_allowed(current_user, user_name):
+        return jsonify({'success': False})
+
     result = False
     if request.method == 'POST':
         result = store_items(user_name, album_title, request.get_json())
 
     return jsonify({'success': result})
 
+
 def store_album(user_name, album_title, album):
-    # TODO: check auth
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if err:
             return False
@@ -89,7 +116,6 @@ UPDATE travel_log.album
 
 
 def store_items(user_name, album_title, items):
-    # TODO: check auth
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if err:
             return False
@@ -154,15 +180,16 @@ def store_image(image, user_name, album_title):
 @ssl_required
 def delete_item(user_name, album_title, id_item):
     logger.debug('{Edit} %s/%s/delete-item/%s', user_name, album_title, id_item)
-    if user_name != current_user.name:
-        return redirect(url_for('edit.index', user_name=current_user.name, album_title=album_title))
+
+    if not is_allowed(current_user, user_name):
+        return abort(404)
 
     if request.method == 'POST':
-        result = delete_one_item(current_user.id_user, album_title, id_item)
+        result = delete_one_item(get_user_id(user_name), album_title, id_item)
         if result['success']:
             if result['success']:
                 flash('Successfully deleted item')
-                return redirect(url_for('edit.index', user_name=current_user.name, album_title=album_title))
+                return redirect(url_for('edit.index', user_name=user_name, album_title=album_title))
             else:
                 flash('Can\'t delete item!')
 

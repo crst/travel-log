@@ -6,36 +6,20 @@ import db
 from util import config
 
 
-def check_auth(current_user, user_name, album_title):
-    if not current_user.is_anonymous and current_user.name == user_name:
-        return True
-
-    with db.pg_connection(config['app-database']) as (_, cur, err):
-        share_type = db.query_one(
+def get_user_id(user_name):
+    result = None
+    with db.pg_connection(config['app-database']) as (_, cur, _):
+        user = db.query_one(
             cur,
-            '''
-SELECT
-  st.share_type_name
-FROM travel_log.share s
-JOIN travel_log.share_type st ON st.id_share_type = s.fk_share_type
-JOIN travel_log.album a ON a.id_album = s.fk_album
-JOIN travel_log.user u ON u.id_user = s.fk_user
-WHERE a.album_title = %(album)s
-  AND u.user_name = %(user)s
-  AND NOT a.is_deleted
-''',
-            {'user': user_name, 'album': album_title}
+            'SELECT id_user FROM travel_log.user WHERE user_name = %(user)s',
+            {'user': user_name}
         )
-        if share_type.share_type_name == 'Public':
-            return True
+        result = user.id_user
+    return result
 
-    return False
 
 
 def load_items(current_user, user_name, album_title):
-    if not check_auth(current_user, user_name, album_title):
-        return jsonify({})
-
     with db.pg_connection(config['app-database']) as (_, cur, err):
         items = db.query_all(
             cur,
@@ -63,9 +47,6 @@ ORDER BY i.ts
 
 
 def load_album(current_user, user_name, album_title):
-    if not check_auth(current_user, user_name, album_title):
-        return jsonify({})
-
     with db.pg_connection(config['app-database']) as (_, cur, _):
         album = db.query_one(
             cur,

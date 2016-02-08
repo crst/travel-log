@@ -13,8 +13,9 @@ user_module = Blueprint('user', __name__)
 @user_module.route('/user/<user_name>/')
 def index(user_name):
     logger.debug('{User} user/%s', user_name)
-    is_current_user = not current_user.is_anonymous and user_name == current_user.name
 
+    # TODO: need a better abstraction to get all "allowed" albums
+    is_current_user = not current_user.is_anonymous and user_name == current_user.name
     albums = get_albums(user_name, is_current_user)
 
     env = {
@@ -31,7 +32,6 @@ def index(user_name):
 def get_albums(user_name, is_current_user):
     albums = []
     with db.pg_connection(config['app-database']) as (_, cur, err):
-        # TODO: need an abstraction for permissions
         public = not is_current_user and ('Public',) or ('Public', 'Private')
         if not err:
             albums = db.query_all(

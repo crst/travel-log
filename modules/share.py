@@ -1,7 +1,8 @@
 
-from flask import Blueprint, escape, flash, render_template, redirect, request, url_for
+from flask import Blueprint, abort, escape, flash, render_template, redirect, request, url_for
 from flask.ext.login import current_user, login_required
 
+from auth import is_allowed
 import db
 from util import config, get_logger
 logger = get_logger(__name__)
@@ -14,14 +15,15 @@ share_module = Blueprint('share', __name__)
 @login_required
 def index(user_name, album_title):
     logger.debug('{Share album} %s/album/%s', user_name, album_title)
-    if user_name != current_user.name:
-        return redirect(url_for('user.index', user_name=current_user.name))
+
+    if not is_allowed(current_user, user_name):
+        return abort(404)
 
     if request.method == 'POST':
         share_type = 'share_type' in request.form and escape(request.form['share_type']) or 'Private'
         result = share_album(user_name, album_title, share_type)
         flash(result['msg'])
-        return redirect(url_for('user.index', user_name=current_user.name))
+        return redirect(url_for('user.index', user_name=user_name))
 
     env = {
         'module': 'Share album',

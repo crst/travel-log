@@ -1,7 +1,8 @@
 from flask import Blueprint, abort, escape, flash, get_flashed_messages, redirect, render_template, request, url_for
 from flask.ext.login import current_user, login_required
 
-from common import check_auth, load_items, load_album, ssl_required
+from auth import is_allowed, is_shared
+from common import get_user_id, load_items, load_album, ssl_required
 import db
 from util import config, get_logger
 logger = get_logger(__name__)
@@ -14,8 +15,8 @@ album_module = Blueprint('album', __name__)
 def index(user_name, album_title):
     logger.debug('{Album} %s/album/%s', user_name, album_title)
 
-    is_authorized = check_auth(current_user, user_name, album_title)
-    if not is_authorized:
+    shared = is_shared(current_user, user_name, album_title)
+    if not shared:
         return abort(404)
 
     env = {
@@ -29,10 +30,16 @@ def index(user_name, album_title):
 
 @album_module.route('/user/<user_name>/album/<album_title>/view/get_items/')
 def get_items(user_name, album_title):
+    if not is_shared(current_user, user_name, album_title):
+        return jsonify({})
+
     return load_items(current_user, user_name, album_title)
 
 @album_module.route('/user/<user_name>/album/<album_title>/view/get_album/')
 def get_album(user_name, album_title):
+    if not is_shared(current_user, user_name, album_title):
+        return jsonify({})
+
     return load_album(current_user, user_name, album_title)
 
 
@@ -41,16 +48,17 @@ def get_album(user_name, album_title):
 @ssl_required
 def new_album(user_name):
     logger.debug('{Album} %s/new-album', user_name)
-    if user_name != current_user.name:
+
+    if not is_allowed(current_user, user_name):
         return redirect(url_for('album.new_album', user_name=current_user.name))
 
     if request.method == 'POST':
         album_title = 'album_title' in request.form and escape(request.form['album_title']) or 'No title'
         album_desc = 'album_desc' in request.form and escape(request.form['album_desc']) or 'No description'
         logger.debug('{Album} %s/new-album/%s', user_name, album_title)
-        result = create_new_album(current_user.id_user, album_title, album_desc)
+        result = create_new_album(get_user_id(user_name), album_title, album_desc)
         if result['success']:
-            return redirect(url_for('user.index', user_name=current_user.name))
+            return redirect(url_for('user.index', user_name=user_name))
         else:
             flash('Can\'t create new album "%s"' % album_title)
 
@@ -64,7 +72,6 @@ def new_album(user_name):
 
 def create_new_album(id_user, album_title, album_desc):
     success = False
-    # TODO: check for allowed characters
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if not err:
             album = db.query_one(
@@ -100,15 +107,16 @@ INSERT INTO travel_log.share (fk_album, fk_share_type, fk_user)
 @ssl_required
 def delete_album(user_name, album_title):
     logger.debug('{Album} %s/%s/delete-album', user_name, album_title)
-    if user_name != current_user.name:
-        return redirect(url_for('album.index', user_name=current_user.name))
+
+    if not is_allowed(current_user, user_name):
+        return abort(404)
 
     if request.method == 'POST':
-        result = delete_one_album(current_user.id_user, album_title)
+        result = delete_one_album(get_user_id(user_name), album_title)
         if result['success']:
             if result['success']:
                 flash('Successfully deleted album "%s"' % album_title)
-                return redirect(url_for('user.index', user_name=current_user.name))
+                return redirect(url_for('user.index', user_name=user_name))
             else:
                 flash('Can\'t delete album "%s"' % album_title)
 
