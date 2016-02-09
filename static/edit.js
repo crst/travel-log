@@ -109,9 +109,27 @@ app.edit.bind_item_upload = function () {
 };
 
 app.edit.save = function () {
-    app.edit.save_album();
-    app.edit.save_items();
+    if (app.edit.validate_input()) {
+        app.edit.save_album();
+        app.edit.save_items();
+    }
 };
+
+
+app.edit.validate_input = function () {
+    for (var key in app.edit.items) {
+        var item = app.edit.items[key];
+        if (item.ts && new Date(item.ts) == 'Invalid Date') {
+            app.edit.select_item(key);
+            $('#item-timestamp').addClass('has-error');
+            app.edit.set_work_in_progress(60);
+            return false;
+        }
+    }
+    $('#item-timestamp').removeClass('has-error');
+    return true;
+};
+
 
 app.edit.save_album = function () {
     $.ajax({
@@ -231,6 +249,7 @@ app.edit.select_item = function (id) {
 
 
 app.edit.bind_item_timestamp = function () {
+    // TODO: should be on focus change instead of input
     $('#item-timestamp').on('input', function () {
         var item = app.edit.get_current_item();
         item.ts = $(this).val();

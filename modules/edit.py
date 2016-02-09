@@ -133,8 +133,8 @@ UPDATE travel_log.item
   FROM travel_log.album,
        travel_log.user
  WHERE item.fk_album = album.id_album
-   AND album.fk_user = user.id_user
-   AND user.user_name = %(user)
+   AND album.fk_user = "user".id_user
+   AND "user".user_name = %(user)s
    AND album.album_title = %(album)s
    AND id_item=%(key)s
    AND NOT album.is_deleted
