@@ -33,7 +33,7 @@ def get_items(user_name, album_title):
     if not is_shared(current_user, user_name, album_title):
         return jsonify({})
 
-    return load_items(current_user, user_name, album_title)
+    return load_items(current_user, user_name, album_title, only_visible=True)
 
 @album_module.route('/user/<user_name>/album/<album_title>/view/get_album/')
 def get_album(user_name, album_title):

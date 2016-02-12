@@ -1,26 +1,30 @@
 
+// ----------------------------------------------------------------------------
+// Module app.album
+
 var app = app || {};
 app.album = {};
+
+// Module state
+// ------------
+
 app.album.autoplay = false;
 app.album.autoplay_delay = 5;
 
 app.album.items = [];
 app.album.current_item = 0;
-app.album.weekdays = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday'
-];
 
+
+// ----------------------------------------------------------------------------
+// Event handler
 
 $(window).resize(function () {
-    app.album.position_marker();
+    app.album.position_timeline_marker();
 });
 
+
+// ----------------------------------------------------------------------------
+// Initialize module
 
 $(document).ready(function () {
     $.ajax({
@@ -73,11 +77,14 @@ app.album.handle_items = function (data) {
     }
     app.album.items = items;
     app.album.add_timeline_marker();
-    app.album.position_marker();
+    app.album.position_timeline_marker();
 
     app.album.switch_to_item(0);
 };
 
+
+// ----------------------------------------------------------------------------
+// Selecting items
 
 app.album.switch_to_item = function (i) {
     var item = app.album.items[i];
@@ -85,12 +92,12 @@ app.album.switch_to_item = function (i) {
         $('#main-image').html(item.img);
         $('#item-description').html(item.description);
         app.map.set_marker(item);
-        app.album.set_date(item.time);
+        app.album.set_timeline_date(item.time);
     }
 };
 
 app.album.skip = function (f) {
-    app.album.current_item = mod(f(app.album.current_item), app.album.items.length);
+    app.album.current_item = app.mod(f(app.album.current_item), app.album.items.length);
     app.album.switch_to_item(app.album.current_item);
 }
 
@@ -130,6 +137,9 @@ app.album.stop_autoplay = function () {
 }
 
 
+// ----------------------------------------------------------------------------
+// Timeline
+
 app.album.add_timeline_marker = function () {
     var m = [];
     for (var i = 0; i < app.album.items.length; i++) {
@@ -145,7 +155,7 @@ app.album.add_timeline_marker = function () {
     });
 };
 
-app.album.position_marker = function () {
+app.album.position_timeline_marker = function () {
     // Calculate y-coordinates for each marker individually
     $('.marker').map(function () {
         var when = new Date($(this).attr('data-when'));
@@ -160,43 +170,24 @@ app.album.position_marker = function () {
     $('.marker').css({'left': left + 'px'});
 };
 
+app.album.set_timeline_date = function (s) {
+    var when = new Date(s);
+    var pos = app.album.calculate_timeline_position(when);
+    var ph = $('#pointer').height();
+    $('#pointer').animate({'top': pos - ph});
+    $('#date').html(app.format_date(when));
+};
+
 app.album.calculate_timeline_position = function (when) {
     var timeStart = new Date(app.album.items[0].time).valueOf();
     var timeEnd = new Date(app.album.items[app.album.items.length - 1].time).valueOf();
     var timeDur = (timeEnd - timeStart);
 
-    var relate_position = (when.valueOf() - timeStart) / timeDur;
+    var relative_position = (when.valueOf() - timeStart) / timeDur;
 
     var timeline_height = $('#timeline').height();
     var offset_top = $('#timeline').offset().top;
     var margin = 25;
 
-    return offset_top + (margin / 2) + (relate_position * (timeline_height - margin)) + ($('.marker').height() / 2);
-};
-
-app.album.set_date = function (s) {
-    var when = new Date(s);
-    var pos = app.album.calculate_timeline_position(when);
-    var ph = $('#pointer').height();
-    $('#pointer').animate({'top': pos - ph});
-
-    // TODO: should be a format_date() function
-    var buffer = [app.album.weekdays[when.getDay()], ', ',
-                  pad(when.getDate(), 2), '. ', pad(when.getMonth() + 1, 2), '. ', when.getFullYear(), '<br>',
-                  pad(when.getHours(), 2), ':', pad(when.getMinutes(), 2)];
-    $('#date').html(buffer.join(''));
-};
-
-
-var mod = function (x, n) {
-    return ((x % n) + n) % n;
-};
-
-var pad = function (num, digits) {
-    var buffer = [];
-    var cnt = 1;
-    if (num > 0) { cnt = digits - Math.floor(Math.log(num) / Math.log(10)) - 1; }
-    for (var i = 0; i < cnt; i++) { buffer.push('0'); }
-    buffer.push('' + num);
-    return buffer.join('');
+    return offset_top + (margin / 2) + (relative_position * (timeline_height - margin)) + ($('.marker').height() / 2);
 };

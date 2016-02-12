@@ -28,7 +28,7 @@ app.map.init_map = function (args) {
     });
 
     var marker_style = new ol.style.Style({
-        image: new ol.style.Icon(/* @type {olx.style.IconOptions} */ ({
+        image: new ol.style.Icon(({
             opacity: 1,
             src: '/static/marker.png' // Maps Icons Collection https://mapicons.mapsmarker.com
         }))
@@ -67,7 +67,6 @@ app.map.init_map = function (args) {
     app.map.marker = marker_feature;
     app.map.marker_layer = marker_layer;
 };
-
 
 app.map.set_marker = function (item) {
     if (item.lat !== 'None' && item.lon !== 'None') {

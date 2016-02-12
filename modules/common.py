@@ -23,7 +23,11 @@ SELECT id_user
 
 
 
-def load_items(current_user, user_name, album_title):
+def load_items(current_user, user_name, album_title, only_visible=False):
+    visible = (True, False)
+    if only_visible:
+        visible = (True,)
+
     with db.pg_connection(config['app-database']) as (_, cur, err):
         items = db.query_all(
             cur,
@@ -34,12 +38,14 @@ JOIN travel_log.user u ON u.id_user = a.fk_user
 WHERE u.user_name = %(user)s AND a.album_title = %(album)s
   AND NOT i.is_deleted
   AND NOT a.is_deleted
+  AND i.is_visible IN %(visible)s
 ORDER BY i.ts
             ''',
-            {'user': user_name, 'album': album_title}
+            {'user': user_name, 'album': album_title, 'visible': visible}
         )
     result = {'items': [{
         'id': item.id_item,
+        'is_visible': item.is_visible,
         'image': url_for('image.images', filename=item.image),
         'description': item.description,
         'lat': str(item.lat),

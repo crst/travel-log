@@ -1,8 +1,13 @@
 
+// ----------------------------------------------------------------------------
+// Module app.edit
+
 var app = app || {};
 app.edit = {};
-app.edit.album = {};
 
+// Module state
+// ------------
+app.edit.album = {};
 
 // All item data by `id_item`.
 app.edit.items = {};
@@ -12,6 +17,9 @@ app.edit.get_current_item = function () {
     return app.edit.items[app.edit.current_item];
 };
 
+
+// ----------------------------------------------------------------------------
+// Saving edits
 
 /* We auto-save under two conditions:
  *   - There are unsaved changes.
@@ -48,7 +56,8 @@ app.edit.set_work_in_progress = function (n) {
 };
 
 
-
+// ----------------------------------------------------------------------------
+// Initialize module
 
 $(document).ready(function () {
     // Bind event handlers
@@ -57,6 +66,7 @@ $(document).ready(function () {
     app.edit.bind_album_autoplay_delay();
 
     app.edit.bind_item_upload();
+    app.edit.bind_item_toggle_visibility();
     app.edit.bind_item_timestamp();
     app.edit.bind_item_description();
 
@@ -69,7 +79,6 @@ $(document).ready(function () {
     // Update page
     app.edit.update();
 });
-
 
 app.edit.bind_album_autoplay_delay = function () {
     $('#album-autoplay-delay').change(function (e) {
@@ -86,7 +95,6 @@ app.edit.bind_album_autoplay_delay = function () {
 
     });
 };
-
 
 app.edit.bind_item_upload = function () {
     $('#image-file').change(function (e) {
@@ -108,6 +116,26 @@ app.edit.bind_item_upload = function () {
     });
 };
 
+app.edit.bind_item_toggle_visibility = function () {
+    $('#toggle-current-item').click(function () {
+        var item = app.edit.get_current_item();
+        $.ajax({
+            'type': 'POST',
+            'url': 'set-item-visibility/',
+            'data': JSON.stringify({'item-id': app.edit.current_item, 'item-visibility': !item.is_visible}),
+            'contentType': false,
+            'cache': false,
+            'processData': false,
+            'async': true,
+            'success': function (data) {
+                if (data['success']) {
+                    app.edit.update_items();
+                }
+            }
+        })
+    });
+};
+
 app.edit.save = function () {
     if (app.edit.validate_input()) {
         app.edit.save_album();
@@ -115,13 +143,13 @@ app.edit.save = function () {
     }
 };
 
-
 app.edit.validate_input = function () {
     for (var key in app.edit.items) {
         var item = app.edit.items[key];
         if (item.ts && new Date(item.ts) == 'Invalid Date') {
-            app.edit.select_item(key);
             $('#item-timestamp').addClass('has-error');
+            // TODO: this might be quite annoying.
+            app.edit.select_item(key);
             app.edit.set_work_in_progress(60);
             return false;
         }
@@ -129,7 +157,6 @@ app.edit.validate_input = function () {
     $('#item-timestamp').removeClass('has-error');
     return true;
 };
-
 
 app.edit.save_album = function () {
     $.ajax({
@@ -187,7 +214,6 @@ app.edit.update_items = function () {
         var sorted_item_list = items.items;
         var item_buffer = {};
 
-
         var thumbnail_buffer = [];
         for (var i=0; i<sorted_item_list.length; i++) {
             var cur_item = sorted_item_list[i];
@@ -234,19 +260,20 @@ app.edit.select_item = function (id) {
     app.edit.current_item = id;
     var item = app.edit.items[id];
     if (item) {
-        $('#current-item').html(
-            '<img src="' + item.image + '">'
-        );
-
+        $('#current-item').html('<img src="' + item.image + '">');
         $('#item-timestamp').val(item.ts);
         $('#item-description').val(item.description);
         $('#delete-current-item').attr('href', 'delete/' + item.id);
-
+        if (item.is_visible) {
+            $('#toggle-current-item').removeClass('btn-warning').addClass('btn-success')
+                .attr('title', 'Hide item');
+        } else {
+            $('#toggle-current-item').removeClass('btn-success').addClass('btn-warning')
+                .attr('title', 'Show item');
+        }
         app.map.set_marker(item);
     }
 };
-
-
 
 app.edit.bind_item_timestamp = function () {
     // TODO: should be on focus change instead of input

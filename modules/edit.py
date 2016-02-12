@@ -1,3 +1,5 @@
+import json
+
 from flask import Blueprint, abort, jsonify, flash, render_template, redirect, request, url_for
 from flask.ext.login import current_user, login_required
 
@@ -158,10 +160,51 @@ UPDATE travel_log.item
     return True
 
 
+@edit_module.route('/user/<user_name>/album/<album_title>/edit/set-item-visibility/', methods=['GET', 'POST'])
+@login_required
+@ssl_required
+def set_item_visibility(user_name, album_title):
+    if not is_allowed(current_user, user_name):
+        return abort(404)
+
+    if request.method == 'POST':
+        data = json.loads(request.data)
+        id_item = 'item-id' in data and data['item-id'] or None
+        item_visibility = None
+        if 'item-visibility' in data:
+            item_visibility = data['item-visibility']
+
+        result = set_item_visibility(user_name, album_title, id_item, item_visibility)
+        return jsonify({'success': result})
+
+def set_item_visibility(user_name, album_title, id_item, item_visibility):
+    if id_item is None or item_visibility is None:
+        return False
+
+    id_user = get_user_id(user_name)
+    with db.pg_connection(config['app-database']) as (_, cur, _):
+        cur.execute(
+                '''
+UPDATE travel_log.item
+   SET is_visible = %(visible)s
+  FROM travel_log.album
+ WHERE item.fk_album = album.id_album
+   AND fk_user=%(user)s AND album_title=%(album)s
+   AND item.id_item=%(id_item)s
+                ''',
+            {'user': id_user, 'album': album_title, 'id_item': id_item, 'visible': item_visibility}
+        )
+
+    return True
+
+
 @edit_module.route('/user/<user_name>/album/<album_title>/edit/upload/', methods=['GET', 'POST'])
 @login_required
 @ssl_required
 def upload_image(user_name, album_title):
+    if not is_allowed(current_user, user_name):
+        return abort(404)
+
     if request.method == 'POST':
         file = request.files['file']
         result = store_image(file, user_name, album_title)

@@ -1,0 +1,3 @@
+
+ALTER TABLE travel_log.item ADD COLUMN
+  is_visible BOOLEAN NOT NULL DEFAULT FALSE;
