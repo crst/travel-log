@@ -140,6 +140,12 @@ app.edit.save = function () {
     if (app.edit.validate_input()) {
         app.edit.save_album();
         app.edit.save_items();
+
+        // TODO: bind_map_coordinates should not cause a call from the
+        // marker to mark_unsaved_changes
+        window.setTimeout(function () {
+            app.edit.mark_everything_saved();
+        }, 100);
     }
 };
 
@@ -236,11 +242,6 @@ app.edit.update_items = function () {
         $('#thumbnail-list').html(thumbnail_buffer.join(''));
         app.edit.bind_item_thumbnails();
         app.edit.select_item(app.edit.current_item);
-        // TODO: select_item should not cause a call from the marker
-        // to mark_unsaved_changes
-        window.setTimeout(function () {
-            app.edit.mark_everything_saved();
-        }, 10);
     };
     $.ajax({
         'type': 'GET',
@@ -261,15 +262,21 @@ app.edit.select_item = function (id) {
     var item = app.edit.items[id];
     if (item) {
         $('#current-item').html('<img src="' + item.image + '">');
-        $('#item-timestamp').val(item.ts);
+        $('#item-timestamp').val(new Date(item.ts).toLocaleString());
         $('#item-description').val(item.description);
         $('#delete-current-item').attr('href', 'delete/' + item.id);
         if (item.is_visible) {
-            $('#toggle-current-item').removeClass('btn-warning').addClass('btn-success')
-                .attr('title', 'Hide item');
+            $('#toggle-current-item')
+                .removeClass('btn-warning').addClass('btn-success')
+                .attr('title', 'Item is visible. Click to hide.')
+                .children('span')
+                .removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
         } else {
-            $('#toggle-current-item').removeClass('btn-success').addClass('btn-warning')
-                .attr('title', 'Show item');
+            $('#toggle-current-item')
+                .removeClass('btn-success').addClass('btn-warning')
+                .attr('title', 'Item is not visible. Click to show.')
+                .children('span')
+                .removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close');
         }
         app.map.set_marker(item);
     }
@@ -301,6 +308,7 @@ app.edit.bind_map_coordinates = function () {
         var item = app.edit.get_current_item();
         item.lat = coord[1];
         item.lon = coord[0];
+
         app.edit.mark_unsaved_changes();
         app.edit.set_work_in_progress(5);
     });

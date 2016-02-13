@@ -29,13 +29,17 @@
             <div class="col-md-2">
               <a href="javascript:void(0);" class="btn btn-default btn-xs">Set background</a>
             </div>
-            <div class="col-md-1">
-              <label class="sr-only" for="album-autoplay-delay">
-                Autoplay delay
-              </label>
-              <input type="text" class="form-control" id="album-autoplay-delay" name="album-autoplay-delay"/>
+            <div class="col-md-3">
+              <form class="form-inline">
+                <div class="form-group">
+                  <label for="album-autoplay-delay">
+                    Autoplay delay
+                  </label>
+                  <input type="number" min="1" max="30" class="form-control" id="album-autoplay-delay" name="album-autoplay-delay"/>
+                </div>
+              </form>
             </div>
-            <div class="col-md-5">
+            <div class="col-md-3">
             </div>
             <div class="col-md-2">
               <div id="last-saved"></div>
@@ -69,7 +73,7 @@
           <div class="row">
             <div id="toggle-current-item-col" class="col-md-1">
               <a id="toggle-current-item" href="javascript:void(0);" class="btn btn-xs">
-                <span class="glyphicon glyphicon-share"></span>
+                <span class="glyphicon"></span>
               </a>
             </div>
             <div class="col-md-10">Current item</div>
