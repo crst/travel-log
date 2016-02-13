@@ -40,19 +40,34 @@
     <div class="col-md-8">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <b>{{ album.album_title }}</b>
-          {% if is_current_user %}<span class="label label-info">{{ album.share_type_name }}</span>{% endif %}
+          <div class="row">
+            <div class="col-md-2">
+              <b>{{ album.album_title }}</b>
+            </div>
+            <div class="col-md-8">
+            </div>
+            <div class="col-md-2">
+              {% if is_current_user %}
+              <a style="float: right;" href="{{ url_for('share.index', user_name='%s' % user, album_title='%s' % album.album_title) }}">
+                <span class="badge">{{ album.share_type_name }}
+                  <span class="glyphicon glyphicon-share"></span>
+                </span>
+              </a>
+              {% endif %}
+            </div>
+          </div>
         </div>
         <div class="panel-body">
           <div class="row">
-            <div class="col-md-5">
-              <a href="{{ url_for('album.index', user_name='%s' % user, album_title='%s' % album.album_title) }}" target="_blank" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-camera"></span> View</a>
-              {% if is_current_user %}
-              <a href="{{ url_for('edit.index', user_name='%s' % user, album_title='%s' % album.album_title) }}" class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</a>
-              <a href="{{ url_for('share.index', user_name='%s' % user, album_title='%s' % album.album_title) }}" class="btn btn-xs btn-info"><span class="glyphicon glyphicon-share"></span> Share</a>
-              {% endif %}
+            <div class="col-md-3">
+              <div class="btn-group" role="group">
+                <a href="{{ url_for('album.index', user_name='%s' % user, album_title='%s' % album.album_title) }}" target="_blank" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-camera"></span> View</a>
+                {% if is_current_user %}
+                <a href="{{ url_for('edit.index', user_name='%s' % user, album_title='%s' % album.album_title) }}" class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+                {% endif %}
+              </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-8">
               {{ album.album_desc }}
             </div>
             <div class="col-md-1">

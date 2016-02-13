@@ -27,17 +27,8 @@
               <a href="{{ url_for('share.index', user_name='%s' % user_name, album_title='%s' % album_title) }}" target="_blank" title="Edit share settings"><span class="glyphicon glyphicon-share"></span></a>
             </div>
             <div class="col-md-2">
-              <a href="javascript:void(0);" class="btn btn-default btn-xs">Set background</a>
             </div>
             <div class="col-md-3">
-              <form class="form-inline">
-                <div class="form-group">
-                  <label for="album-autoplay-delay">
-                    Autoplay delay
-                  </label>
-                  <input type="number" min="1" max="30" class="form-control" id="album-autoplay-delay" name="album-autoplay-delay"/>
-                </div>
-              </form>
             </div>
             <div class="col-md-3">
             </div>
@@ -52,16 +43,41 @@
 
   <div class="row">
     <div class="col-md-2">
-      <div id="tile-image-upload" class="tile panel panel-default">
-        <div class="panel-heading">Image upload</div>
-        <div class="panel-body">
-          <div id="thumbnail-list" class="row">
-          </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div id="tile-image-upload" class="tile panel panel-default">
+            <div class="panel-heading">
+              Image upload
+            </div>
+            <div class="panel-body">
+              <form class="form-inline" style="margin-bottom: 1em;">
+                <div class="form-group">
+                  <label for="album-autoplay-delay">
+                    Autoplay delay
+                  </label>
+                  <input type="number" min="1" max="30" class="form-control" id="album-autoplay-delay" name="album-autoplay-delay"/>
+                </div>
+              </form>
 
-          <div>
-            <form id="upload-file" action="" method="POST" enctype="multipart/form-data">
-              <span class="btn btn-default btn-file">Browse<input id="image-file" name="file" type="file"></span>
-            </form>
+              <div id="thumbnail-list" class="row">
+              </div>
+
+              <div style="margin-top: 1em; float: right;">
+                <form id="upload-file" action="" method="POST" enctype="multipart/form-data">
+                  <span class="btn btn-default btn-file">Browse<input id="image-file" name="file" type="file"></span>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div id="tile-background" class="tile panel panel-default">
+            <div class="panel-heading">Background</div>
+            <div class="panel-body">
+            </div>
           </div>
         </div>
       </div>
