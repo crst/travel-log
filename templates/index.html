@@ -6,10 +6,6 @@
 
 {% block body %}
 
-<div id="login">
-  <a href="{{ url_for('index.login', _external=True, _scheme='https') }}"><span class="label label-primary">Login</span></a>
-</div>
-
 <div class="container">
   <div id="featured">
     <div class="row">
@@ -33,7 +29,11 @@
   </div>
 
   <div id="sign-up">
-    <h3>Want to create your own travel logs?</h3>
+    <h3>
+      <span id="question">
+        Want to create your own travel logs?
+      </span>
+    </h3>
     <form class="form-inline">
       <div class="form-group">
         <label class="sr-only" for="email">Email address</label>
