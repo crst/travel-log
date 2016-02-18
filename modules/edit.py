@@ -97,17 +97,18 @@ def store_album(user_name, album_title, album):
             cur.execute(
             '''
 UPDATE travel_log.album
-   SET autoplay_delay = %(autoplay_delay)s
+   SET album_desc = %(description)s,
+       autoplay_delay = %(autoplay_delay)s
   FROM travel_log.user
- WHERE album.fk_user = user.id_user
-   AND user.user_name = %(user)s
+ WHERE album.fk_user = "user".id_user
+   AND "user".user_name = %(user)s
    AND album.album_title = %(album)s
    AND NOT album.is_deleted
-   AND NOT item.is_deleted
             ''',
                 {
                     'user': user_name,
                     'album': album_title,
+                    'description': album['description'],
                     'autoplay_delay': album['autoplay_delay']
                 }
             )

@@ -63,6 +63,7 @@ $(document).ready(function () {
     // Bind event handlers
     $('#save').click(app.edit.save);
 
+    app.edit.bind_album_description();
     app.edit.bind_album_autoplay_delay();
 
     app.edit.bind_item_upload();
@@ -79,6 +80,16 @@ $(document).ready(function () {
     // Update page
     app.edit.update();
 });
+
+
+app.edit.bind_album_description = function () {
+    $('#album-description').change(function (e) {
+        app.edit.album.description = $('#album-description').val();
+
+        app.edit.mark_unsaved_changes();
+        app.edit.set_work_in_progress(5);
+    });
+};
 
 app.edit.bind_album_autoplay_delay = function () {
     $('#album-autoplay-delay').change(function (e) {
@@ -205,8 +216,11 @@ app.edit.update = function () {
 
 app.edit.update_album = function () {
     var handle_album = function (album) {
+        $('#album-description').val(album.description);
         $('body').css({'background': album.background});
         $('#album-autoplay-delay').val(album.autoplay_delay);
+
+        app.edit.album = album;
     }
     $.ajax({
         'type': 'GET',

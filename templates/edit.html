@@ -21,16 +21,13 @@
       <div id="tile-header" class="tile panel panel-default">
         <div class="panel-heading">
           <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-6">
               Editing album <b>{{ album_title }}</b>
+              <input type="text" class="form-inline" id="album-description">
               <a href="{{ url_for('album.index', user_name='%s' % user_name, album_title='%s' % album_title) }}" target="_blank" title="Preview"><span class="glyphicon glyphicon-camera"></span></a>
               <a href="{{ url_for('share.index', user_name='%s' % user_name, album_title='%s' % album_title) }}" target="_blank" title="Edit share settings"><span class="glyphicon glyphicon-share"></span></a>
             </div>
-            <div class="col-md-2">
-            </div>
-            <div class="col-md-3">
-            </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
             </div>
             <div class="col-md-2">
               <div id="last-saved"></div>

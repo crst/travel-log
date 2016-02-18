@@ -72,6 +72,7 @@ WHERE u.user_name = %(user)s AND a.album_title = %(album)s
 
     if album:
         return jsonify({
+            'description': album.album_desc,
             'background': album.background,
             'autoplay_delay': album.autoplay_delay
         })
