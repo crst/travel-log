@@ -22,7 +22,7 @@ def index():
 
     env = {
         'module': 'Home',
-        'featured': featured
+        #'featured': featured
     }
     return render_template('index.html', **env)
 
