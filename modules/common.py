@@ -71,9 +71,12 @@ WHERE u.user_name = %(user)s AND a.album_title = %(album)s
         )
 
     if album:
+        bg = album.background
+        if not bg.startswith('#'):
+            bg = url_for('image.images', filename=bg)
         return jsonify({
             'description': album.album_desc,
-            'background': album.background,
+            'background': bg,
             'autoplay_delay': album.autoplay_delay
         })
 

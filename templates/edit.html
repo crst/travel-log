@@ -61,7 +61,7 @@
 
               <div style="margin-top: 1em; float: right;">
                 <form id="upload-file" action="" method="POST" enctype="multipart/form-data">
-                  <span class="btn btn-default btn-file">Browse<input id="image-file" name="file" type="file"></span>
+                  <span class="btn btn-primary btn-file">Browse<input id="image-file" name="file" type="file"></span>
                 </form>
               </div>
             </div>
@@ -74,6 +74,14 @@
           <div id="tile-background" class="tile panel panel-default">
             <div class="panel-heading">Background</div>
             <div class="panel-body">
+              <form id="upload-background" action="" method="POST" enctype="multipart/form-data">
+                <span class="btn-background btn-file btn btn-xs btn-success">
+                  <span class="glyphicon glyphicon-picture"> Image
+                    <input id="background-image" name="file" type="file">
+                  </span>
+                </span>
+              </form>
+              <a href="javascript:void(0);" class="btn-background btn btn-xs btn-primary"><span class="glyphicon glyphicon-pencil"></span> Color</a>
             </div>
           </div>
         </div>

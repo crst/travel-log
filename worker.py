@@ -78,7 +78,13 @@ WHERE a.is_deleted OR i.is_deleted
     found_stale_files = False
 
     with db.pg_connection(config['app-database']) as (_, cur, _):
-        ref_items = db.query_all(cur, 'SELECT image FROM travel_log.item')
+        ref_items = db.query_all(
+            cur,
+            '''
+SELECT image FROM travel_log.item WHERE NOT is_deleted
+ UNION
+SELECT background FROM travel_log.album WHERE NOT is_deleted
+            ''')
     ref = set([
         os.path.join(config['storage-engine']['path'], i.image) for i in ref_items
     ])

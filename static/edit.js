@@ -63,6 +63,7 @@ $(document).ready(function () {
     // Bind event handlers
     $('#save').click(app.edit.save);
 
+    app.edit.bind_album_background();
     app.edit.bind_album_description();
     app.edit.bind_album_autoplay_delay();
 
@@ -112,7 +113,7 @@ app.edit.bind_item_upload = function () {
         var form_data = new FormData($('#upload-file')[0]);
         $.ajax({
             'type': 'POST',
-            'url': 'upload/',
+            'url': 'upload_item/',
             'data': form_data,
             'contentType': false,
             'cache': false,
@@ -124,6 +125,26 @@ app.edit.bind_item_upload = function () {
                 }
             }
         });
+    });
+};
+
+app.edit.bind_album_background = function () {
+    $('#background-image').change(function (e) {
+        var form_data = new FormData($('#upload-background')[0]);
+        $.ajax({
+            'type': 'POST',
+            'url': 'upload_album_background/',
+            'data': form_data,
+            'contentType': false,
+            'cache': false,
+            'processData': false,
+            'async': true,
+            'success': function (data) {
+                if (data['success']) {
+                    app.edit.update_items();
+                }
+            }
+        })
     });
 };
 
@@ -217,7 +238,14 @@ app.edit.update = function () {
 app.edit.update_album = function () {
     var handle_album = function (album) {
         $('#album-description').val(album.description);
-        $('body').css({'background': album.background});
+        if (album.background.startsWith('#')) {
+            $('body').css({'background': album.background});
+        } else {
+            $('body').css({
+                'background': 'url(' + album.background + ') no-repeat fixed center center',
+                'background-size': 'cover'
+            });
+        }
         $('#album-autoplay-delay').val(album.autoplay_delay);
 
         app.edit.album = album;

@@ -31,7 +31,14 @@ $(document).ready(function () {
         'type': 'GET',
         'url': 'get_album/',
         success: function (album) {
-            $('body').css({'background': album.background})
+            if (album.background.startsWith('#')) {
+                $('body').css({'background': album.background})
+            } else {
+                $('body').css({
+                'background': 'url(' + album.background + ') no-repeat fixed center center',
+                'background-size': 'cover'
+                });
+            }
             app.album.autoplay_delay = album.autoplay_delay;
         }
     });

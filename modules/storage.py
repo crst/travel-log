@@ -14,47 +14,50 @@ from util import config, get_logger
 logger = get_logger(__name__)
 
 
-def store_fs(file_storage, user_name, album_title):
+def store_background_fs(file_storage, user_name, album_title):
+    fname = _make_file_path(user_name, album_title, file_storage.filename)
+    if not fname:
+        return False
+    fs_file, rel_path, aid = fname
+
+    img = Image.open(StringIO(file_storage.read()))
+    write_image(file_storage, img, fs_file)
+
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if err:
             return False
-
-        # Get database id's
-        data = db.query_one(
-            cur,
+        cur.execute(
             '''
-SELECT u.id_user, a.id_album
-FROM travel_log.album a
-JOIN travel_log.user u ON u.id_user = a.fk_user
-WHERE u.user_name = %(user)s AND album_title = %(album)s AND NOT is_deleted
+UPDATE travel_log.album
+   SET background = %(path)s
+ WHERE id_album = %(aid)s
+   AND NOT is_deleted
             ''',
-            {'user': user_name, 'album': album_title}
+            {'path': rel_path, 'aid': aid}
         )
-        uid, aid = data.id_user, data.id_album
+    return True
 
-        # Generate file path and name
-        fs_path = os.path.join(
-            config['storage-engine']['path'],
-            str(uid), str(aid))
-        if not os.path.isdir(fs_path):
-            os.makedirs(fs_path)
 
-        filename = hashlib.sha256(
-            '%s-%s-%s-%s' % (uid, aid, time.time(), secure_filename(file_storage.filename))
-        ).hexdigest()
-        fs_file = os.path.join(fs_path, '%s.jpg' % filename)
-        rel_path = os.path.join(str(uid), str(aid), '%s.jpg' % filename)
+def store_item_fs(file_storage, user_name, album_title):
+    fname = _make_file_path(user_name, album_title, file_storage.filename)
+    if not fname:
+        return False
+    fs_file, rel_path, aid = fname
 
-        # TODO: we need to make sure writing to the
-        # filesystem/database happens as a transaction, i.e. either
-        # both or none.
+    # TODO: we need to make sure writing to the
+    # filesystem/database happens as a transaction, i.e. either
+    # both or none.
 
-        # Store image in file system
-        img = Image.open(StringIO(file_storage.read()))
-        meta_data = get_meta_data(img)
-        zoom = (meta_data['lat'] and meta_data['lon']) and 14 or None # TODO: magic number
-        write_image(file_storage, img, fs_file)
+    # Store image in file system
+    # TODO: file_storage.read() may empty the buffer?
+    img = Image.open(StringIO(file_storage.read()))
+    meta_data = get_meta_data(img)
+    zoom = (meta_data['lat'] and meta_data['lon']) and 14 or None # TODO: magic number
+    write_image(file_storage, img, fs_file)
 
+    with db.pg_connection(config['app-database']) as (_, cur, err):
+        if err:
+            return False
         # Store item in database
         cur.execute(
             '''
@@ -82,17 +85,18 @@ VALUES (%(aid)s, %(image)s, %(ts)s, %(lat)s, %(lon)s, %(zoom)s)
 def write_image(storage, img, file_path):
     file_size = get_img_size(img)
     max_allowed_size = 1024 * 1024 # TODO: magic number
-    if True: #not is_jpeg(img) or file_size > max_allowed_size:
+    if not is_jpeg(img) or file_size > max_allowed_size:
         processed_image = process_image(img, file_size, max_allowed_size)
         processed_image.save(file_path, 'JPEG', quality=90) # TODO: magic number
     else:
-        # TODO
+        # TODO: check if this works
         storage.save(file_path)
 
 def process_image(img, file_size, max_allowed_size):
-    # TODO: This works for now, but there is probably a better way to
-    # find a reasonable size for the image.
-    resize_factor = 1.0 / (float(file_size) / float(max_allowed_size))
+    resize_factor = 1.0
+    if file_size > max_allowed_size:
+        resize_factor /= (float(file_size) / float(max_allowed_size))
+
     width, height = img.size
     new_width, new_height = int(width * resize_factor), int(height * resize_factor)
     return img.resize((new_width, new_height), Image.ANTIALIAS)
@@ -177,3 +181,38 @@ def dms_to_dd(dms):
     """
     d, m, s = [float(dms[i][0]) / float(dms[i][1]) for i in range(3)]
     return d + (m / 60.0) + (s / 3600.0)
+
+
+def _make_file_path(user_name, album_title, fname):
+    with db.pg_connection(config['app-database']) as (_, cur, err):
+        if err:
+            return False
+
+        # Get database id's
+        data = db.query_one(
+            cur,
+            '''
+SELECT u.id_user, a.id_album
+FROM travel_log.album a
+JOIN travel_log.user u ON u.id_user = a.fk_user
+WHERE u.user_name = %(user)s AND album_title = %(album)s AND NOT is_deleted
+            ''',
+            {'user': user_name, 'album': album_title}
+        )
+        uid, aid = data.id_user, data.id_album
+
+        # Generate file path and name
+        fs_path = os.path.join(
+            config['storage-engine']['path'],
+            str(uid), str(aid))
+        if not os.path.isdir(fs_path):
+            os.makedirs(fs_path)
+
+        filename = hashlib.sha256(
+            '%s-%s-%s-%s' % (uid, aid, time.time(), secure_filename(fname))
+        ).hexdigest()
+        fs_file = os.path.join(fs_path, '%s.jpg' % filename)
+        rel_path = os.path.join(str(uid), str(aid), '%s.jpg' % filename)
+
+        return (fs_file, rel_path, aid)
+    return False

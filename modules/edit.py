@@ -6,7 +6,7 @@ from flask.ext.login import current_user, login_required
 from auth import is_allowed
 from common import get_user_id, load_items, load_album, ssl_required
 import db
-from storage import store_fs
+from storage import store_background_fs, store_item_fs
 from util import config, get_logger
 logger = get_logger(__name__)
 
@@ -199,7 +199,24 @@ UPDATE travel_log.item
     return True
 
 
-@edit_module.route('/user/<user_name>/album/<album_title>/edit/upload/', methods=['GET', 'POST'])
+@edit_module.route('/user/<user_name>/album/<album_title>/edit/upload_album_background/', methods=['GET', 'POST'])
+@login_required
+@ssl_required
+def upload_background(user_name, album_title):
+    if not is_allowed(current_user, user_name):
+        return abort(404)
+
+    if request.method == 'POST':
+        f = request.files['file']
+        result = store_background(f, user_name, album_title)
+        return jsonify({'success': result})
+
+def store_background(image, user_name, album_title):
+    if config['storage-engine']['type'] == 'filesystem':
+        return store_background_fs(image, user_name, album_title)
+    return False
+
+@edit_module.route('/user/<user_name>/album/<album_title>/edit/upload_item/', methods=['GET', 'POST'])
 @login_required
 @ssl_required
 def upload_image(user_name, album_title):
@@ -207,15 +224,15 @@ def upload_image(user_name, album_title):
         return abort(404)
 
     if request.method == 'POST':
-        file = request.files['file']
-        result = store_image(file, user_name, album_title)
+        f = request.files['file']
+        result = store_image(f, user_name, album_title)
         return jsonify({'success': result})
 
 
 # TODO: add other storage engines here
 def store_image(image, user_name, album_title):
     if config['storage-engine']['type'] == 'filesystem':
-        return store_fs(image, user_name, album_title)
+        return store_item_fs(image, user_name, album_title)
     return False
 
 
