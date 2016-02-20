@@ -11,6 +11,7 @@
     <form method="POST" class="form-inline">
       <input type="hidden" class="form-control" id="id_item" name="id_item">
       <button type="submit" class="btn btn-danger">Delete item</button>
+      <a href="{{ url_for('edit.index', user_name='%s' % user_name, album_title='%s' % album_title) }}" class="btn btn-success">Back to editing</a>
     </form>
   </div>
 </div>

@@ -1,5 +1,9 @@
 {% extends "app.html" %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='user.css') }}" type="text/css" />
+{% endblock %}
+
 {% block body %}
 
 <div class="container">
@@ -49,7 +53,7 @@
             <div class="col-md-2">
               {% if is_current_user %}
               <a style="float: right;" href="{{ url_for('share.index', user_name='%s' % user, album_title='%s' % album.album_title) }}">
-                <span class="badge">{{ album.share_type_name }}
+                <span class="badge {{ album.share_type_name }}">{{ album.share_type_name }}
                   <span class="glyphicon glyphicon-share"></span>
                 </span>
               </a>

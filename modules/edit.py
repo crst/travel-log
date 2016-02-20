@@ -257,6 +257,7 @@ def delete_item(user_name, album_title, id_item):
                 flash('Can\'t delete item!')
 
     env = {
+        'user_name': user_name,
         'album_title': album_title,
         'id_item': id_item
     }

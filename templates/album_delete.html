@@ -10,6 +10,7 @@
     <form method="POST" class="form-inline">
       <input type="hidden" class="form-control" id="album_name" name="album_name">
       <button type="submit" class="btn btn-danger">Delete album</button>
+      <a href="{{ url_for('user.index', user_name='%s' % user_name) }}" class="btn btn-success">Back to overview</a>
     </form>
   </div>
 </div>

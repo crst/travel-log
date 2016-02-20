@@ -121,6 +121,7 @@ def delete_album(user_name, album_title):
                 flash('Can\'t delete album "%s"' % album_title)
 
     env = {
+        'user_name': user_name,
         'album_title': album_title,
     }
     return render_template('album_delete.html', **env)
