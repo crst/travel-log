@@ -49,12 +49,14 @@ CREATE TRIGGER travel_log_signup_update_last_modified BEFORE INSERT OR UPDATE ON
 
 
 CREATE TABLE travel_log.album (
-  id_album      SERIAL PRIMARY KEY,
-  album_title   TEXT NOT NULL,
-  album_desc    TEXT,
-  fk_user       INTEGER NOT NULL,
-  is_deleted    BOOLEAN NOT NULL DEFAULT FALSE,
-  last_modified TIMESTAMP WITH TIME ZONE NOT NULL
+  id_album       SERIAL PRIMARY KEY,
+  album_title    TEXT NOT NULL,
+  album_desc     TEXT,
+  fk_user        INTEGER NOT NULL,
+  is_deleted     BOOLEAN NOT NULL DEFAULT FALSE,
+  last_modified  TIMESTAMP WITH TIME ZONE NOT NULL,
+  background     TEXT NOT NULL DEFAULT '#dbd1b4',
+  autoplay_delay SMALLINT NOT NULL DEFAULT 5
 );
 CREATE TRIGGER travel_log_album_update_last_modified BEFORE INSERT OR UPDATE ON travel_log.album
   FOR EACH ROW EXECUTE PROCEDURE fn.update_last_modified();

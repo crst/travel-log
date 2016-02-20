@@ -72,16 +72,28 @@
       <div class="row">
         <div class="col-md-12">
           <div id="tile-background" class="tile panel panel-default">
-            <div class="panel-heading">Background</div>
-            <div class="panel-body">
-              <form id="upload-background" action="" method="POST" enctype="multipart/form-data">
-                <span class="btn-background btn-file btn btn-xs btn-success">
-                  <span class="glyphicon glyphicon-picture"> Image
-                    <input id="background-image" name="file" type="file">
-                  </span>
-                </span>
-              </form>
-              <a href="javascript:void(0);" class="btn-background btn btn-xs btn-primary"><span class="glyphicon glyphicon-pencil"></span> Color</a>
+            <div class="panel-heading">Album background</div>
+            <div id="background-tabs" class="panel-body">
+              <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#background-image-tab" aria-controls="background-image-tab" role="tab" data-toggle="tab">Image</a></li>
+                <li role="presentation"><a href="#background-color-tab" aria-controls="background-color-tab" role="tab" data-toggle="tab">Color</a></li>
+              </ul>
+
+              <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="background-image-tab">
+                  <form id="upload-background" action="" method="POST" enctype="multipart/form-data">
+                    <span class="btn-background btn-file btn btn-xs btn-success">
+                      <span class="glyphicon glyphicon-picture"> Upload
+                        <input id="background-image" name="file" type="file">
+                      </span>
+                    </span>
+                  </form>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="background-color-tab">
+                  <span class="glyphicon glyphicon-pencil"></span> Choose
+                  <input id="album-background-color" type="color" name="album-background-color">
+                </div>
+              </div>
             </div>
           </div>
         </div>

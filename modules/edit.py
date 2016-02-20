@@ -98,7 +98,8 @@ def store_album(user_name, album_title, album):
             '''
 UPDATE travel_log.album
    SET album_desc = %(description)s,
-       autoplay_delay = %(autoplay_delay)s
+       autoplay_delay = %(autoplay_delay)s,
+       background = CASE WHEN substring(%(background)s, 1, 1) = '#' THEN %(background)s ELSE background END
   FROM travel_log.user
  WHERE album.fk_user = "user".id_user
    AND "user".user_name = %(user)s
@@ -109,7 +110,8 @@ UPDATE travel_log.album
                     'user': user_name,
                     'album': album_title,
                     'description': album['description'],
-                    'autoplay_delay': album['autoplay_delay']
+                    'autoplay_delay': album['autoplay_delay'],
+                    'background': album['background']
                 }
             )
         except Exception as e:

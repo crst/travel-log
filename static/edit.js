@@ -64,6 +64,7 @@ $(document).ready(function () {
     $('#save').click(app.edit.save);
 
     app.edit.bind_album_background();
+    app.edit.bind_album_background_color();
     app.edit.bind_album_description();
     app.edit.bind_album_autoplay_delay();
 
@@ -104,7 +105,6 @@ app.edit.bind_album_autoplay_delay = function () {
 
         app.edit.mark_unsaved_changes();
         app.edit.set_work_in_progress(5);
-
     });
 };
 
@@ -141,12 +141,22 @@ app.edit.bind_album_background = function () {
             'async': true,
             'success': function (data) {
                 if (data['success']) {
-                    app.edit.update_items();
+                    app.edit.update_album();
                 }
             }
         })
     });
 };
+
+app.edit.bind_album_background_color = function () {
+    $('#album-background-color').change(function (e) {
+        app.edit.album.background = $(this).val();
+
+        app.edit.mark_unsaved_changes();
+        app.edit.set_work_in_progress(5);
+    });
+};
+
 
 app.edit.bind_item_toggle_visibility = function () {
     $('#toggle-current-item').click(function () {
@@ -240,11 +250,14 @@ app.edit.update_album = function () {
         $('#album-description').val(album.description);
         if (album.background.startsWith('#')) {
             $('body').css({'background': album.background});
+            $('#album-background-color').val(album.background);
+            $('#background-tabs a[href="#background-color-tab"]').tab('show');
         } else {
             $('body').css({
                 'background': 'url(' + album.background + ') no-repeat fixed center center',
                 'background-size': 'cover'
             });
+            $('#background-tabs a[href="#background-image-tab"]').tab('show');
         }
         $('#album-autoplay-delay').val(album.autoplay_delay);
 
