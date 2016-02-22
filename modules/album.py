@@ -1,8 +1,8 @@
-from flask import Blueprint, abort, escape, flash, get_flashed_messages, redirect, render_template, request, url_for
+from flask import Blueprint, abort, escape, flash, get_flashed_messages, jsonify, redirect, render_template, request, url_for
 from flask.ext.login import current_user, login_required
 
 from auth import is_allowed, is_shared
-from common import get_user_id, load_items, load_album, ssl_required
+from common import get_user_id, is_current_user, load_items, load_album, ssl_required
 import db
 from util import config, get_logger
 logger = get_logger(__name__)
@@ -12,10 +12,11 @@ album_module = Blueprint('album', __name__)
 
 
 @album_module.route('/user/<user_name>/album/<album_title>/view/')
-def index(user_name, album_title):
-    logger.debug('{Album} %s/album/%s', user_name, album_title)
+@album_module.route('/user/<user_name>/album/<album_title>/<secret_part>/view/')
+def index(user_name, album_title, secret_part=None):
+    logger.debug('{Album} %s/album/%s/%s', user_name, album_title, secret_part)
 
-    shared = is_shared(current_user, user_name, album_title)
+    shared = is_shared(current_user, user_name, album_title, secret_part)
     if not shared:
         return abort(404)
 
@@ -29,15 +30,17 @@ def index(user_name, album_title):
 
 
 @album_module.route('/user/<user_name>/album/<album_title>/view/get_items/')
-def get_items(user_name, album_title):
-    if not is_shared(current_user, user_name, album_title):
+@album_module.route('/user/<user_name>/album/<album_title>/<secret_part>/view/get_items/')
+def get_items(user_name, album_title, secret_part=None):
+    if not is_shared(current_user, user_name, album_title, secret_part):
         return jsonify({})
 
     return load_items(current_user, user_name, album_title, only_visible=True)
 
 @album_module.route('/user/<user_name>/album/<album_title>/view/get_album/')
-def get_album(user_name, album_title):
-    if not is_shared(current_user, user_name, album_title):
+@album_module.route('/user/<user_name>/album/<album_title>/<secret_part>/view/get_album/')
+def get_album(user_name, album_title, secret_part=None):
+    if not is_shared(current_user, user_name, album_title, secret_part):
         return jsonify({})
 
     return load_album(current_user, user_name, album_title)

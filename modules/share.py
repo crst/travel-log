@@ -1,3 +1,7 @@
+import hashlib
+import random
+import string
+import time
 
 from flask import Blueprint, abort, escape, flash, render_template, redirect, request, url_for
 from flask.ext.login import current_user, login_required
@@ -35,10 +39,17 @@ def index(user_name, album_title):
 
 
 def share_album(user_name, album_title, share):
+    if share == 'Hidden':
+        m = '%s%s' % (time.time(), ''.join([string.ascii_letters[random.randint(0, len(string.ascii_letters) - 1)] for _ in range(8)]))
+        secret = hashlib.sha256(m).hexdigest()
+    else:
+        secret = None
+
     with db.pg_connection(config['app-database']) as (_, cur, err):
         cur.execute('''
 UPDATE travel_log.share
-SET fk_share_type = share_type.id_share_type
+   SET fk_share_type = share_type.id_share_type,
+       secret = %(secret)s
 FROM travel_log.album,
      travel_log.user,
      travel_log.share_type
@@ -47,8 +58,8 @@ WHERE album.id_album = share.fk_album AND album.album_title = %(album)s
   AND "user".id_user = share.fk_user AND "user".user_name = %(user)s
   AND share_type.share_type_name = %(share)s
 ''',
-                    {'user': user_name, 'album': album_title, 'share': share})
-    return {'success': True, 'msg': 'Changed share type to %s' % share}
+                    {'user': user_name, 'album': album_title, 'share': share, 'secret': secret})
+    return {'success': True, 'secret': secret, 'msg': 'Changed share type to %s' % share}
 
 
 def get_share_type(user_name, album_title):

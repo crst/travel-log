@@ -93,13 +93,14 @@ CREATE TRIGGER travel_log_type_update_last_modified BEFORE INSERT OR UPDATE ON t
 
 INSERT INTO travel_log.share_type VALUES
   (1, 'Private'),
-  (2, 'Public');
+  (2, 'Public'),
+  (3, 'Hidden');
 
 
 CREATE TABLE travel_log.share (
   fk_album      SERIAL NOT NULL,
   fk_share_type SMALLINT NOT NULL,
-  url           TEXT,
+  secret        TEXT,
   email         TEXT,
   fk_user       INTEGER,
   last_modified TIMESTAMP WITH TIME ZONE NOT NULL

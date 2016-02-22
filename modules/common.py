@@ -6,6 +6,10 @@ import db
 from util import config
 
 
+def is_current_user(user_name, current_user):
+    return not current_user.is_anonymous and current_user.name == user_name
+
+
 def get_user_id(user_name):
     result = None
     with db.pg_connection(config['app-database']) as (_, cur, _):

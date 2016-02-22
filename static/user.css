@@ -1,8 +1,12 @@
 
+.Private {
+    background-color: gray !important;
+}
+
 .Public {
     background-color: green !important;
 }
 
-.Private {
+.Hidden {
     background-color: orange !important;
 }
