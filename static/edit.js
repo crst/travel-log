@@ -290,7 +290,7 @@ app.edit.update_items = function () {
             var item = items[current_item_key];
 
             thumbnail_buffer.push(
-                '<div class="col-sm-6, col-md-12">',
+                '<div id="item-', current_item_key, '"class="col-sm-6 col-md-12">',
                 '<a href="javascript:void(0);" class="thumbnail item-thumbnail" data-item="', current_item_key, '">',
                 '<img src="', cur_item.image, '">',
                 '</a>',
@@ -320,6 +320,8 @@ app.edit.select_item = function (id) {
     app.edit.current_item = id;
     var item = app.edit.items[id];
     if (item) {
+        var offset = $('#item-' + id).offset().top - $('#thumbnail-list').offset().top + $('#thumbnail-list').scrollTop();
+        $('#thumbnail-list').animate({'scrollTop': offset}, 'slow');
         $('#current-item').html('<img src="' + item.image + '">');
         $('#item-timestamp').val(new Date(item.ts).toLocaleString());
         $('#item-description').val(item.description);
