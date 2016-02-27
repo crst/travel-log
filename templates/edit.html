@@ -60,7 +60,10 @@
 
               <div style="margin-top: 1em; float: right;">
                 <form id="upload-file" action="" method="POST" enctype="multipart/form-data">
-                  <span id="item-upload-button" class="btn btn-primary btn-file" data-loading-text="Uploading...">Browse<input id="image-file" name="file" type="file"></span>
+                  <span id="item-upload-button" class="btn-file">
+                    <span id="item-upload-button-text" class="btn btn-primary" data-loading-text="Uploading...">Browse</span>
+                    <input id="image-file" name="file" type="file">
+                  </span>
                 </form>
               </div>
             </div>
@@ -81,10 +84,9 @@
               <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="background-image-tab">
                   <form id="upload-background" action="" method="POST" enctype="multipart/form-data">
-                    <span id="album-background-upload-button" class="btn-background btn-file btn btn-xs btn-success" data-loading-text="Uploading...">
-                      <span class="glyphicon glyphicon-picture"> Upload
-                        <input id="background-image" name="file" type="file">
-                      </span>
+                    <span id="album-background-upload-button" class="btn-file">
+                      <span id="album-background-upload-button-text" class="btn btn-xs btn-success glyphicon glyphicon-picture" data-loading-text="Uploading..."> Upload</span>
+                      <input id="background-image" name="file" type="file">
                     </span>
                   </form>
                 </div>

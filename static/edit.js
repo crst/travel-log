@@ -109,8 +109,8 @@ app.edit.bind_album_autoplay_delay = function () {
 };
 
 app.edit.bind_item_upload = function () {
-    $('#image-file').change(function (e) {
-        $('#item-upload-button').button('loading');
+    $('#image-file').on('change', function (e) {
+        $('#item-upload-button-text').button('loading');
         var form_data = new FormData($('#upload-file')[0]);
         $.ajax({
             'type': 'POST',
@@ -122,7 +122,7 @@ app.edit.bind_item_upload = function () {
             'async': true,
             'success': function (data) {
                 if (data['success']) {
-                    $('#item-upload-button').button('reset');
+                    $('#item-upload-button-text').button('reset');
                     app.edit.update_items();
                 }
             }
@@ -131,8 +131,8 @@ app.edit.bind_item_upload = function () {
 };
 
 app.edit.bind_album_background = function () {
-    $('#background-image').change(function (e) {
-        $('#album-background-upload-button').button('loading');
+    $('#background-image').on('change', function (e) {
+        $('#album-background-upload-button-text').button('loading');
         var form_data = new FormData($('#upload-background')[0]);
         $.ajax({
             'type': 'POST',
@@ -144,7 +144,7 @@ app.edit.bind_album_background = function () {
             'async': true,
             'success': function (data) {
                 if (data['success']) {
-                    $('#album-background-upload-button').button('reset');
+                    $('#album-background-upload-button-text').button('reset');
                     app.edit.update_album();
                 }
             }
