@@ -48,9 +48,8 @@ def store_item_fs(file_storage, user_name, album_title):
     # filesystem/database happens as a transaction, i.e. either
     # both or none.
 
-    # Store image in file system
-    # TODO: file_storage.read() may empty the buffer?
     img = Image.open(StringIO(file_storage.read()))
+    file_storage.seek(0)
     meta_data = get_meta_data(img)
     zoom = (meta_data['lat'] and meta_data['lon']) and 14 or None # TODO: magic number
     write_image(file_storage, img, fs_file)
@@ -89,7 +88,6 @@ def write_image(storage, img, file_path):
         processed_image = process_image(img, file_size, max_allowed_size)
         processed_image.save(file_path, 'JPEG', quality=90) # TODO: magic number
     else:
-        # TODO: check if this works
         storage.save(file_path)
 
 def process_image(img, file_size, max_allowed_size):
