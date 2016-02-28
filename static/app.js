@@ -24,17 +24,17 @@ app.pad = function (num, digits) {
 
 app.format_date = function (d) {
      var weekdays = [
-         'Sunday',
-         'Monday',
-         'Tuesday',
-         'Wednesday',
-         'Thursday',
-         'Friday',
-         'Saturday'
+         'Sun',
+         'Mon',
+         'Tue',
+         'Wed',
+         'Thu',
+         'Fri',
+         'Sat'
      ];
 
     var buffer = [weekdays[d.getDay()], ', ',
-                  app.pad(d.getDate(), 2), '. ', app.pad(d.getMonth() + 1, 2), '. ', d.getFullYear(), '<br>',
+                  d.getFullYear() , '-', app.pad(d.getMonth() + 1, 2), '-', app.pad(d.getDate(), 2), '<br>',
                   app.pad(d.getHours(), 2), ':', app.pad(d.getMinutes(), 2)];
 
     return buffer.join('');

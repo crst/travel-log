@@ -70,6 +70,6 @@ def run_migration(version, up_file):
 
 
 if __name__ == '__main__':
-    success = migrate_up()
+    success = run_migration()
     if success:
         print('Database is a latest version!')

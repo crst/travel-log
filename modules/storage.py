@@ -83,7 +83,7 @@ VALUES (%(aid)s, %(image)s, %(ts)s, %(lat)s, %(lon)s, %(zoom)s)
 
 def write_image(storage, img, file_path):
     file_size = get_img_size(img)
-    max_allowed_size = 1024 * 1024 # TODO: magic number
+    max_allowed_size = 0.5 * 1024 * 1024 # TODO: magic number
     if not is_jpeg(img) or file_size > max_allowed_size:
         processed_image = process_image(img, file_size, max_allowed_size)
         processed_image.save(file_path, 'JPEG', quality=90) # TODO: magic number

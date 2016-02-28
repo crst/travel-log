@@ -21,7 +21,7 @@ def index(user_name, album_title, secret_part=None):
         return abort(404)
 
     env = {
-        'module': 'Album',
+        'module': '%s | %s' % (user_name, album_title),
         'header': False,
         'user': user_name,
         'album_title': album_title,
