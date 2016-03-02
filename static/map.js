@@ -46,7 +46,13 @@ app.map.init_map = function (args) {
             new ol.layer.Tile({
                 source: new ol.source.OSM({
                     crossOrigin: null,
-                    //url: 'http://{a-b}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png'
+                    url: 'http://{a-b}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                    attributions: [
+                        ol.source.OSM.ATTRIBUTION,
+                        new ol.Attribution({
+                            'html': '<p class="Attribution-text u-left"> <span id=CopyText class=CopyText>Map tiles by <a href=http://cartodb.com/attributions#basemaps>CartoDB</a>, under <a href="https://creativecommons.org/licenses/by/3.0/" target=_blank>CC BY 3.0</a>. Data by <a href="http://www.openstreetmap.org/" target=_blank>OpenStreetMap</a>, under ODbL.</span> </p>'
+                        }),
+                    ]
                 }),
             }),
             marker_layer,
