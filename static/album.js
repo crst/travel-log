@@ -94,6 +94,7 @@ app.album.handle_items = function (data) {
 // Selecting items
 
 app.album.switch_to_item = function (i) {
+    app.album.current_item = i;
     var item = app.album.items[i];
     if (item) {
         $('#main-image').html(item.img);
@@ -104,8 +105,8 @@ app.album.switch_to_item = function (i) {
 };
 
 app.album.skip = function (f) {
-    app.album.current_item = app.mod(f(app.album.current_item), app.album.items.length);
-    app.album.switch_to_item(app.album.current_item);
+    var i = app.mod(f(app.album.current_item), app.album.items.length);
+    app.album.switch_to_item(i);
 }
 
 app.album.next_item = function () {
