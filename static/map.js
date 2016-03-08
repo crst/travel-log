@@ -46,7 +46,8 @@ app.map.init_map = function (args) {
             new ol.layer.Tile({
                 source: new ol.source.OSM({
                     crossOrigin: null,
-                    url: 'http://{a-b}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                    //url: 'http://{a-b}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                    url: 'https://cartodb-basemaps-{a-d}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
                     attributions: [
                         ol.source.OSM.ATTRIBUTION,
                         new ol.Attribution({
