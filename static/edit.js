@@ -35,13 +35,18 @@ app.edit.handle_changes = function () {
     }
 };
 window.setInterval(app.edit.handle_changes, 5 * 1000);
-app.edit.mark_unsaved_changes = function () {
+app.edit.mark_unsaved_changes = function (reason) {
+    //console.log('mark unsaved: ' + reason);
     app.edit.has_unsaved_changes = true;
     $('#last-saved').html('<a href="javascript:app.edit.save();">Save changes</a>');
 };
 app.edit.mark_everything_saved = function () {
     app.edit.has_unsaved_changes = false;
     $('#last-saved').hide().html('Last saved at ' + app.format_time(new Date())).fadeIn('fast');
+};
+app.edit.mark_no_changes = function () {
+    app.edit.has_unsaved_changes = false;
+    $('#last-saved').html('No unsaved changes');
 };
 
 app.edit.work_in_progress = 0;
@@ -60,41 +65,83 @@ app.edit.set_work_in_progress = function (n) {
 // Initialize module
 
 $(document).ready(function () {
-    // Bind event handlers
-    $('#save').click(app.edit.save);
+    // Setup map
+    app.map.resize_map();
+    app.map.init_map({'drag_marker': true});
+
+    // Bind events
+    app.edit.bind_events();
+
+    // Update page
+    app.edit.update();
+    app.edit.mark_no_changes();
+});
+
+app.edit.bind_events = function () {
+    app.edit.bind_album_events();
+    app.edit.bind_item_events();
+};
+app.edit.unbind_events = function () {
+    app.edit.unbind_album_events();
+    app.edit.unbind_item_events();
+};
+
+app.edit.bind_item_events = function () {
+    app.edit.bind_item_upload();
+    app.edit.bind_item_toggle_visibility();
+    app.edit.bind_item_timestamp();
+    app.edit.bind_item_description();
+    app.edit.bind_item_thumbnails();
+
+    app.edit.bind_map_coordinates();
+    app.edit.bind_map_zoom();
+};
+app.edit.unbind_item_events = function () {
+    app.edit.unbind_item_upload();
+    app.edit.unbind_item_toggle_visibility();
+    app.edit.unbind_item_timestamp();
+    app.edit.unbind_item_description();
+    app.edit.unbind_item_thumbnails();
+
+    app.edit.unbind_map_coordinates();
+    app.edit.unbind_map_zoom();
+};
+
+app.edit.bind_album_events = function () {
+    $('#save').on('click', app.edit.save);
 
     app.edit.bind_album_background();
     app.edit.bind_album_background_color();
     app.edit.bind_album_description();
     app.edit.bind_album_autoplay_delay();
+};
+app.edit.unbind_album_events = function () {
+    $('#save').off('click');
 
-    app.edit.bind_item_upload();
-    app.edit.bind_item_toggle_visibility();
-    app.edit.bind_item_timestamp();
-    app.edit.bind_item_description();
-
-    // Setup map
-    app.map.resize_map();
-    app.map.init_map({'drag_marker': true});
-    app.edit.bind_map_coordinates();
-    app.edit.bind_map_zoom();
-
-    // Update page
-    app.edit.update();
-});
+    app.edit.unbind_album_background();
+    app.edit.unbind_album_background_color();
+    app.edit.unbind_album_description();
+    app.edit.unbind_album_autoplay_delay();
+};
 
 
 app.edit.bind_album_description = function () {
-    $('#album-description').change(function (e) {
-        app.edit.album.description = $('#album-description').val();
+    var elem = $('#album-description');
+    elem.on('change', function (e) {
+        app.edit.album.description = elem.val();
 
-        app.edit.mark_unsaved_changes();
+        app.edit.mark_unsaved_changes('album description');
         app.edit.set_work_in_progress(5);
     });
+
+    app.edit.unbind_album_description = function () {
+        elem.off('change');
+    };
 };
 
 app.edit.bind_album_autoplay_delay = function () {
-    $('#album-autoplay-delay').change(function (e) {
+    var elem = $('#album-autoplay-delay');
+    elem.on('change', function (e) {
         var delay = parseInt($(this).val());
         if (isNaN(delay)) {
             delay = 5;
@@ -103,13 +150,18 @@ app.edit.bind_album_autoplay_delay = function () {
 
         app.edit.album.autoplay_delay = delay;
 
-        app.edit.mark_unsaved_changes();
+        app.edit.mark_unsaved_changes('album autoplay delay');
         app.edit.set_work_in_progress(5);
     });
+
+    app.edit.unbind_album_autoplay_delay = function () {
+        elem.off('change');
+    };
 };
 
 app.edit.bind_item_upload = function () {
-    $('#image-file').on('change', function (e) {
+    var elem = $('#image-file');
+    elem.on('change', function (e) {
         $('#item-upload-button-text').button('loading');
         var form_data = new FormData($('#upload-file')[0]);
         $.ajax({
@@ -123,15 +175,20 @@ app.edit.bind_item_upload = function () {
             'success': function (data) {
                 if (data['success']) {
                     $('#item-upload-button-text').button('reset');
-                    app.edit.update_items();
+                    app.edit.save();
                 }
             }
         });
     });
+
+    app.edit.unbind_item_upload = function () {
+        elem.off('change');
+    };
 };
 
 app.edit.bind_album_background = function () {
-    $('#background-image').on('change', function (e) {
+    var elem = $('#background-image');
+    elem.on('change', function (e) {
         $('#album-background-upload-button-text').button('loading');
         var form_data = new FormData($('#upload-background')[0]);
         $.ajax({
@@ -145,25 +202,35 @@ app.edit.bind_album_background = function () {
             'success': function (data) {
                 if (data['success']) {
                     $('#album-background-upload-button-text').button('reset');
-                    app.edit.update_album();
+                    app.edit.save();
                 }
             }
         })
     });
+
+    app.edit.unbind_album_background = function () {
+        elem.off('change');
+    };
 };
 
 app.edit.bind_album_background_color = function () {
-    $('#album-background-color').change(function (e) {
+    var elem = $('#album-background-color');
+    elem.change(function (e) {
         app.edit.album.background = $(this).val();
 
-        app.edit.mark_unsaved_changes();
+        app.edit.mark_unsaved_changes('album background color');
         app.edit.set_work_in_progress(5);
     });
+
+    app.edit.unbind_album_background_color = function () {
+        elem.off('change');
+    };
 };
 
 
 app.edit.bind_item_toggle_visibility = function () {
-    $('#toggle-current-item').click(function () {
+    var elem = $('#toggle-current-item');
+    elem.click(function () {
         var item = app.edit.get_current_item();
         $.ajax({
             'type': 'POST',
@@ -180,6 +247,9 @@ app.edit.bind_item_toggle_visibility = function () {
             }
         })
     });
+    app.edit.unbind_item_toggle_visibility = function () {
+        elem.off('click');
+    };
 };
 
 app.edit.save = function () {
@@ -187,11 +257,7 @@ app.edit.save = function () {
         app.edit.save_album();
         app.edit.save_items();
 
-        // TODO: bind_map_coordinates should not cause a call from the
-        // marker to mark_unsaved_changes
-        window.setTimeout(function () {
-            app.edit.mark_everything_saved();
-        }, 100);
+        app.edit.mark_everything_saved();
     }
 };
 
@@ -251,6 +317,8 @@ app.edit.update = function () {
 
 app.edit.update_album = function () {
     var handle_album = function (album) {
+        app.edit.unbind_album_events();
+
         $('#album-description').val(album.description);
         if (album.background.startsWith('#')) {
             $('body').css({'background': album.background});
@@ -264,8 +332,9 @@ app.edit.update_album = function () {
             $('#background-tabs a[href="#background-image-tab"]').tab('show');
         }
         $('#album-autoplay-delay').val(album.autoplay_delay);
-
         app.edit.album = album;
+
+        app.edit.bind_album_events();
     }
     $.ajax({
         'type': 'GET',
@@ -276,6 +345,8 @@ app.edit.update_album = function () {
 
 app.edit.update_items = function () {
     var handle_items = function (items) {
+        app.edit.unbind_item_events();
+
         var sorted_item_list = items.items;
         var item_buffer = {};
 
@@ -299,8 +370,9 @@ app.edit.update_items = function () {
         }
         app.edit.items = item_buffer;
         $('#thumbnail-list').html(thumbnail_buffer.join(''));
-        app.edit.bind_item_thumbnails();
         app.edit.select_item(app.edit.current_item);
+
+        app.edit.bind_item_events();
     };
     $.ajax({
         'type': 'GET',
@@ -310,10 +382,17 @@ app.edit.update_items = function () {
 };
 
 app.edit.bind_item_thumbnails = function () {
-    $('.item-thumbnail').click(function () {
+    var elem = $('.item-thumbnail');
+    elem.on('click', function () {
         var id = $(this).attr('data-item');
+        app.edit.unbind_events();
         app.edit.select_item(id);
+        app.edit.bind_events();
     });
+
+    app.edit.unbind_item_thumbnails = function () {
+        elem.off('click');
+    };
 };
 
 app.edit.select_item = function (id) {
@@ -344,43 +423,64 @@ app.edit.select_item = function (id) {
 };
 
 app.edit.bind_item_timestamp = function () {
+    var elem = $('#item-timestamp');
     // TODO: should be on focus change instead of input
-    $('#item-timestamp').on('input', function () {
+    elem.on('input', function () {
         var item = app.edit.get_current_item();
         item.ts = $(this).val();
-        app.edit.mark_unsaved_changes();
+
+        app.edit.mark_unsaved_changes('item timestamp');
         app.edit.set_work_in_progress(5);
     });
+
+    app.edit.unbind_item_timestamp = function () {
+        elem.off('input');
+    };
 };
 
 app.edit.bind_item_description = function () {
-    $('#item-description').on('input', function () {
+    var elem = $('#item-description');
+    elem.on('input', function () {
         var item = app.edit.get_current_item();
         item.description = $(this).val();
-        app.edit.mark_unsaved_changes();
+
+        app.edit.mark_unsaved_changes('item description');
         app.edit.set_work_in_progress(5);
     });
+
+    app.edit.unbind_item_description = function () {
+        elem.off('input');
+    };
 };
 
 app.edit.bind_map_coordinates = function () {
-    app.map.marker.on('change', function() {
+    var marker_change = app.map.marker.on('change', function() {
         var coord = this.getGeometry().getCoordinates();
         coord = ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
         var item = app.edit.get_current_item();
         item.lat = coord[1];
         item.lon = coord[0];
 
-        app.edit.mark_unsaved_changes();
+        app.edit.mark_unsaved_changes('map coordinates');
         app.edit.set_work_in_progress(5);
     });
+
+    app.edit.unbind_map_coordinates = function () {
+        app.map.marker.unByKey(marker_change);
+    };
 };
 
 app.edit.bind_map_zoom = function () {
     var view = app.map.map.getView();
-    view.on('change:resolution', function () {
+    var zoom_change = view.on('change:resolution', function () {
         var item = app.edit.get_current_item();
         item.zoom = view.getZoom();
-        app.edit.mark_unsaved_changes();
+
+        app.edit.mark_unsaved_changes('map zoom');
         app.edit.set_work_in_progress(5);
     });
+
+    app.edit.unbind_map_zoom = function () {
+        view.unByKey(zoom_change);
+    };
 };
