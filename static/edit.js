@@ -65,6 +65,11 @@ app.edit.set_work_in_progress = function (n) {
 // Initialize module
 
 $(document).ready(function () {
+    var hash = parseInt(location.hash.replace(/^#/, ''), 10);
+    if (hash) {
+        app.edit.current_item = hash;
+    }
+
     // Setup map
     app.map.resize_map();
     app.map.init_map({'drag_marker': true});
@@ -78,12 +83,26 @@ $(document).ready(function () {
 });
 
 app.edit.bind_events = function () {
+    app.edit.bind_url();
     app.edit.bind_album_events();
     app.edit.bind_item_events();
 };
 app.edit.unbind_events = function () {
+    app.edit.unbind_url();
     app.edit.unbind_album_events();
     app.edit.unbind_item_events();
+};
+
+app.edit.bind_url = function () {
+    $(window).on('hashchange', function () {
+        var hash = location.hash.replace(/^#/, '');
+        app.edit.unbind_item_events();
+        app.edit.select_item(hash);
+        app.edit.bind_item_events();
+    });
+};
+app.edit.unbind_url = function () {
+    $(window).off('hashchange');
 };
 
 app.edit.bind_item_events = function () {
@@ -399,6 +418,7 @@ app.edit.select_item = function (id) {
     app.edit.current_item = id;
     var item = app.edit.items[id];
     if (item) {
+        location.hash = id;
         var offset = $('#item-' + id).offset().top - $('#thumbnail-list').offset().top + $('#thumbnail-list').scrollTop();
         $('#thumbnail-list').animate({'scrollTop': offset}, 'slow');
         $('#current-item').html('<img src="' + item.image + '">');
@@ -419,6 +439,9 @@ app.edit.select_item = function (id) {
                 .removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close');
         }
         app.map.set_marker(item);
+    } else {
+        app.edit.current_item = undefined;
+        app.edit.update_items();
     }
 };
 
