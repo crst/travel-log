@@ -1,10 +1,10 @@
 from flask import Blueprint, escape, redirect, render_template, url_for
-from flask.ext.login import current_user, login_required
+from flask.ext.login import current_user, login_required, request
 
 from auth import is_shared
 from common import is_current_user
 import db
-from util import config, get_logger
+from util import config, get_logger, log_request
 logger = get_logger(__name__)
 
 
@@ -13,6 +13,7 @@ user_module = Blueprint('user', __name__)
 
 @user_module.route('/user/<user_name>/')
 def index(user_name):
+    log_request(request, current_user)
     logger.debug('{User} user/%s', user_name)
 
     albums = get_albums(user_name, current_user)

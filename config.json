@@ -16,14 +16,12 @@
         "port": 5432
     },
 
-    "SECRET_KEY": "fM#1KY$\tD4ygxZ8/x0ck+jy,xq#BK~xu[/3",
-
+    "SECRET_KEY": "asdf",
 
     "storage-engine": {
         "type": "filesystem",
         "path": "/data/images/"
     },
-
 
     "debug": false,
     "log-folder": "log",

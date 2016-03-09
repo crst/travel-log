@@ -8,7 +8,7 @@ from flask.ext.login import current_user, login_required
 
 from auth import is_allowed
 import db
-from util import config, get_logger
+from util import config, get_logger, log_request
 logger = get_logger(__name__)
 
 
@@ -18,6 +18,7 @@ share_module = Blueprint('share', __name__)
 @share_module.route('/user/<user_name>/album/<album_title>/share/', methods=['GET', 'POST'])
 @login_required
 def index(user_name, album_title):
+    log_request(request, current_user)
     logger.debug('{Share album} %s/album/%s', user_name, album_title)
 
     if not is_allowed(current_user, user_name):

@@ -1,11 +1,11 @@
 from importlib import import_module
 import sys
 
-from flask import Flask, render_template
-from flask.ext.login import LoginManager
+from flask import Flask, render_template, request
+from flask.ext.login import LoginManager, current_user
 
 import db
-from util import get_logger, config
+from util import get_logger, config, log_request
 logger = get_logger(__name__)
 
 
@@ -45,6 +45,7 @@ load_modules(config)
 
 @flask_app.errorhandler(404)
 def page_not_found(e):
+    log_request(request, current_user)
     logger.debug('{Not found}')
     env = {'header': True}
     return render_template('404.html', **env), 404

@@ -2,7 +2,7 @@ from flask import Blueprint, escape, flash, get_flashed_messages, redirect, rend
 from flask.ext.login import current_user, login_user, logout_user
 
 import db
-from util import get_logger
+from util import get_logger, log_request
 logger = get_logger(__name__)
 
 
@@ -11,6 +11,7 @@ index_module = Blueprint('index', __name__)
 
 @index_module.route('/')
 def index():
+    log_request(request, current_user)
     logger.debug('{Index}')
 
     featured = [
@@ -29,6 +30,7 @@ def index():
 
 @index_module.route('/login/', methods=['GET', 'POST'])
 def login():
+    log_request(request, current_user)
     logger.debug('{Login}')
     if current_user.is_authenticated:
         return redirect(url_for('user.index', user_name=current_user.name))
@@ -54,6 +56,7 @@ def login():
 
 @index_module.route('/logout/')
 def logout():
+    log_request(request, current_user)
     logger.debug('{Logout}')
     logout_user()
     return redirect(url_for('index.index'))
@@ -61,13 +64,23 @@ def logout():
 
 @index_module.route('/about')
 def about():
+    log_request(request, current_user)
     logger.debug('{About}')
     env = {'module': 'About', 'header': True}
     return render_template('about.html', **env)
 
 
-@index_module.route('/imprint')
+@index_module.route('/impressum')
 def imprint():
-    logger.debug('{Imprint}')
-    env = {'module': 'Imprint', 'header': True}
+    log_request(request, current_user)
+    logger.debug('{Impressum}')
+    env = {'module': 'Impressum', 'header': True}
     return render_template('imprint.html', **env)
+
+
+@index_module.route('/datenschutz')
+def datenschutz():
+    log_request(request, current_user)
+    logger.debug('{Datenschutz}')
+    env = {'module': 'Datenschutz', 'header': True}
+    return render_template('datenschutz.html', **env)
