@@ -68,6 +68,8 @@ def log_request(request, current_user):
         str(int(current_user.is_anonymous)),
         hash_to_int(str(current_user.get_id())),
         request.method,
+        str(int(request.is_secure)),
+        str(int(request.is_xhr)),
         request.path,
         request.environ['QUERY_STRING'],
         request.user_agent.browser,
