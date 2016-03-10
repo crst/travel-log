@@ -72,8 +72,8 @@ def log_request(request, current_user):
         str(int(request.is_xhr)),
         request.path,
         request.environ['QUERY_STRING'],
-        request.user_agent.browser,
-        request.user_agent.platform,
+        str(request.user_agent.browser),
+        str(request.user_agent.platform),
     ]
     logger.info('";"'.join(data))
 
