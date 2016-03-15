@@ -40,7 +40,17 @@ install-osm:
 	wget -P static/lib/osm http://openlayers.org/en/v3.12.1/css/ol.css
 	wget -P static/lib/osm http://openlayers.org/en/v3.12.1/build/ol.js
 
-
+.PHONY: install-pickadate
+install-pickadate:
+	wget -O cache/pickadate-3.5.6.zip http://github.com/amsul/pickadate.js/archive/3.5.6.zip
+	unzip -d cache cache/pickadate-3.5.6.zip
+	mkdir -p static/lib/pickadate
+	cp cache/pickadate.js-3.5.6/lib/compressed/picker.js static/lib/pickadate/
+	cp cache/pickadate.js-3.5.6/lib/compressed/picker.date.js static/lib/pickadate/
+	cp cache/pickadate.js-3.5.6/lib/compressed/picker.time.js static/lib/pickadate/
+	cp cache/pickadate.js-3.5.6/lib/compressed/themes/classic.css static/lib/pickadate/
+	cp cache/pickadate.js-3.5.6/lib/compressed/themes/classic.date.css static/lib/pickadate/
+	cp cache/pickadate.js-3.5.6/lib/compressed/themes/classic.time.css static/lib/pickadate/
 
 .PHONY: clean
 clean:

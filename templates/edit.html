@@ -5,6 +5,13 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='lib/osm/ol.css') }}" type="text/css" />
 <script type="text/javascript" src="{{ url_for('static', filename='lib/osm/ol.js') }}"></script>
 
+<link rel="stylesheet" href="{{ url_for('static', filename='lib/pickadate/classic.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='lib/pickadate/classic.date.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='lib/pickadate/classic.time.css') }}" type="text/css" />
+<script type="text/javascript" src="{{ url_for('static', filename='lib/pickadate/picker.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='lib/pickadate/picker.date.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='lib/pickadate/picker.time.js') }}"></script>
+
 <script type="text/javascript" src="{{ url_for('static', filename='map.js') }}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='map.css') }}" type="text/css" />
 <script type="text/javascript" src="{{ url_for('static', filename='edit.js') }}"></script>
@@ -141,7 +148,8 @@
           <div id="tile-timestamp" class="tile panel panel-default">
             <div class="panel-heading">Time</div>
             <div class="panel-body">
-              <input type="text" class="form-control" id="item-timestamp"/>
+              <input type="text" class="form-inline" id="item-date"/>
+              <input type="text" class="form-inline" id="item-time"/>
             </div>
           </div>
         </div>

@@ -433,7 +433,11 @@ app.edit.select_item = function (id) {
         var offset = $('#item-' + id).offset().top - $('#thumbnail-list').offset().top + $('#thumbnail-list').scrollTop();
         $('#thumbnail-list').animate({'scrollTop': offset}, 'slow');
         $('#current-item').html('<img src="' + item.image + '">');
-        $('#item-timestamp').val(new Date(item.ts).toLocaleString());
+
+        var ts = new Date(item.ts);
+        $('#item-date').pickadate().pickadate('picker').set('select', ts);
+        $('#item-time').pickatime({'interval': 1}).pickatime('picker').set('select', ts);
+
         $('#item-description').val(item.description);
         $('#delete-current-item').attr('href', 'delete/' + item.id);
         if (item.is_visible) {
@@ -457,18 +461,30 @@ app.edit.select_item = function (id) {
 };
 
 app.edit.bind_item_timestamp = function () {
-    var elem = $('#item-timestamp');
-    // TODO: should be on focus change instead of input
-    elem.on('input', function () {
-        var item = app.edit.get_current_item();
-        item.ts = $(this).val();
+    var date_elem = $('#item-date');
+    var time_elem = $('#item-time');
 
-        app.edit.mark_unsaved_changes('item timestamp');
+    var set_current_timestamp = function () {
+        var item = app.edit.get_current_item();
+        var ts = new Date(date_elem.val() + ' ' + time_elem.val());
+        item.ts = ts.toString();
+    };
+
+    date_elem.on('change', function () {
+        set_current_timestamp();
+        app.edit.mark_unsaved_changes('item date');
+        app.edit.set_work_in_progress(5);
+    });
+
+    time_elem.on('change', function () {
+        set_current_timestamp();
+        app.edit.mark_unsaved_changes('item time');
         app.edit.set_work_in_progress(5);
     });
 
     app.edit.unbind_item_timestamp = function () {
-        elem.off('input');
+        date_elem.off('change');
+        time_elem.off('change');
     };
 };
 
