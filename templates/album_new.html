@@ -9,6 +9,7 @@
       later in the <b>Share</b> section.</h4>
 
     <form method="POST" class="form-inline">
+      <input name="_csrf_token" type="hidden" value="{{ generate_csrf_token() }}">
       <div class="form-group">
         <label class="sr-only" for="album_title">Album name</label>
         <div class="input-group">

@@ -71,7 +71,9 @@ def save_album(user_name, album_title):
 
     result = False
     if request.method == 'POST':
-        result = store_album(user_name, album_title, request.get_json())
+        data = request.get_json()
+        del data['_csrf_token']
+        result = store_album(user_name, album_title, data)
 
     return jsonify({'success': result})
 
@@ -88,7 +90,9 @@ def save_items(user_name, album_title):
 
     result = False
     if request.method == 'POST':
-        result = store_items(user_name, album_title, request.get_json())
+        data = request.get_json()
+        del data['_csrf_token']
+        result = store_items(user_name, album_title, data)
 
     return jsonify({'success': result})
 

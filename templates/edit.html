@@ -60,6 +60,7 @@
 
               <div style="margin-top: 1em; float: right;">
                 <form id="upload-file" action="" method="POST" enctype="multipart/form-data">
+                  <input name="_csrf_token" type="hidden" value="{{ generate_csrf_token() }}">
                   <span id="item-upload-button" class="btn-file">
                     <span id="item-upload-button-text" class="btn btn-primary" data-loading-text="Uploading...">Browse</span>
                     <input id="image-file" name="file" type="file">
@@ -84,6 +85,7 @@
               <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="background-image-tab">
                   <form id="upload-background" action="" method="POST" enctype="multipart/form-data">
+                    <input name="_csrf_token" type="hidden" value="{{ generate_csrf_token() }}">
                     <span id="album-background-upload-button" class="btn-file">
                       <span id="album-background-upload-button-text" class="btn btn-xs btn-success glyphicon glyphicon-picture" data-loading-text="Uploading..."> Upload</span>
                       <input id="background-image" name="file" type="file">

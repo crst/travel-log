@@ -251,11 +251,16 @@ app.edit.bind_item_toggle_visibility = function () {
     var elem = $('#toggle-current-item');
     elem.click(function () {
         var item = app.edit.get_current_item();
+        var token = $('input[name="_csrf_token"]').val();
         $.ajax({
             'type': 'POST',
             'url': 'set-item-visibility/',
-            'data': JSON.stringify({'item-id': app.edit.current_item, 'item-visibility': !item.is_visible}),
-            'contentType': false,
+            'data': JSON.stringify({
+                '_csrf_token': token,
+                'item-id': app.edit.current_item,
+                'item-visibility': !item.is_visible
+            }),
+            'contentType': 'application/json;charset=UTF-8',
             'cache': false,
             'processData': false,
             'async': true,
@@ -296,11 +301,14 @@ app.edit.validate_input = function () {
 };
 
 app.edit.save_album = function () {
+    var data = app.edit.album;
+    data['_csrf_token'] = $('input[name="_csrf_token"]').val();
+
     $.ajax({
         'type': 'POST',
         'url': 'save_album/',
-        'data': JSON.stringify(app.edit.album),
-        'contentType': 'application/json',
+        'data': JSON.stringify(data),
+        'contentType': 'application/json;charset=UTF-8',
         'cache': false,
         'processData': false,
         'async': true,
@@ -313,11 +321,14 @@ app.edit.save_album = function () {
 };
 
 app.edit.save_items = function () {
+    var data = app.edit.items;
+    data['_csrf_token'] = $('input[name="_csrf_token"]').val();
+
     $.ajax({
         'type': 'POST',
         'url': 'save_items/',
-        'data': JSON.stringify(app.edit.items),
-        'contentType': 'application/json',
+        'data': JSON.stringify(data),
+        'contentType': 'application/json;charset=UTF-8',
         'cache': false,
         'processData': false,
         'async': true,

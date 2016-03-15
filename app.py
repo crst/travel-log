@@ -1,7 +1,10 @@
+import hashlib
 from importlib import import_module
+import random
+import string
 import sys
 
-from flask import Flask, render_template, request
+from flask import Flask, abort, render_template, request, session
 from flask.ext.login import LoginManager, current_user
 
 import db
@@ -41,6 +44,32 @@ def load_modules(cnf):
 init_app(config)
 load_modules(config)
 
+
+@flask_app.before_request
+def csrf_protect():
+    if request.method == 'POST':
+        session_token = session.pop('_csrf_token', None)
+        form_token = request.form.get('_csrf_token')
+        if not form_token and '_csrf_token' in request.json:
+            form_token = request.json['_csrf_token']
+
+        if request.is_xhr:
+            session['_csrf_token'] = session_token
+
+        if not session_token or session_token != form_token:
+            abort(400)
+
+
+def generate_random_string():
+    m = ''.join([random.choice(string.printable) for _ in range(16)])
+    return hashlib.md5(m).hexdigest()
+
+def generate_csrf_token():
+    if '_csrf_token' not in session:
+        session['_csrf_token'] = generate_random_string()
+    return session['_csrf_token']
+
+flask_app.jinja_env.globals['generate_csrf_token'] = generate_csrf_token
 
 
 @flask_app.errorhandler(404)
