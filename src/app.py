@@ -7,8 +7,8 @@ import sys
 from flask import Flask, abort, render_template, request, session
 from flask.ext.login import LoginManager, current_user
 
-import db
-from util import get_logger, config, log_request
+import shared.db as db
+from shared.util import get_logger, config, log_request
 logger = get_logger(__name__)
 
 
@@ -32,7 +32,7 @@ def init_login():
 
 def load_modules(cnf):
     for module in cnf['modules']:
-        mod_name = 'modules.%s' % module
+        mod_name = 'views.%s' % module
         try:
             flask_app.register_blueprint(getattr(import_module(mod_name), '%s_module' % module))
             logger.debug('Loaded module %s', mod_name)

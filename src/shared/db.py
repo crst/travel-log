@@ -2,7 +2,7 @@ from contextlib import contextmanager
 
 import psycopg2
 
-from util import config
+from shared.util import config
 
 
 @contextmanager

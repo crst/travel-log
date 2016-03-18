@@ -146,7 +146,7 @@ app.edit.unbind_album_events = function () {
 
 app.edit.bind_album_description = function () {
     var elem = $('#album-description');
-    elem.on('change', function (e) {
+    elem.on('input', function (e) {
         app.edit.album.description = elem.val();
 
         app.edit.mark_unsaved_changes('album description');

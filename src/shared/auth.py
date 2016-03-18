@@ -1,7 +1,7 @@
+from shared.common import is_current_user
+import shared.db as db
+from shared.util import config, get_logger
 
-from common import is_current_user
-import db
-from util import config, get_logger
 logger = get_logger(__name__)
 
 

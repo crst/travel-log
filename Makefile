@@ -1,13 +1,17 @@
 
 .PHONY: run-app
 run-app:
-	python2 app.py
+	cd src && python2 app.py
+
+.PHONY: vacuum
+vacuum:
+	cd src && python2 vacuum.py
 
 
 .PHONY: get-media
 get-media:
 	git clone git@gitlab.com:travel-log/media.git cache/media
-	cp cache/media/* static/
+	cp cache/media/* src/static/
 
 
 .PHONY: dependencies
@@ -23,34 +27,34 @@ install-python-packages:
 
 .PHONY: install-jquery
 install-jquery:
-	mkdir -p static/lib/jquery/
-	wget -O static/lib/jquery/jquery.min.js https://code.jquery.com/jquery-2.2.0.min.js
+	mkdir -p src/static/lib/jquery/
+	wget -O src/static/lib/jquery/jquery.min.js https://code.jquery.com/jquery-2.2.0.min.js
 
 .PHONY: install-bootstrap
 install-bootstrap:
 	wget -P cache https://github.com/twbs/bootstrap/releases/download/v3.3.6/bootstrap-3.3.6-dist.zip
 	unzip -d cache/ cache/bootstrap-3.3.6-dist.zip
-	mkdir -p static/lib/bootstrap/{js,css,fonts}
-	cp cache/bootstrap-3.3.6-dist/js/bootstrap.min.js static/lib/bootstrap/js/
-	cp cache/bootstrap-3.3.6-dist/css/bootstrap.min.css static/lib/bootstrap/css/
-	cp cache/bootstrap-3.3.6-dist/fonts/glyphicons-halflings-regular.* static/lib/bootstrap/fonts/
+	mkdir -p src/static/lib/bootstrap/{js,css,fonts}
+	cp cache/bootstrap-3.3.6-dist/js/bootstrap.min.js src/static/lib/bootstrap/js/
+	cp cache/bootstrap-3.3.6-dist/css/bootstrap.min.css src/static/lib/bootstrap/css/
+	cp cache/bootstrap-3.3.6-dist/fonts/glyphicons-halflings-regular.* src/static/lib/bootstrap/fonts/
 
 .PHONY: install-osm
 install-osm:
-	wget -P static/lib/osm http://openlayers.org/en/v3.12.1/css/ol.css
-	wget -P static/lib/osm http://openlayers.org/en/v3.12.1/build/ol.js
+	wget -P src/static/lib/osm http://openlayers.org/en/v3.12.1/css/ol.css
+	wget -P src/static/lib/osm http://openlayers.org/en/v3.12.1/build/ol.js
 
 .PHONY: install-pickadate
 install-pickadate:
 	wget -O cache/pickadate-3.5.6.zip http://github.com/amsul/pickadate.js/archive/3.5.6.zip
 	unzip -d cache cache/pickadate-3.5.6.zip
-	mkdir -p static/lib/pickadate
-	cp cache/pickadate.js-3.5.6/lib/compressed/picker.js static/lib/pickadate/
-	cp cache/pickadate.js-3.5.6/lib/compressed/picker.date.js static/lib/pickadate/
-	cp cache/pickadate.js-3.5.6/lib/compressed/picker.time.js static/lib/pickadate/
-	cp cache/pickadate.js-3.5.6/lib/compressed/themes/classic.css static/lib/pickadate/
-	cp cache/pickadate.js-3.5.6/lib/compressed/themes/classic.date.css static/lib/pickadate/
-	cp cache/pickadate.js-3.5.6/lib/compressed/themes/classic.time.css static/lib/pickadate/
+	mkdir -p src/static/lib/pickadate
+	cp cache/pickadate.js-3.5.6/lib/compressed/picker.js src/static/lib/pickadate/
+	cp cache/pickadate.js-3.5.6/lib/compressed/picker.date.js src/static/lib/pickadate/
+	cp cache/pickadate.js-3.5.6/lib/compressed/picker.time.js src/static/lib/pickadate/
+	cp cache/pickadate.js-3.5.6/lib/compressed/themes/classic.css src/static/lib/pickadate/
+	cp cache/pickadate.js-3.5.6/lib/compressed/themes/classic.date.css src/static/lib/pickadate/
+	cp cache/pickadate.js-3.5.6/lib/compressed/themes/classic.time.css src/static/lib/pickadate/
 
 .PHONY: clean
 clean:

@@ -24,6 +24,6 @@
     },
 
     "debug": false,
-    "log-folder": "log",
+    "log-folder": "../log",
     "log-level": "WARNING"
 }

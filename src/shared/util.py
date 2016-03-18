@@ -50,6 +50,8 @@ def get_logger(name):
 
 
 def log_request(request, current_user):
+    # TODO: request logging should happen asynchronously
+
     log_folder = config['log-folder']
     if not os.path.isdir(log_folder):
         os.makedirs(log_folder)

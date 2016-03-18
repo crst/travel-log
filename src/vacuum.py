@@ -1,11 +1,13 @@
 import glob
 import os
 
-import db
-from util import config
+import shared.db as db
+from shared.util import config
 
 
 def vacuum():
+    # TODO: log deleted filenames
+
     # Step 1:
     # Search for database entries that have the `is_deleted` flag. If
     # an album is marked as deleted, this cascaded to all the items,

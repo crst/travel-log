@@ -2,8 +2,8 @@ from functools import wraps
 
 from flask import current_app, jsonify, request, redirect, url_for
 
-import db
-from util import config
+import shared.db as db
+from shared.util import config
 
 
 def is_current_user(user_name, current_user):

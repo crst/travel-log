@@ -5,12 +5,13 @@ from io import BytesIO
 import os
 import time
 
+from dateutil.parser import parse as date_parser
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 from werkzeug import secure_filename
 
-import db
-from util import config, get_logger
+import shared.db as db
+from shared.util import config, get_logger
 logger = get_logger(__name__)
 
 
@@ -121,8 +122,7 @@ def get_meta_data(img):
     exif = get_exif_data(img)
 
     if 'DateTime' in exif:
-        # TODO: probably need more robust date parsing
-        parsed_date = datetime.datetime.strptime(exif['DateTime'], '%Y:%m:%d %H:%M:%S')
+        parsed_date = date_parser(exif['DateTime'])
         formatted_date = parsed_date.strftime('%Y-%m-%d %H:%M:%S')
         meta['date_time'] = formatted_date
 

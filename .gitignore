@@ -12,7 +12,8 @@ log/*
 *.log
 
 /env/*
-/static/lib/*
-/static/images/
-/static/*.jpg
-/static/*.png
+/src/static/*.min.js
+/src/static/lib/*
+/src/static/images/
+/src/static/*.jpg
+/src/static/*.png

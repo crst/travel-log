@@ -3,43 +3,15 @@ import random
 import string
 import time
 
-from flask import Blueprint, abort, escape, flash, render_template, redirect, request, url_for
-from flask.ext.login import current_user, login_required
+import shared.db as db
+from shared.util import config, get_logger, log_request
 
-from auth import is_allowed
-import db
-from util import config, get_logger, log_request
 logger = get_logger(__name__)
 
 
-share_module = Blueprint('share', __name__)
-
-
-@share_module.route('/user/<user_name>/album/<album_title>/share/', methods=['GET', 'POST'])
-@login_required
-def index(user_name, album_title):
-    log_request(request, current_user)
-    logger.debug('{Share album} %s/album/%s', user_name, album_title)
-
-    if not is_allowed(current_user, user_name):
-        return abort(404)
-
-    if request.method == 'POST':
-        share_type = 'share_type' in request.form and escape(request.form['share_type']) or 'Private'
-        result = share_album(user_name, album_title, share_type)
-        flash(result['msg'])
-        return redirect(url_for('user.index', user_name=user_name))
-
-    env = {
-        'module': 'Share album',
-        'title': album_title,
-        'share_type': get_share_type(escape(user_name), escape(album_title)),
-        'share_types': get_share_types()
-    }
-    return render_template('share.html', **env)
-
-
 def share_album(user_name, album_title, share):
+    logger.debug('{Module|Share} share_album(%s, %s, %s)', user_name, album_title, share)
+
     if share == 'Hidden':
         m = '%s%s' % (time.time(), ''.join([string.ascii_letters[random.randint(0, len(string.ascii_letters) - 1)] for _ in range(8)]))
         secret = hashlib.sha256(m).hexdigest()
@@ -64,6 +36,8 @@ WHERE album.id_album = share.fk_album AND album.album_title = %(album)s
 
 
 def get_share_type(user_name, album_title):
+    logger.debug('{Module|Share} get_share_type(%s, %s)', user_name, album_title)
+
     with db.pg_connection(config['app-database']) as (_, cur, err):
         share_type = db.query_one(
             cur,
@@ -83,6 +57,8 @@ WHERE u.user_name = %(user)s AND a.album_title = %(album)s
 
 
 def get_share_types():
+    logger.debug('{Module|Share} get_share_types()')
+
     with db.pg_connection(config['app-database']) as (_, cur, err):
         share_types = db.query_all(
             cur,
