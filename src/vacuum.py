@@ -23,7 +23,7 @@ SELECT
   i.id_item,
   i.image
 FROM travel_log.album a
-JOIN travel_log.item i ON a.id_album = i.fk_album
+LEFT JOIN travel_log.item i ON a.id_album = i.fk_album
 WHERE a.is_deleted OR i.is_deleted
 '''
         )
@@ -32,13 +32,14 @@ WHERE a.is_deleted OR i.is_deleted
     item_ids = tuple([int(item.id_item) for item in stale_items if item.id_item])
     for item in stale_items:
         found_stale_items = True
-        fs_path = os.path.join(
-            config['storage-engine']['path'],
-            item.image
-        )
-        print('  - Deleting file %s' % fs_path)
-        if os.path.isfile(fs_path):
-            os.remove(fs_path)
+        if item.id_item:
+            fs_path = os.path.join(
+                config['storage-engine']['path'],
+                item.image
+            )
+            print('  - Deleting file %s' % fs_path)
+            if os.path.isfile(fs_path):
+                os.remove(fs_path)
     if not found_stale_items:
         print(' - None found!')
 
