@@ -10,7 +10,10 @@ def get_albums(user_name, current_user):
 
     albums = []
     with db.pg_connection(config['app-database']) as (_, cur, err):
-        if not err:
+        if err:
+            logger.error(err)
+
+        try:
             albums = db.query_all(
                 cur,
                 '''
@@ -24,8 +27,7 @@ WHERE u.user_name=%(user)s AND NOT a.is_deleted
 ORDER BY a.id_album
                 ''',
                 {'user': user_name})
-        else:
-            logger.debug('{Module|User}: %s' % err)
+        except Exception as e:
+            logger.error(e)
 
-    result = [a for a in albums if is_shared(current_user, user_name, a.album_title, None)]
-    return result
+    return [a for a in albums if is_shared(current_user, user_name, a.album_title, None)]

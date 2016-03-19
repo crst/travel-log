@@ -164,7 +164,7 @@ def delete_item(user_name, album_title, id_item):
                 flash('Successfully deleted item', 'success')
                 return redirect(url_for('edit.index', user_name=user_name, album_title=album_title))
             else:
-                flash('Can\'t delete item!', 'error')
+                flash('Can\'t delete item!', 'danger')
 
     env = {
         'user_name': user_name,

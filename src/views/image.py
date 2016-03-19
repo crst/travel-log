@@ -3,9 +3,8 @@ from flask import Blueprint, send_from_directory, request
 from flask.ext.login import current_user
 
 from shared.util import config, get_logger, log_request
+
 logger = get_logger(__name__)
-
-
 image_module = Blueprint('image', __name__)
 
 

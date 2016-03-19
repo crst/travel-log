@@ -192,9 +192,9 @@ app.edit.bind_item_upload = function () {
             'processData': false,
             'async': true,
             'success': function (data) {
+                $('#item-upload-button-text').button('reset');
                 if (data['success']) {
-                    $('#item-upload-button-text').button('reset');
-                    app.edit.save();
+                    app.edit.update_items();
                 }
             }
         });
@@ -219,8 +219,8 @@ app.edit.bind_album_background = function () {
             'processData': false,
             'async': true,
             'success': function (data) {
+                $('#album-background-upload-button-text').button('reset');
                 if (data['success']) {
-                    $('#album-background-upload-button-text').button('reset');
                     app.edit.update_album();
                 }
             }

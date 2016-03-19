@@ -44,7 +44,7 @@ def login():
             login_user(u)
             return redirect(url_for('user.index', user_name=user_name))
         else:
-            flash('Login failed!', 'error')
+            flash('Login failed!', 'danger')
 
     env = {
         'module': 'Login',

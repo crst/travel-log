@@ -13,6 +13,7 @@ def store_album(user_name, album_title, album):
 
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if err:
+            logger.error(err)
             return False
 
         try:
@@ -37,7 +38,7 @@ UPDATE travel_log.album
                 }
             )
         except Exception as e:
-            logger.debug(e)
+            logger.error(e)
             return False
     return True
 
@@ -47,6 +48,7 @@ def store_items(user_name, album_title, items):
 
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if err:
+            logger.error(err)
             return False
 
         for key, item in items.items():
@@ -83,7 +85,7 @@ UPDATE travel_log.item
                     }
                 )
             except Exception as e:
-                logger.debug(e)
+                logger.error(e)
                 return False
 
     return True
@@ -97,7 +99,8 @@ def change_item_visibility(user_name, album_title, id_item, item_visibility):
 
     id_user = get_user_id(user_name)
     with db.pg_connection(config['app-database']) as (_, cur, _):
-        cur.execute(
+        try:
+            cur.execute(
                 '''
 UPDATE travel_log.item
    SET is_visible = %(visible)s
@@ -106,8 +109,11 @@ UPDATE travel_log.item
    AND fk_user=%(user)s AND album_title=%(album)s
    AND item.id_item=%(id_item)s
                 ''',
-            {'user': id_user, 'album': album_title, 'id_item': id_item, 'visible': item_visibility}
-        )
+                {'user': id_user, 'album': album_title, 'id_item': id_item, 'visible': item_visibility}
+            )
+        except Exception as e:
+            logger.error(e)
+            return False
 
     return True
 
@@ -133,9 +139,13 @@ def delete_one_item(id_user, album_title, id_item):
 
     success = False
     with db.pg_connection(config['app-database']) as (_, cur, err):
-        if not err:
-            # We only flag items as deleted here, some worker queue
-            # will actually delete them asynchronously.
+        if err:
+            logger.error(err)
+            return False
+
+        # We only flag items as deleted here, some worker queue
+        # will actually delete them asynchronously.
+        try:
             cur.execute(
                 '''
 UPDATE travel_log.item
@@ -148,5 +158,7 @@ UPDATE travel_log.item
                 {'user': id_user, 'album': album_title, 'id_item': id_item}
             )
             success = True
+        except Exception as e:
+            logger.error(e)
 
     return {'success': success}

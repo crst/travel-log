@@ -15,10 +15,15 @@ def is_shared(current_user, user_name, album_title, secret_part):
     if is_current_user(user_name, current_user):
         return True
 
+    share_type = None
     with db.pg_connection(config['app-database']) as (_, cur, err):
-        share_type = db.query_one(
-            cur,
-            '''
+        if err:
+            logger.error(err)
+
+        try:
+            share_type = db.query_one(
+                cur,
+                '''
 SELECT
   st.share_type_name,
   s.secret
@@ -29,14 +34,20 @@ JOIN travel_log.user u ON u.id_user = s.fk_user
 WHERE a.album_title = %(album)s
   AND u.user_name = %(user)s
   AND NOT a.is_deleted
-            ''',
-            {'user': user_name, 'album': album_title}
-        )
-        if share_type.share_type_name == 'Public':
-            return True
+                ''',
+                {'user': user_name, 'album': album_title}
+            )
+        except Exception as e:
+            logger.error(e)
 
-        if share_type.share_type_name == 'Hidden':
-            if share_type.secret and share_type.secret == secret_part:
-                return True
+    if not share_type:
+        return False
+
+    if share_type.share_type_name == 'Public':
+        return True
+
+    if share_type.share_type_name == 'Hidden':
+        if share_type.secret and share_type.secret == secret_part:
+            return True
 
     return False

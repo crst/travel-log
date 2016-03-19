@@ -66,13 +66,12 @@ def new_album(user_name):
     if request.method == 'POST':
         album_title = 'album_title' in request.form and escape(request.form['album_title']) or 'No title'
         album_desc = 'album_desc' in request.form and escape(request.form['album_desc']) or 'No description'
-        logger.debug('{Album} %s/new-album/%s', user_name, album_title)
         result = create_new_album(get_user_id(user_name), album_title, album_desc)
         if result['success']:
             flash('Successfully created new album "%s"' % album_title, 'success')
             return redirect(url_for('user.index', user_name=user_name))
         else:
-            flash('Can\'t create new album "%s"' % album_title, 'error')
+            flash('Can\'t create new album "%s"' % album_title, 'danger')
 
     env = {
         'module': 'Create new album',
@@ -98,7 +97,7 @@ def delete_album(user_name, album_title):
                 flash('Successfully deleted album "%s"' % album_title, 'success')
                 return redirect(url_for('user.index', user_name=user_name))
             else:
-                flash('Can\'t delete album "%s"' % album_title, 'error')
+                flash('Can\'t delete album "%s"' % album_title, 'danger')
 
     env = {
         'user_name': user_name,

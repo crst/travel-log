@@ -9,7 +9,10 @@ def create_new_album(id_user, album_title, album_desc):
 
     success = False
     with db.pg_connection(config['app-database']) as (_, cur, err):
-        if not err:
+        if err:
+            logger.error(err)
+
+        try:
             album = db.query_one(
                 cur,
                 'SELECT id_album FROM travel_log.album WHERE album_title = %(album)s and fk_user = %(user)s AND NOT is_deleted;',
@@ -33,8 +36,8 @@ INSERT INTO travel_log.share (fk_album, fk_share_type, fk_user)
                 ''',
                 {'title': album_title, 'user': id_user})
                 success = True
-        else:
-            logger.debug('{Modules|Album}: %s'% err)
+        except Exception as e:
+            logger.error(e)
 
     return {'success': success}
 
@@ -44,7 +47,10 @@ def delete_one_album(id_user, album_title):
 
     success = False
     with db.pg_connection(config['app-database']) as (_, cur, err):
-        if not err:
+        if err:
+            logger.error(err)
+
+        try:
             # We only flag album as deleted here, some worker queue
             # will actually delete them (and cascade to items).
             cur.execute(
@@ -56,5 +62,7 @@ WHERE fk_user=%(user)s AND album_title=%(album)s
                 {'user': id_user, 'album': album_title}
             )
             success = True
+        except Exception as e:
+            logger.error(e)
 
     return {'success': success}

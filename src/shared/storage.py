@@ -12,6 +12,7 @@ from werkzeug import secure_filename
 
 import shared.db as db
 from shared.util import config, get_logger
+
 logger = get_logger(__name__)
 
 
@@ -21,22 +22,31 @@ def store_background_fs(file_storage, user_name, album_title):
         return False
     fs_file, rel_path, aid = fname
 
-    img = Image.open(StringIO(file_storage.read()))
+    try:
+        img = Image.open(StringIO(file_storage.read()))
+    except Exception as e:
+        logger.error(e)
+        return False
     write_image(file_storage, img, fs_file)
 
+    result = False
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if err:
-            return False
-        cur.execute(
-            '''
+            logger.error(err)
+        try:
+            cur.execute(
+                '''
 UPDATE travel_log.album
    SET background = %(path)s
  WHERE id_album = %(aid)s
    AND NOT is_deleted
-            ''',
-            {'path': rel_path, 'aid': aid}
-        )
-    return True
+                ''',
+                {'path': rel_path, 'aid': aid}
+            )
+            result = True
+        except Exception as e:
+            logger.error(e)
+    return result
 
 
 def store_item_fs(file_storage, user_name, album_title):
@@ -49,32 +59,43 @@ def store_item_fs(file_storage, user_name, album_title):
     # filesystem/database happens as a transaction, i.e. either
     # both or none.
 
-    img = Image.open(StringIO(file_storage.read()))
+    try:
+        img = Image.open(StringIO(file_storage.read()))
+    except Exception as e:
+        logger.error(e)
+        return False
+
     file_storage.seek(0)
     meta_data = get_meta_data(img)
     zoom = (meta_data['lat'] and meta_data['lon']) and 14 or None # TODO: magic number
     write_image(file_storage, img, fs_file)
 
+    result = False
     with db.pg_connection(config['app-database']) as (_, cur, err):
         if err:
-            return False
+            logger.error(err)
+
         # Store item in database
-        cur.execute(
-            '''
+        try:
+            cur.execute(
+                '''
 INSERT INTO travel_log.item (fk_album, image, ts, lat, lon, zoom)
 VALUES (%(aid)s, %(image)s, %(ts)s, %(lat)s, %(lon)s, %(zoom)s)
-            ''',
-            {
-                'aid': aid,
-                'image': rel_path,
-                'ts': meta_data['date_time'],
-                'lat': meta_data['lat'],
-                'lon': meta_data['lon'],
-                'zoom': zoom
-            }
-        )
+                ''',
+                {
+                    'aid': aid,
+                    'image': rel_path,
+                    'ts': meta_data['date_time'],
+                    'lat': meta_data['lat'],
+                    'lon': meta_data['lon'],
+                    'zoom': zoom
+                }
+            )
+            result = True
+        except Exception as e:
+            logger.error(e)
 
-    return True
+    return result
 
 
 

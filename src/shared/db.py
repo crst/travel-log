@@ -2,7 +2,9 @@ from contextlib import contextmanager
 
 import psycopg2
 
-from shared.util import config
+from shared.util import config, get_logger
+
+logger = get_logger(__name__)
 
 
 @contextmanager
@@ -45,8 +47,12 @@ def query_all(cur, query, env=None):
 
 # TODO: this is duplicated in common.py
 def get_user_id(user_name):
+    result = None
     with pg_connection(config['app-database']) as (_, cur, err):
-        if not err:
+        if err:
+            logger.error(err)
+
+        try:
             cur.execute(
                 '''
 SELECT *
@@ -56,7 +62,12 @@ SELECT *
                 {'name': user_name}
             )
             result = fetch_one_row(cur)
-            return result.id_user
+        except Exception as e:
+            logger.error(e)
+
+    if result:
+        return result.id_user
+    return None
 
 
 class User(object):
@@ -68,7 +79,9 @@ class User(object):
 
     def set_authenticated(self, password):
         with pg_connection(config['app-database']) as (_, cur, err):
-            if not err:
+            if err:
+                logger.error(err)
+            try:
                 cur.execute(
                     '''
 SELECT pw_hash = crypt(%(pw)s, pw_hash) AS auth
@@ -79,6 +92,8 @@ SELECT pw_hash = crypt(%(pw)s, pw_hash) AS auth
                 result = fetch_one_row(cur)
                 if result.auth:
                     self.authenticated = True
+            except Exception as e:
+                logger.error(e)
 
     def is_authenticated(self):
         return self.authenticated
@@ -91,8 +106,12 @@ SELECT pw_hash = crypt(%(pw)s, pw_hash) AS auth
 
 
 def load_user(key):
+    user = None
     with pg_connection(config['app-database']) as (_, cur, err):
-        if not err:
+        if err:
+            logger.error(err)
+
+        try:
             cur.execute(
                 '''
 SELECT *
@@ -101,6 +120,9 @@ SELECT *
                 ''',
                 {'name': key})
             user = fetch_one_row(cur)
-            if user:
-                return User(user.user_name, id_user=user.id_user)
+        except Exception as e:
+            logger.error(e)
+
+    if user:
+        return User(user.user_name, id_user=user.id_user)
     return None
