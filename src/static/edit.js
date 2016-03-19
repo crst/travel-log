@@ -221,7 +221,7 @@ app.edit.bind_album_background = function () {
             'success': function (data) {
                 if (data['success']) {
                     $('#album-background-upload-button-text').button('reset');
-                    app.edit.save();
+                    app.edit.update_album();
                 }
             }
         })
