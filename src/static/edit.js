@@ -194,6 +194,7 @@ app.edit.bind_item_upload = function () {
             'success': function (data) {
                 $('#item-upload-button-text').button('reset');
                 if (data['success']) {
+                    app.edit.current_item = data['success'];
                     app.edit.update_items();
                 }
             }

@@ -16,6 +16,11 @@ from shared.util import config, get_logger
 logger = get_logger(__name__)
 
 
+MAX_ALLOWED_IMAGE_SIZE = int(0.5 * 1024 * 1024)
+DEFAULT_JPEG_QUALITY = 90
+DEFAULT_ZOOM_LEVEL = 14
+
+
 def store_background_fs(file_storage, user_name, album_title):
     fname = _make_file_path(user_name, album_title, file_storage.filename)
     if not fname:
@@ -67,7 +72,7 @@ def store_item_fs(file_storage, user_name, album_title):
 
     file_storage.seek(0)
     meta_data = get_meta_data(img)
-    zoom = (meta_data['lat'] and meta_data['lon']) and 14 or None # TODO: magic number
+    zoom = (meta_data['lat'] and meta_data['lon']) and DEFAULT_ZOOM_LEVEL or None
     write_image(file_storage, img, fs_file)
 
     result = False
@@ -77,10 +82,12 @@ def store_item_fs(file_storage, user_name, album_title):
 
         # Store item in database
         try:
-            cur.execute(
+            new_item = db.query_one(
+                cur,
                 '''
 INSERT INTO travel_log.item (fk_album, image, ts, lat, lon, zoom)
 VALUES (%(aid)s, %(image)s, %(ts)s, %(lat)s, %(lon)s, %(zoom)s)
+RETURNING id_item
                 ''',
                 {
                     'aid': aid,
@@ -91,7 +98,7 @@ VALUES (%(aid)s, %(image)s, %(ts)s, %(lat)s, %(lon)s, %(zoom)s)
                     'zoom': zoom
                 }
             )
-            result = True
+            result = new_item.id_item
         except Exception as e:
             logger.error(e)
 
@@ -102,13 +109,11 @@ VALUES (%(aid)s, %(image)s, %(ts)s, %(lat)s, %(lon)s, %(zoom)s)
 # -----------------------------------------------------------------------------
 # Process and write image
 
-
 def write_image(storage, img, file_path):
     file_size = get_img_size(img)
-    max_allowed_size = 0.5 * 1024 * 1024 # TODO: magic number
-    if not is_jpeg(img) or file_size > max_allowed_size:
-        processed_image = process_image(img, file_size, max_allowed_size)
-        processed_image.save(file_path, 'JPEG', quality=90) # TODO: magic number
+    if not is_jpeg(img) or file_size > MAX_ALLOWED_IMAGE_SIZE:
+        processed_image = process_image(img, file_size, MAX_ALLOWED_IMAGE_SIZE)
+        processed_image.save(file_path, 'JPEG', quality=DEFAULT_JPEG_QUALITY)
     else:
         storage.save(file_path)
 
@@ -126,7 +131,7 @@ def is_jpeg(img):
 
 def get_img_size(img):
     mem_file = BytesIO()
-    img.save(mem_file, 'JPEG', quality=90)
+    img.save(mem_file, 'JPEG', quality=DEFAULT_JPEG_QUALITY)
     return mem_file.tell()
 
 

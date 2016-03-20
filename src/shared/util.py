@@ -1,7 +1,7 @@
 import hashlib
 import json
 import logging
-from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
+from logging.handlers import TimedRotatingFileHandler
 import os
 import sys
 
@@ -39,7 +39,7 @@ def get_logger(name):
     logger = logging.getLogger(name)
     if not getattr(logger, 'has_handler', False):
         logger.setLevel(logging.getLevelName(config['log-level']))
-        handler = RotatingFileHandler(os.path.join(log_folder, 'app.log'), maxBytes=1024 * 1024 * 50, backupCount=5)
+        handler = TimedRotatingFileHandler(os.path.join(log_folder, 'app.log'), when='midnight', interval=1, utc=True)
         formatter = logging.Formatter(
             '[%(asctime)s] - {%(processName)s:%(threadName)s:%(pathname)s:%(lineno)d} - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
