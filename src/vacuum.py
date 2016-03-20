@@ -110,8 +110,24 @@ SELECT background FROM travel_log.album WHERE NOT is_deleted
 
     # Step 4:
     # Remove empty directories
-    # TODO
-
+    print('Searching stale folders...')
+    with db.pg_connection(config['app-database']) as (_, cur, _):
+        albums = db.query_all(
+            cur,
+            'SELECT fk_user, id_album FROM travel_log.album WHERE NOT is_deleted'
+        )
+    albums = set([(a.fk_user, a.id_album) for a in albums])
+    folders = [d for d in glob.glob(os.path.join(config['storage-engine']['path'], '*', '*'))]
+    found_stale_folders = False
+    for f in folders:
+        rest, aid = os.path.split(f)
+        rest, uid = os.path.split(rest)
+        if (int(uid), int(aid)) not in albums:
+            found_stale_folders = True
+            print(' - Delete folder from disk: %s' % f)
+            os.rmdir(f)
+    if not found_stale_folders:
+        print(' - None found')
 
 
 if __name__ == '__main__':
