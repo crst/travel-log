@@ -12,7 +12,7 @@ vacuum:
 JS_FILES = $(filter-out %.min.js, $(wildcard src/static/*.js))
 JS_FILES_MINIFIED = $(JS_FILES:.js=.min.js)
 JS_COMPRESSOR = closure
-JS_COMPRESSOR_FLAGS = --compilation_level SIMPLE_OPTIMIZATIONS
+JS_COMPRESSOR_FLAGS = --language_in ECMASCRIPT5 --compilation_level SIMPLE_OPTIMIZATIONS
 
 CSS_FILES = $(filter-out %.min.css, $(wildcard src/static/*.css))
 CSS_FILES_MINIFIED = $(CSS_FILES:.css=.min.css)

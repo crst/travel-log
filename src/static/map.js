@@ -30,7 +30,7 @@ app.map.init_map = function (args) {
     var marker_style = new ol.style.Style({
         image: new ol.style.Icon(({
             opacity: 1,
-            src: '/static/marker.png' // Maps Icons Collection https://mapicons.mapsmarker.com
+            src: '/static/marker.png' /** @license marker.png from: Maps Icons Collection https://mapicons.mapsmarker.com */
         }))
     });
     marker_feature.setStyle(marker_style);
