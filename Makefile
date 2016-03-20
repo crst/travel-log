@@ -8,6 +8,43 @@ vacuum:
 	cd src && python2 vacuum.py
 
 
+
+JS_FILES = $(filter-out %.min.js, $(wildcard src/static/*.js))
+JS_FILES_MINIFIED = $(JS_FILES:.js=.min.js)
+JS_COMPRESSOR = closure
+JS_COMPRESSOR_FLAGS = --compilation_level SIMPLE_OPTIMIZATIONS
+
+CSS_FILES = $(filter-out %.min.css, $(wildcard src/static/*.css))
+CSS_FILES_MINIFIED = $(CSS_FILES:.css=.min.css)
+CSS_COMPRESSOR = yuicompressor
+CSS_COMPRESSOR_FLAGS = --charset UTF-8
+
+minify-js: $(JS_FILES) $(JS_FILES_MINIFIED)
+minify-css: $(CSS_FILES) $(CSS_FILES_MINIFIED)
+
+%.min.js: %.js
+	@echo '-> Minifying $<'
+	$(JS_COMPRESSOR) $(JS_COMPRESSOR_FLAGS) $< > $@
+
+%.min.css: %.css
+	@echo '-> Minifying $<'
+	$(CSS_COMPRESSOR) $(CSS_COMPRESSOR_FLAGS) $< > $@
+
+minify-production: minify-js minify-css
+
+
+.PHONY: minify-dev
+minify-dev: clean-minified-files symlink-static-files
+
+clean-minified-files:
+	rm -f $(JS_FILES_MINIFIED) $(CSS_FILES_MINIFIED)
+
+symlink-static-files:
+	cd src/static && rm -f *.min.js && find ./ -maxdepth 1 -iname "*.js" -exec sh -c 'ln -s $$0 `basename "$$0" .js`.min.js' '{}' \;
+	cd src/static && rm -f *.min.css && find ./ -maxdepth 1 -iname "*.css" -exec sh -c 'ln -s $$0 `basename "$$0" .css`.min.css' '{}' \;
+
+
+
 .PHONY: get-media
 get-media:
 	git clone git@gitlab.com:travel-log/media.git cache/media
@@ -56,8 +93,9 @@ install-pickadate:
 	cp cache/pickadate.js-3.5.6/lib/compressed/themes/classic.date.css src/static/lib/pickadate/
 	cp cache/pickadate.js-3.5.6/lib/compressed/themes/classic.time.css src/static/lib/pickadate/
 
-.PHONY: clean
+
 clean:
+	rm -f $(JS_MINIFIED) $(CSS_MINIFIED)
 	rm -rf cache
 
 

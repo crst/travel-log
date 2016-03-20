@@ -51,7 +51,7 @@ app.map.init_map = function (args) {
                     attributions: [
                         ol.source.OSM.ATTRIBUTION,
                         new ol.Attribution({
-                            'html': '<p class="Attribution-text u-left"> <span id=CopyText class=CopyText>Map tiles by <a href=http://cartodb.com/attributions#basemaps>CartoDB</a>, under <a href="https://creativecommons.org/licenses/by/3.0/" target=_blank>CC BY 3.0</a>. Data by <a href="http://www.openstreetmap.org/" target=_blank>OpenStreetMap</a>, under ODbL.</span> </p>'
+                            'html': '<p class="Attribution-text u-left"> <span id="CopyText" class="CopyText">Map tiles by <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>, under <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC BY 3.0</a>. Data by <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>, under ODbL.</span> </p>'
                         }),
                     ]
                 }),

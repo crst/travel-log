@@ -12,7 +12,7 @@ log/*
 *.log
 
 /env/*
-/src/static/*.min.js
+/src/static/*.min.*
 /src/static/lib/*
 /src/static/images/
 /src/static/*.jpg
