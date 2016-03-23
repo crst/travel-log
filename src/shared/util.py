@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import json
 import logging
@@ -5,6 +6,7 @@ from logging.handlers import TimedRotatingFileHandler
 import os
 import sys
 
+import pika
 
 configs = [
     'config.json',
@@ -50,22 +52,8 @@ def get_logger(name):
 
 
 def log_request(request, current_user):
-    # TODO: request logging should happen asynchronously
-
-    log_folder = config['log-folder']
-    if not os.path.isdir(log_folder):
-        os.makedirs(log_folder)
-
-    logger = logging.getLogger(__name__)
-    if not getattr(logger, 'has_handler', False):
-        logger.setLevel(logging.INFO)
-        handler = TimedRotatingFileHandler(os.path.join(log_folder, 'request.log'), when='midnight', interval=1, utc=True)
-        formatter = logging.Formatter('"%(asctime)s";"%(message)s"')
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.has_handler = True
-
-    data = [
+    data = '";"'.join([
+        datetime.datetime.utcnow().isoformat(' '),
         hash_to_int(request.environ['REMOTE_ADDR']),
         str(int(current_user.is_anonymous)),
         hash_to_int(str(current_user.get_id())),
@@ -76,8 +64,32 @@ def log_request(request, current_user):
         request.environ['QUERY_STRING'],
         str(request.user_agent.browser),
         str(request.user_agent.platform),
-    ]
-    logger.info('";"'.join(data))
+    ])
+    data = '"%s"' % data
+
+    try:
+        connection = pika.BlockingConnection(pika.ConnectionParameters(
+            host=config['request-logger-host']
+        ))
+        channel = connection.channel()
+        channel.exchange_declare(
+            exchange='request_logs',
+            type='fanout',
+            durable=True,
+            auto_delete=False
+        )
+        channel.basic_publish(
+            exchange='request_logs',
+            routing_key='request_logs',
+            body=data,
+            properties=pika.BasicProperties(
+                delivery_mode=2
+            )
+        )
+        connection.close()
+    except Exception as e:
+        logger = get_logger(__name__)
+        logger.error('Can\'t log request: %s', e)
 
 
 def hash_to_int(msg, n=32):

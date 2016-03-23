@@ -25,5 +25,6 @@
 
     "debug": false,
     "log-folder": "../log",
-    "log-level": "WARNING"
+    "log-level": "WARNING",
+    "request-logger-host": "localhost"
 }

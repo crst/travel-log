@@ -3,6 +3,10 @@
 run-app:
 	cd src && python2 app.py
 
+.PHONY: run-request-logger
+run-request-logger:
+	cd src && python2 request_logger.py
+
 .PHONY: vacuum
 vacuum:
 	cd src && python2 vacuum.py
