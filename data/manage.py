@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 import glob
 import os
+import sys
 
 import psycopg2
 
@@ -25,51 +26,66 @@ def pg_connection(user=None, password=None, database=None, host=None, port=None)
             con.close()
 
 
-def migrate_up():
+def migrate(version):
     if not os.path.isfile('CURRENT_VERSION'):
         print('Can not read current version.')
         return False
 
-    # Read current version
-    # Apply all changes
     with open('CURRENT_VERSION', 'r') as f:
-        version = int(f.read())
-    print('Current schema version: %s' % version)
+        current_version = int(f.read())
+    print('Current schema version: %s' % current_version)
 
-    migrations_up = glob.glob('*_up.sql')
-    available_migrations = {int(m.split('_')[0]): m for m in migrations_up}
-    keys = sorted([k for k in available_migrations.keys() if k > version])
-    for k in keys:
-        migration = available_migrations[k]
-        success = run_migration(k, migration)
+    def get_migrations(direction, from_version, to_version):
+        migrations = {int(m.split('_')[0]): m for m in glob.glob('*_%s.sql' % direction)}
+        sorted_keys = sorted([k for k in migrations.keys() if k > from_version and k <= to_version],
+                             reverse=direction == 'down')
+        return migrations, sorted_keys
+
+    migrations, sorted_keys = [], []
+    if current_version < version:
+        next_version = lambda x: x
+        migrations, sorted_keys = get_migrations('up', current_version, version)
+    elif current_version > version:
+        next_version = lambda x: x - 1
+        migrations, sorted_keys = get_migrations('down', version, current_version)
+
+    for k in sorted_keys:
+        migration = migrations[k]
+        success = run_migration(k, next_version(k), migration)
         if not success:
             return False
 
     return True
 
 
-def run_migration(version, up_file):
-    with open(up_file, 'r') as f:
+def run_migration(from_version, to_version, migration_file):
+    with open(migration_file, 'r') as f:
         sql = f.read()
 
     cmd = 'BEGIN TRANSACTION;\n%s\nCOMMIT;' % (sql)
 
     with pg_connection(user='travel_log_admin', database='travel_log') as (_, cur, _):
-        print('Running migration to version %s' % version)
+        print('Running migration %s' % migration_file)
         try:
             cur.execute(cmd)
         except Exception as e:
-            print('Migration to version %s failed!' % version)
+            print('Migration failed!')
             print(e)
             return False
 
     with open('CURRENT_VERSION', 'w') as f:
-        f.write('%s\n' % version)
+        f.write('%s\n' % to_version)
 
-    print('Successfully migrated to version %s!' % version)
+    print('Successfully migrated to version %s!' % to_version)
 
 
 if __name__ == '__main__':
-    success = run_migration()
+    try:
+        version = int(sys.argv[1])
+    except:
+        print('Please specify a version where to migrate')
+        sys.exit(0)
+
+    success = migrate(version)
     if success:
-        print('Database is a latest version!')
+        print('Database is at version %s!' % version)
