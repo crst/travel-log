@@ -4,18 +4,6 @@ body {
     background-size: cover;
 }
 
-#featured {
-    padding: 25px;
-    border: 1px solid #333333;
-    background: #f5f5f5;
-    opacity: 0.75;
-
-    box-shadow: 5px 5px 4px 0px rgba(30, 30, 30, 0.9);
-    border-radius: 4px;
-
-    text-align: center;
-}
-
 #sign-up {
     position: absolute;
     top: 50%;

@@ -7,44 +7,15 @@
 {% block body %}
 
 <div class="container">
-  <!--
-  <div id="featured">
-    <div class="row">
-      <div class="page-header">
-        <h2>Featured travel logs</h2>
-      </div>
-    </div>
-    <div class="row">
-      {% for feature in featured %}
-      <div class="col-sm-6 col-md-3">
-        <a href="javascript:void(0);" class="thumbnail">
-          <img src="{{ url_for('static', filename='%s' % feature.image)}}" alt="{{ feature.caption }}">
-          <div class="caption">
-            <h3>{{ feature.caption }}</h3>
-            <p>{{ feature.description }}</p>
-          </div>
-        </a>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-  -->
-
   <div id="sign-up">
     <h1 style="margin: 1em;">
       <span id="question">
         Want to create your own travel logs?
       </span>
     </h1>
-    <form class="form-inline">
-      <div class="form-group">
-        <label class="sr-only" for="email">Email address</label>
-        <div class="input-group">
-          <input type="text" class="form-control input-lg" id="email" placeholder="you@app" disabled>
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary btn-lg" disabled>Sign up for waiting list</button>
-    </form>
+
+    <a href="https://github.com/crst/travel-log" target="_blank" class="btn btn-success btn-lg">View project on GitHub</a>
+
   </div>
 </div>
 

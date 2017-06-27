@@ -7,7 +7,6 @@ Required packages:
 
 
     cd travel-log
-    make get-media
     virtualenv -p /usr/bin/python2 env
     source env/bin/activate
     make dependencies

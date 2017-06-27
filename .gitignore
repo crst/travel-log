@@ -1,6 +1,9 @@
 data/CURRENT_VERSION
 TODO
 
+src/templates/footer/
+src/static/footer/
+
 cache/
 
 *.pyc
@@ -14,6 +17,3 @@ log/*
 /env/*
 /src/static/*.min.*
 /src/static/lib/*
-/src/static/images/
-/src/static/*.jpg
-/src/static/*.png

@@ -5,8 +5,11 @@
         "user",
         "album",
         "edit",
-        "share"
+        "share",
+        "footer"
     ],
+
+    "footer-pages": [],
 
     "app-database": {
         "database": "travel_log",

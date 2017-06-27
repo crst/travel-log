@@ -56,9 +56,9 @@
     <footer class="footer">
       <div class="container">
         <ul class="list-inline">
-          <li class="text-muted"><a href="{{ url_for('index.about') }}">About</a></li>
-          <li class="text-muted"><a href="{{ url_for('index.datenschutz') }}">Datenschutz</a></li>
-          <li class="text-muted"><a href="{{ url_for('index.imprint') }}">Impressum</a></li>
+          {% for page in footer %}
+          <li class="text-muted"><a href="{{ url_for('footer.%s' % page) }}">{{ page.capitalize() }}</a></li>
+          {% endfor %}
         </ul>
       </div>
     </footer>

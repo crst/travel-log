@@ -33,9 +33,6 @@ CREATE TRIGGER travel_log_user_update_last_modified BEFORE INSERT OR UPDATE ON t
   FOR EACH ROW EXECUTE PROCEDURE fn.update_last_modified();
 CREATE INDEX ON travel_log.user (user_name);
 
-INSERT INTO travel_log.user (user_name, email, pw_hash) VALUES
-  ('admin', 'admin@travel_log', crypt('@1@3%kgq\\|EH\tt{LO|PjZwn\x0c\tZPluh4(', gen_salt('bf', 12)));
-
 
 
 CREATE TABLE travel_log.signup (

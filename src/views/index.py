@@ -2,7 +2,7 @@ from flask import Blueprint, escape, flash, redirect, render_template, request, 
 from flask.ext.login import current_user, login_user, logout_user
 
 import shared.db as db
-from shared.util import get_logger, log_request
+from shared.util import config, get_logger, log_request
 
 logger = get_logger(__name__)
 index_module = Blueprint('index', __name__)
@@ -13,16 +13,8 @@ def index():
     log_request(request, current_user)
     logger.debug('{View|Index}')
 
-    featured = [
-        {'image': 'berlin.jpg', 'caption': 'Berlin', 'description': 'Winter in Berlin. Awesome.'},
-        {'image': 'valencia.jpg', 'caption': 'Valencia', 'description': 'Ciudad de las Artes y las Ciencias.'},
-        {'image': 'lisbon.jpg', 'caption': 'Lisbon', 'description': 'Amazing city.'},
-        {'image': 'barcelona.jpg', 'caption': 'Barcelona', 'description': 'Well, it\'s Barcelona.'},
-    ]
-
     env = {
-        'module': 'Home',
-        #'featured': featured
+        'module': 'Home'
     }
     return render_template('index.html', **env)
 
@@ -47,8 +39,7 @@ def login():
             flash('Login failed!', 'danger')
 
     env = {
-        'module': 'Login',
-        'header': True,
+        'module': 'Login'
     }
     return render_template('login.html', **env)
 
@@ -60,30 +51,3 @@ def logout():
 
     logout_user()
     return redirect(url_for('index.index'))
-
-
-@index_module.route('/about')
-def about():
-    log_request(request, current_user)
-    logger.debug('{View|About}')
-
-    env = {'module': 'About', 'header': True}
-    return render_template('about.html', **env)
-
-
-@index_module.route('/impressum')
-def imprint():
-    log_request(request, current_user)
-    logger.debug('{View|Impressum}')
-
-    env = {'module': 'Impressum', 'header': True}
-    return render_template('imprint.html', **env)
-
-
-@index_module.route('/datenschutz')
-def datenschutz():
-    log_request(request, current_user)
-    logger.debug('{View|Datenschutz}')
-
-    env = {'module': 'Datenschutz', 'header': True}
-    return render_template('datenschutz.html', **env)

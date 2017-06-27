@@ -8,7 +8,7 @@ from flask import Flask, abort, render_template, request, session
 from flask.ext.login import LoginManager, current_user
 
 import shared.db as db
-from shared.util import get_logger, config, log_request
+from shared.util import config, get_logger, log_request
 logger = get_logger(__name__)
 
 
@@ -43,7 +43,7 @@ def load_modules(cnf):
 
 init_app(config)
 load_modules(config)
-
+flask_app.jinja_env.globals['footer'] = config['footer-pages']
 
 @flask_app.before_request
 def csrf_protect():
