@@ -1,8 +1,8 @@
 from flask import Blueprint, escape, flash, redirect, render_template, request, url_for
-from flask.ext.login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user
 
 import shared.db as db
-from shared.util import config, get_logger, log_request
+from shared.util import get_logger, log_request
 
 logger = get_logger(__name__)
 index_module = Blueprint('index', __name__)

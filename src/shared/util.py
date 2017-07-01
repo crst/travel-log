@@ -41,7 +41,7 @@ def get_logger(name):
     logger = logging.getLogger(name)
     if not getattr(logger, 'has_handler', False):
         logger.setLevel(logging.getLevelName(config['log-level']))
-        handler = TimedRotatingFileHandler(os.path.join(log_folder, 'app.log'), when='midnight', interval=1, utc=True)
+        handler = TimedRotatingFileHandler(os.path.join(log_folder, 'travel-log.log'), when='midnight', interval=1, utc=True)
         formatter = logging.Formatter(
             '[%(asctime)s] - {%(processName)s:%(threadName)s:%(pathname)s:%(lineno)d} - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
@@ -94,4 +94,4 @@ def log_request(request, current_user):
 
 def hash_to_int(msg, n=32):
     salt = config['SECRET_KEY']
-    return str(int(hashlib.md5('%s%s' % (salt, msg)).hexdigest(), 16) % (2**n))
+    return str(int(hashlib.md5(b'%s%s' % (salt.encode('utf-8'), msg.encode('utf-8'))).hexdigest(), 16) % (2**n))

@@ -1,4 +1,3 @@
-from cStringIO import StringIO
 import datetime
 import hashlib
 from io import BytesIO
@@ -28,7 +27,7 @@ def store_background_fs(file_storage, user_name, album_title):
     fs_file, rel_path, aid = fname
 
     try:
-        img = Image.open(StringIO(file_storage.read()))
+        img = Image.open(BytesIO(file_storage.read()))
     except Exception as e:
         logger.error(e)
         return False
@@ -65,7 +64,7 @@ def store_item_fs(file_storage, user_name, album_title):
     # both or none.
 
     try:
-        img = Image.open(StringIO(file_storage.read()))
+        img = Image.open(BytesIO(file_storage.read()))
     except Exception as e:
         logger.error(e)
         return False
@@ -233,7 +232,7 @@ WHERE u.user_name = %(user)s AND album_title = %(album)s AND NOT is_deleted
             os.makedirs(fs_path)
 
         filename = hashlib.sha256(
-            '%s-%s-%s-%s' % (uid, aid, time.time(), secure_filename(fname))
+            ('%s-%s-%s-%s' % (uid, aid, time.time(), secure_filename(fname))).encode('utf-8')
         ).hexdigest()
         fs_file = os.path.join(fs_path, '%s.jpg' % filename)
         rel_path = os.path.join(str(uid), str(aid), '%s.jpg' % filename)

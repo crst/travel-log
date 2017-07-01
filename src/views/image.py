@@ -1,5 +1,5 @@
 from flask import Blueprint, request, send_from_directory
-from flask.ext.login import current_user
+from flask_login import current_user
 
 from shared.util import config, get_logger, log_request
 

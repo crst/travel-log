@@ -4,7 +4,7 @@ import string
 import time
 
 import shared.db as db
-from shared.util import config, get_logger, log_request
+from shared.util import config, get_logger
 
 logger = get_logger(__name__)
 

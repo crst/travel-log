@@ -1,7 +1,7 @@
 import json
 
 from flask import Blueprint, abort, jsonify, flash, render_template, redirect, request, url_for
-from flask.ext.login import current_user, login_required
+from flask_login import current_user, login_required
 
 from shared.auth import is_allowed
 from shared.common import get_user_id, load_items, load_album, ssl_required
@@ -40,7 +40,7 @@ def get_items(user_name, album_title):
     if not is_allowed(current_user, user_name):
         return jsonify({})
 
-    return load_items(current_user, user_name, album_title)
+    return load_items(user_name, album_title)
 
 
 @edit_module.route('/user/<user_name>/album/<album_title>/edit/get_album/')

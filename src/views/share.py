@@ -1,5 +1,5 @@
 from flask import Blueprint, abort, escape, flash, render_template, redirect, request, url_for
-from flask.ext.login import current_user, login_required
+from flask_login import current_user, login_required
 
 from shared.auth import is_allowed
 from shared.util import get_logger, log_request

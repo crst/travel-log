@@ -1,21 +1,29 @@
 
-.PHONY: run-app
-run-app:
-	cd src && python2 app.py
+.PHONY: run-travel-log
+run-travel-log:
+	@( \
+		source env/bin/activate; \
+		cd src && python3 app.py; \
+	)
 
 .PHONY: run-request-logger
 run-request-logger:
-	cd src && python2 request_logger.py
+	@( \
+		source env/bin/activate; \
+		cd src && python3 request_logger.py; \
+	)
 
 .PHONY: vacuum
 vacuum:
-	cd src && python2 vacuum.py
-
+	@( \
+		source env/bin/activate; \
+		cd src && python3 vacuum.py; \
+	)
 
 
 JS_FILES = $(filter-out %.min.js, $(wildcard src/static/*.js))
 JS_FILES_MINIFIED = $(JS_FILES:.js=.min.js)
-JS_COMPRESSOR = closure
+JS_COMPRESSOR = closure-compiler
 JS_COMPRESSOR_FLAGS = --language_in ECMASCRIPT5 --compilation_level SIMPLE_OPTIMIZATIONS
 
 CSS_FILES = $(filter-out %.min.css, $(wildcard src/static/*.css))
@@ -34,6 +42,8 @@ minify-css: $(CSS_FILES) $(CSS_FILES_MINIFIED)
 	@echo '-> Minifying $<'
 	$(CSS_COMPRESSOR) $(CSS_COMPRESSOR_FLAGS) $< > $@
 
+
+.PHONY: minify-production
 minify-production: minify-js minify-css
 
 
@@ -49,22 +59,24 @@ symlink-static-files:
 
 
 
-.PHONY: get-media
-get-media:
-	git clone git@gitlab.com:travel-log/media.git cache/media
-	cp cache/media/* src/static/
-
-
 .PHONY: dependencies
-dependencies: install-python-packages install-jquery install-bootstrap install-osm
+dependencies: create-local-config install-python-packages static-dependencies
 
 .PHONY: static-dependencies
 static-dependencies: install-jquery install-bootstrap install-osm
 
 
+.PHONY: create-local-config
+create-local-config:
+	if [ ! -f src/config_local.json ]; then echo -e '{\n    "SECRET_KEY": "",\n    "debug": false,\n    "log-level": "WARNING"\n}' > src/config_local.json; fi;
+
 .PHONY: install-python-packages
 install-python-packages:
-	pip2 install -r requirements.txt
+	@( \
+		if [ ! -d env ]; then virtualenv -p python3 --system-site-packages env; fi; \
+		source env/bin/activate; \
+		pip3 install -r requirements.txt; \
+	)
 
 .PHONY: install-jquery
 install-jquery:
@@ -99,8 +111,9 @@ install-pickadate:
 
 
 clean:
-	rm -f $(JS_MINIFIED) $(CSS_MINIFIED)
+	rm -f $(JS_FILES_MINIFIED) $(CSS_FILES_MINIFIED)
 	rm -rf cache
+	rm -rf env
 
 
 

@@ -73,7 +73,8 @@ CREATE TABLE travel_log.item (
   zoom          SMALLINT,
   description   TEXT,
   is_deleted    BOOLEAN NOT NULL DEFAULT FALSE,
-  last_modified TIMESTAMP WITH TIME ZONE NOT NULL
+  last_modified TIMESTAMP WITH TIME ZONE NOT NULL,
+  is_visible    BOOLEAN NOT NULL DEFAULT FALSE
 );
 CREATE TRIGGER travel_log_item_update_last_modified BEFORE INSERT OR UPDATE ON travel_log.item
   FOR EACH ROW EXECUTE PROCEDURE fn.update_last_modified();

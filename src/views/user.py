@@ -1,5 +1,5 @@
 from flask import Blueprint, escape, render_template, request
-from flask.ext.login import current_user
+from flask_login import current_user
 
 from shared.common import is_current_user
 from shared.util import get_logger, log_request

@@ -2,15 +2,13 @@
 Dev setup:
 
 Required packages:
-* Python2
-* pip2
-
+* `Python 3`
+* `Pip 3`
+* `PostgreSQL`
 
     cd travel-log
-    virtualenv -p /usr/bin/python2 env
-    source env/bin/activate
     make dependencies
+    $EDITOR src/config_local.json
+    make run-travel-log
 
-    make run-app
-
-    deactivate
+Check `log/travel-log.log`

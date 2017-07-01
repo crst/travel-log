@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request
-from flask.ext.login import current_user
+from flask_login import current_user
 
-import shared.db as db
 from shared.util import config, get_logger, log_request
 
 logger = get_logger(__name__)

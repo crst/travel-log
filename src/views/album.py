@@ -1,5 +1,5 @@
 from flask import Blueprint, abort, escape, flash, jsonify, redirect, render_template, request, url_for
-from flask.ext.login import current_user, login_required
+from flask_login import current_user, login_required
 
 from shared.auth import is_allowed, is_shared
 from shared.common import get_user_id, load_items, load_album, ssl_required
@@ -38,7 +38,7 @@ def get_items(user_name, album_title, secret_part=None):
     if not is_shared(current_user, user_name, album_title, secret_part):
         return jsonify({})
 
-    return load_items(current_user, user_name, album_title, only_visible=True)
+    return load_items(user_name, album_title, only_visible=True)
 
 
 @album_module.route('/user/<user_name>/album/<album_title>/view/get_album/')

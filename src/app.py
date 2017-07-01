@@ -5,7 +5,7 @@ import string
 import sys
 
 from flask import Flask, abort, render_template, request, session
-from flask.ext.login import LoginManager, current_user
+from flask_login import LoginManager, current_user
 
 import shared.db as db
 from shared.util import config, get_logger, log_request
@@ -17,6 +17,9 @@ flask_app.config['PREFERRED_URL_SCHEME'] = 'https'
 
 
 def init_app(cnf):
+    if cnf['SECRET_KEY'] == '':
+        logger.error('Please make sure to change the "SECRET_KEY" config entry!')
+        sys.exit(1)
     flask_app.secret_key = cnf['SECRET_KEY']
     init_login()
 
@@ -38,7 +41,7 @@ def load_modules(cnf):
             logger.debug('Loaded module %s', mod_name)
         except Exception as err:
             logger.critical('Can\'t load module: %s', err)
-            sys.exit(-1)
+            sys.exit(1)
 
 
 init_app(config)
@@ -62,7 +65,7 @@ def csrf_protect():
 
 def generate_random_string():
     m = ''.join([random.choice(string.printable) for _ in range(16)])
-    return hashlib.md5(m).hexdigest()
+    return hashlib.md5(m.encode('utf-8')).hexdigest()
 
 def generate_csrf_token():
     if '_csrf_token' not in session:

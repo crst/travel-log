@@ -34,7 +34,7 @@ SELECT id_user
     return result
 
 
-def load_items(current_user, user_name, album_title, only_visible=False):
+def load_items(user_name, album_title, only_visible=False):
     visible = (True, False)
     if only_visible:
         visible = (True,)
