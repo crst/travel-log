@@ -1,6 +1,7 @@
 from flask import Blueprint, escape, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_user, logout_user
 
+from shared.common import ssl_required
 import shared.db as db
 from shared.util import get_logger, log_request
 
@@ -20,6 +21,7 @@ def index():
 
 
 @index_module.route('/login/', methods=['GET', 'POST'])
+@ssl_required
 def login():
     log_request(request, current_user)
     logger.debug('{View|Login}')

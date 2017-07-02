@@ -1,5 +1,14 @@
+# Example
 
-Dev setup:
+![Edit presentation](doc/edit.jpg)
+
+![View presentation](doc/presentation.jpg)
+
+http://travel-log.christopher-strecker.de/user/chris/album/2016-february/view/
+
+-------------------------------------------------------------------------------
+
+# Dev setup:
 
 Required packages:
 * `Python 3`

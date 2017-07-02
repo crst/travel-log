@@ -63,7 +63,7 @@ symlink-static-files:
 dependencies: create-local-config install-python-packages static-dependencies
 
 .PHONY: static-dependencies
-static-dependencies: install-jquery install-bootstrap install-osm
+static-dependencies: install-jquery install-bootstrap install-osm install-pickadate
 
 
 .PHONY: create-local-config
