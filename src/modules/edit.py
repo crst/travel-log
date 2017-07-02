@@ -78,8 +78,8 @@ UPDATE travel_log.item
                         'album': album_title,
                         'key': key,
                         'desc': item['description'],
-                        'lat': item['lat'] != 'None' and item['lat'] or None,
-                        'lon': item['lon'] != 'None' and item['lon'] or None,
+                        'lat': item['lat'] if item['lat'] != 'None' else None,
+                        'lon': item['lon'] if item['lon'] != 'None' else None,
                         'zoom': item['zoom'] or 12,
                         'ts': ts or None,
                     }

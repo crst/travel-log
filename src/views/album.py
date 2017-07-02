@@ -64,8 +64,8 @@ def new_album(user_name):
         return redirect(url_for('album.new_album', user_name=current_user.name))
 
     if request.method == 'POST':
-        album_title = 'album_title' in request.form and escape(request.form['album_title']) or 'No title'
-        album_desc = 'album_desc' in request.form and escape(request.form['album_desc']) or 'No description'
+        album_title = escape(request.form['album_title']) if 'album_title' in request.form else 'No title'
+        album_desc = escape(request.form['album_desc']) if 'album_desc' in request.form else 'No description'
         result = create_new_album(get_user_id(user_name), album_title, album_desc)
         if result['success']:
             flash('Successfully created new album "%s"' % album_title, 'success')

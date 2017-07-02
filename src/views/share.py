@@ -19,7 +19,7 @@ def index(user_name, album_title):
         return abort(404)
 
     if request.method == 'POST':
-        share_type = 'share_type' in request.form and escape(request.form['share_type']) or 'Private'
+        share_type = escape(request.form['share_type']) if 'share_type' in request.form else 'Private'
         result = share_album(user_name, album_title, share_type)
         flash(result['msg'], 'info')
         return redirect(url_for('user.index', user_name=user_name))

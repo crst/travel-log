@@ -106,11 +106,8 @@ def set_item_visibility(user_name, album_title):
 
     if request.method == 'POST':
         data = json.loads(request.data)
-        id_item = 'item-id' in data and data['item-id'] or None
-        item_visibility = None
-        if 'item-visibility' in data:
-            item_visibility = data['item-visibility']
-
+        id_item = data['item-id'] if 'item-id' in data else None
+        item_visibility = data['item-visibility'] if 'item-visibility' in data else None
         result = change_item_visibility(user_name, album_title, id_item, item_visibility)
         return jsonify({'success': result})
 

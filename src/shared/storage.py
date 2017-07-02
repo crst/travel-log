@@ -71,7 +71,7 @@ def store_item_fs(file_storage, user_name, album_title):
 
     file_storage.seek(0)
     meta_data = get_meta_data(img)
-    zoom = (meta_data['lat'] and meta_data['lon']) and DEFAULT_ZOOM_LEVEL or None
+    zoom = DEFAULT_ZOOM_LEVEL if (meta_data['lat'] and meta_data['lon']) else None
     write_image(file_storage, img, fs_file)
 
     result = False

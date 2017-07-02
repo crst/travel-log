@@ -30,8 +30,8 @@ def login():
         return redirect(url_for('user.index', user_name=current_user.name))
 
     if request.method == 'POST':
-        user_name = 'user_name' in request.form and escape(request.form['user_name']) or ''
-        pw = 'password' in request.form and escape(request.form['password']) or ''
+        user_name = escape(request.form['user_name']) if 'user_name' in request.form else ''
+        pw = escape(request.form['password']) if 'password' in request.form else ''
         u = db.User(user_name)
         u.set_authenticated(pw)
         if u.is_authenticated():
