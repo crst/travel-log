@@ -25,11 +25,11 @@ def get_logger(name):
 
 
 def run_logger():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=config['request-logger-host']))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=config['request-logger-host'], port=5673))
     channel = connection.channel()
     channel.exchange_declare(
         exchange='request_logs',
-        type='fanout',
+        exchange_type='fanout',
         durable=True,
         auto_delete=False
     )
@@ -43,7 +43,7 @@ def run_logger():
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
     channel.basic_qos(prefetch_count=1)
-    channel.basic_consume(callback, queue=queue_name)
+    channel.basic_consume(queue_name, callback)
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
 
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     while True:
         try:
             run_logger()
-        except Exception as e:
-            print('Rabbitmq connection failed!')
+        except Exception as err:
+            print(f'Rabbitmq connection failed: {err}')
             time.sleep(30)
             print('Trying to run again!')

@@ -7,7 +7,7 @@ import time
 from dateutil.parser import parse as date_parser
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 
 import shared.db as db
 from shared.util import config, get_logger

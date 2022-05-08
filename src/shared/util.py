@@ -59,7 +59,7 @@ def log_request(request, current_user):
         hash_to_int(str(current_user.get_id())),
         request.method,
         str(int(request.is_secure)),
-        str(int(request.is_xhr)),
+        str(int(False)),
         request.path,
         request.environ['QUERY_STRING'],
         str(request.user_agent.browser),
@@ -69,12 +69,13 @@ def log_request(request, current_user):
 
     try:
         connection = pika.BlockingConnection(pika.ConnectionParameters(
-            host=config['request-logger-host']
+            host=config['request-logger-host'],
+            port=5673
         ))
         channel = connection.channel()
         channel.exchange_declare(
             exchange='request_logs',
-            type='fanout',
+            exchange_type='fanout',
             durable=True,
             auto_delete=False
         )
